@@ -1,5 +1,17 @@
 <!DOCTYPE html>
 
+<?
+
+    require 'steamauth/steamauth.php';
+    require 'steamauth/userInfo.php';
+
+    if (isset($_SESSION['steamid'])) {
+        $id = $_SESSION['steamid'];
+    } else {
+        # Not logged in
+    }
+
+?>
 
 
 <html lang="en">
@@ -7,52 +19,45 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Title</title>
-    <!-- <link rel="stylesheet" href="style.css"> -->
-    <style>
-        body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: #f4f4f4;
-    }
-    .navbar {
-        background-color: #333;
-        overflow: hidden;
-    }
-    .navbar a {
-        float: left;
-        display: block;
-        color: white;
-        text-align: center;
-        padding: 14px 20px;
-        text-decoration: none;
-    }
-    .navbar a:hover {
-        background-color: #ddd;
-        color: black;
-    }
-    .navbar .login {
-        float: right;
-        background-color: #4CAF50;
-        color: white;
-    }
-    .container {
-        padding: 20px;
-    }
-    .main-content {
-        background: white;
-        padding: 20px;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        border-radius: 8px;
-    }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="navbar">
         <a href="#">Home</a>
         <a href="#">Transakcje</a>
         <a href="#">Kontakt</a>
-        <a href="#" class="login">Log in</a>
+        <? if (isset($_SESSION['steamid'])) { ?>
+            <div class="dropdown">
+            <button class="dropbtn">
+                <img src="<? $steamprofile['avatar']; ?>" alt="Avatar" class="profile-img">
+                <span class="profile-text"><? $steamprofile['personaname']; ?></span>
+            </button>
+            <div class="dropdown-content">
+                <a href="#">Option 1</a>
+                <a href="#">Option 2</a>
+                <a href="#">Option 3</a>
+                <a href="steamauth/logout.php">Logout</a>
+            </div>
+            </div>
+            
+            <!-- <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                    <img class="img-rounded" src="<? $steamprofile['avatar']; ?>"> <b> <? $steamprofile['personaname']; ?> </b> <b class="caret"> </b> 
+                </a>
+                    <span class="dropdown-arrow"></span>
+                    <ul class="dropdown-menu">
+                    <li><a href="#"> Option 1 </a></li>
+                    <li><a href="#"> Option 2 </a></li>
+                    <li><a href="#"> Option 3 </a></li>
+                    <li><a href="#"> Option 4 </a></li>
+                    <li class="divider"></li>
+                    <li><a href="steamauth/logout.php">Logout</a></li>
+                </ul>
+            </li> -->
+        <?} else {?>
+            <!-- <a href="#" class="login">Log in</a> -->
+            <a href="#" class="login"><? echo loginbutton(); ?></a>
+        <? } ?>
     </div>
     <div class="container">
         <div class="main-content">

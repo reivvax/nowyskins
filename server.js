@@ -8,7 +8,7 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 
 app.get("/", (req, res) => {
-    readFile("./front/mainpage/index.html", "utf-8", (err, html) => {
+    readFile("./front/mainpage/mainpage.php", "utf-8", (err, html) => {
         if (err) {
             res.status(500).send("Error ocurred");
         }
@@ -19,4 +19,4 @@ app.get("/", (req, res) => {
 
 app.use('/api/v1/users', usersRoutes);
 
-app.listen(PORT, () => {console.log(`App available on http://localhost:${PORT}`)})
+app.listen(PORT, () => {console.log(`App available on http://localhost:${PORT}`)});

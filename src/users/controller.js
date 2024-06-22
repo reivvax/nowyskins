@@ -9,6 +9,22 @@ const getUsers = (req, res) => {
     });
 };
 
+const addUser = (req, res) => {
+    const { steamname, registration } = req.body;
+    
+}
+
+const getUserById = (req, res) => {
+    const ID = parseInt(req.params.id);
+    pool.query(queries.getUserById, [ID], (error, result) => {
+        if (error) 
+            console.error(error.stack);
+        res.status(200).send(result.rows);
+    });
+};
+
 module.exports = {
     getUsers,
+    addUser,
+    getUserById,
 };

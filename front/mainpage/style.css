@@ -37,29 +37,38 @@ body {
 
 .dropdown {
     float: right;
-    overflow: hidden;
 }
 
 .dropbtn {
+    display: flex;
+    align-items: center;
+    background-color: #333;
+    color: white;
+    padding: 10px 20px;
     font-size: 16px;
     border: none;
-    outline: none;
-    color: white;
-    padding: 14px 16px;
-    background-color: inherit;
-    font-family: inherit;
-    margin: 0;
     cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.dropbtn:hover {
+    background-color: #555;
 }
 
 .profile-img {
-    vertical-align: middle;
-    margin-right: 8px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    margin-right: 10px;
 }
 
 .profile-text {
-    vertical-align: middle;
-    font-weight: bold;
+    margin-right: 10px;
+}
+
+.caret {
+    margin-left: auto;
+    font-size: 12px;
 }
 
 .dropdown-content {
@@ -70,6 +79,7 @@ body {
     box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
     z-index: 1;
     right: 0;
+    flex-direction: column;
 }
 
 .dropdown-content a {
@@ -77,6 +87,7 @@ body {
     padding: 12px 16px;
     text-decoration: none;
     display: block;
+    transition: background-color 0.3s ease;
 }
 
 .dropdown-content a:hover {
@@ -84,9 +95,10 @@ body {
 }
 
 .dropdown:hover .dropdown-content {
-    display: block;
+    display: flex;
+    flex-direction: column;
 }
 
 .dropdown:hover .dropbtn {
-    background-color: #3e8e41;
+    background-color: #555;
 }

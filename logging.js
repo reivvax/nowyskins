@@ -40,8 +40,6 @@ app.get('/', (req, res) => {
 app.get('/auth/steam',
   passport.authenticate('steam'),
   (req, res) => {
-    // The request will be redirected to Steam for authentication, so this
-    // function will not be called.
   }
 );
 

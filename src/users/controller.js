@@ -9,20 +9,30 @@ const getUsers = (req, res) => {
     });
 };
 
-const addUser = (req, res) => {
-    const { steamID, steamname, registration, email } = req.body;
+const addUserToDatabase = (user, cb) => {
+    const { steamID, steamname, email } = user;
     pool.query(queries.checkEmailExists, [email], (error, results) => {
-        if (results.rows.length) {
-            res.send("Email already exists");
-        }
+        if (error) 
+            throw error;
+        if (results.rows.length)
+            throw new Error("Email already exists");
         
-        pool.query(querires.addUser, [steamID, steamname, registration, email], (error, results) => {
-            if (error) throw error;
-            res.status(201).send("User added successfully.");
+        
+        pool.query(querires.addUser, [steamID, steamname, new Date().toISOString().slice(0, 10), email], cb);
+    })
+}
+
+const addUser = (req, res) => {
+    try {
+        addUserToDatabase(req.body, (error, results) => {
+            if (error) 
+                throw error;
             console.log(`User ${steamname} added`);
         });
-    })
-    
+        res.status(201).send("User added successfully.");
+    } catch {
+        res.status(500).send("Failed to add user to the database");
+    }
 }
 
 const getUserById = (req, res) => {
@@ -67,8 +77,13 @@ const updateEmail = (req, res) => {
     });
 };
 
+const addFederatedCredentials = (identifier, profile, cb) => {
+
+}
+
 module.exports = {
     getUsers,
+    addUserToDatabase,
     addUser,
     getUserById,
     removeUser,

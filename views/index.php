@@ -1,25 +1,5 @@
 <!DOCTYPE html>
 
-<?php
-
-    require 'steamauth/steamauth.php';
-    require 'steamauth/userInfo.php';
-
-    function debug_to_console($data) {
-        $output = $data;
-        if (is_array($output))
-            $output = implode(',', $output);
-    
-        echo "<script>console.log('Debug Objects: " . $output . "' );</script>";
-    }
-    
-
-    if (isset($_SESSION['steamid'])) {
-        $id = $_SESSION['steamid'];
-    }
-?>
-
-
 <html lang="en">
 <head>
     <meta charset="UTF-8">

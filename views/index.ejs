@@ -5,30 +5,33 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Title</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="index.css">
 </head>
 <body>
     <div class="navbar">
         <a href="#">Home</a>
         <a href="#">Transakcje</a>
         <a href="#">Kontakt</a>
-        <?php if (isset($_SESSION['steamid'])) { ?>
+        <% if (user) { %>
             <div class="dropdown">
                 <button class="dropbtn">
-                    <img src="<?php echo $steamprofile['avatar']; ?>" alt="Avatar" class="profile-img">
-                    <span class="profile-text"> <?php echo $steamprofile['personaname']; ?> </span>
+                    <img src="<%=user.avatar%>" alt="Avatar" class="profile-img">
+                    <span class="profile-text"> <%=user.display_name%> </span>
                     <span class="caret">&#9660;</span>
                 </button>
                 <div class="dropdown-content">
-                    <a href="#">Option 1</a>
+                    <a href="/profile">Profile</a>
                     <a href="#">Option 2</a>
                     <a href="#">Option 3</a>
-                    <a href="steamauth/logout.php">Logout</a>
+                    <form id="logoutForm" action="/logout" method="post" style="display: none;">
+                        <!-- Empty -->
+                    </form>
+                    <a href="#" onclick="document.getElementById('logoutForm').submit();">Logout</a>
                 </div>
             </div>
-        <?php } else {?>
-            <?php echo loginbutton(); ?>
-        <?php } ?>
+        <% } else {%>
+            <a href="/login" class="login">Log in</a>
+        <% } %>
     </div>
     <div class="container">
         <div class="main-content">

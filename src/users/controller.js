@@ -9,33 +9,59 @@ const getUsers = (req, res) => {
     });
 };
 
-const addUserToDatabase = (user, cb) => {
-    const { steamID, steamname, email } = user;
-    pool.query(queries.checkEmailExists, [email], (error, results) => {
+const checkAndAddUser = (user, cb) => {
+    if (!user) {
+        console.log("User is null");
+        return;
+    }
+    const { steam_id, display_name, avatar, profile_url, email } = user;
+    
+    if (email != null)
+        pool.query(queries.checkEmailExists, [email], (error, results) => {
+            if (error) 
+                throw error;
+            if (results.rows.length)
+                throw new Error("Email already exists");
+        });
+    pool.query(queries.getUserById, [steam_id], (error, results) => {
         if (error) 
             throw error;
-        if (results.rows.length)
-            throw new Error("Email already exists");
-        
-        
-        pool.query(querires.addUser, [steamID, steamname, new Date().toISOString().slice(0, 10), email], cb);
-    })
+        if (!results.rows.length)
+            addUserToDatabase(user, cb);
+    });
+}
+
+const addUserToDatabase = (user) => {
+    const { steam_id, display_name, avatar, profile_url } = user;
+    return pool.query(queries.addUser, [steam_id, display_name, avatar, profile_url], (err, result) => {
+        if (err) {
+            console.log(err);
+            throw err;
+        };
+        return result.rows[0];
+    });
 }
 
 const addUser = (req, res) => {
     try {
-        addUserToDatabase(req.body, (error, results) => {
-            if (error) 
-                throw error;
-            console.log(`User ${steamname} added`);
-        });
+        checkAndAddUser(req.body);
         res.status(201).send("User added successfully.");
     } catch {
         res.status(500).send("Failed to add user to the database");
     }
 }
 
-const getUserById = (req, res) => {
+const getUserById = (id) => {
+    return result = pool.query(queries.getUserById, [id], (err, results) => {
+        if (err) console.log(err);
+        console.log(results);
+        if (results.rows.length)
+            return results.rows[0];
+        return null;
+    });
+}
+
+const getUserByIdRouting = (req, res) => {
     const ID = req.params.id;
     pool.query(queries.getUserById, [ID], (error, result) => {
         if (error) 
@@ -77,15 +103,13 @@ const updateEmail = (req, res) => {
     });
 };
 
-const addFederatedCredentials = (identifier, profile, cb) => {
-
-}
-
 module.exports = {
     getUsers,
+    checkAndAddUser,
     addUserToDatabase,
     addUser,
     getUserById,
+    getUserByIdRouting,
     removeUser,
     updateEmail,
 };

@@ -22,9 +22,19 @@ body {
 }
 .navbar .login {
     float: right;
-    background-color: #4CAF50;
+    background-color: green;
     color: white;
+    font-weight: bold;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 5px;
 }
+
+.navbar .login:hover {
+    background-color: darkgreen;
+}
+
 .container {
     padding: 20px;
 }

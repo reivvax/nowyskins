@@ -12,9 +12,9 @@ passport.use(new SteamStrategy({
   }, 
   async (identifier, profile, cb) => {
     try {
+      // console.log(profile);
       const { id, displayName, photos, _json: { profileurl } } = profile;
       const avatar = photos[0].value;
-      // console.log(id, displayName, avatar, profileurl);
       const search = await pool.query('SELECT * FROM users WHERE steam_id = $1', [id]);
       let user = search.rows[0];
       if (!user) {
@@ -22,16 +22,8 @@ passport.use(new SteamStrategy({
           "INSERT INTO users (steam_id, display_name, avatar, profile_url) VALUES ($1, $2, $3, $4) RETURNING *",
           [id, displayName, avatar, profileurl]
         );
-        // user = userController.addUserToDatabase({
-        //   steam_id: profile.id,
-        //   display_name: profile.displayName,
-        //   avatar: profile.photos[0].value,
-        //   profile_url: profile._json.profileurl,
-        //   email: null
-        // });
         user = insertResult.rows[0];
       }
-      // console.log(user);
       return cb(null, user);
     } catch (err) {
       return cb(err);
@@ -60,7 +52,7 @@ router.get('/auth/steam/return',
   passport.authenticate('steam', { failureRedirect: '/' }),
   (req, res) => {
     // Successful authentication, redirect home.
-    res.redirect('/'); //or render()?
+    res.redirect('/');
   });
 
 

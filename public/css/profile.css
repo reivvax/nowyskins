@@ -1,0 +1,27 @@
+.profile-content {
+    background: #1e1e1e;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.7);
+    border-radius: 8px;
+    max-width: 600px;
+    margin: 20px auto;
+    text-align: center;
+}
+
+.profile-img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    margin-bottom: 20px;
+}
+
+.profile-info {
+    margin: 10px 0;
+}
+
+.profile-info strong {
+    display: inline-block;
+    width: 100px;
+    text-align: right;
+    margin-right: 10px;
+}

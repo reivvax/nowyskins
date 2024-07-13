@@ -1,29 +1,26 @@
-body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: #f4f4f4;
-}
 .navbar {
-    background-color: #333;
+    background-color: #1f1f1f;
     overflow: hidden;
 }
+
 .navbar a {
     float: left;
     display: block;
-    color: white;
+    color: #e0e0e0;
     text-align: center;
     padding: 14px 20px;
     text-decoration: none;
 }
+
 .navbar a:hover {
-    background-color: #ddd;
-    color: black;
+    background-color: #333;
+    color: #ffffff;
 }
+
 .navbar .login {
     float: right;
-    background-color: green;
-    color: white;
+    background-color: #3b7a57;
+    color: #e0e0e0;
     font-weight: bold;
     border: none;
     padding: 10px 20px;
@@ -32,17 +29,7 @@ body {
 }
 
 .navbar .login:hover {
-    background-color: darkgreen;
-}
-
-.container {
-    padding: 20px;
-}
-.main-content {
-    background: white;
-    padding: 20px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
+    background-color: #2e5943;
 }
 
 .dropdown {
@@ -53,7 +40,7 @@ body {
     display: flex;
     align-items: center;
     background-color: #333;
-    color: white;
+    color: #e0e0e0;
     padding: 10px 20px;
     font-size: 16px;
     border: none;
@@ -65,14 +52,14 @@ body {
     background-color: #555;
 }
 
-.profile-img {
+.profile-img-navbar {
     width: 20px;
     height: 20px;
     border-radius: 50%;
     margin-right: 10px;
 }
 
-.profile-text {
+.profile-text-navbar {
     margin-right: 10px;
 }
 
@@ -84,16 +71,16 @@ body {
 .dropdown-content {
     display: none;
     position: absolute;
-    background-color: #f9f9f9;
+    background-color: #2a2a2a;
     min-width: 160px;
-    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.9);
     z-index: 1;
     right: 0;
     flex-direction: column;
 }
 
 .dropdown-content a {
-    color: black;
+    color: #e0e0e0;
     padding: 12px 16px;
     text-decoration: none;
     display: block;
@@ -101,7 +88,7 @@ body {
 }
 
 .dropdown-content a:hover {
-    background-color: #f1f1f1;
+    background-color: #3a3a3a;
 }
 
 .dropdown:hover .dropdown-content {

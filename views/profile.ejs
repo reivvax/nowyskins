@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+    <link rel="stylesheet" href="basic.css">
+    <link rel="stylesheet" href="profile.css">
+</head>
+<body>
+    <%- include('./components/navbar.ejs') %>
+    <div class="container">
+        <div class="profile-content">
+            <img src="<%=user.avatar.substring(0, user.avatar.length - 4) + "_full.jpg"%>" alt="Avatar" class="profile-img">
+            <h2><%= user.display_name %>'s Profile</h2>
+            <div class="profile-info">
+                <strong>Username:</strong> <%= user.display_name%>
+            </div>
+            <div class="profile-info">
+                <strong>Email:</strong> <%=user.email%>
+            </div>
+            <div class="profile-info">
+                <strong>Balance:</strong> TODO
+            </div>
+        </div>
+    </div>
+</body>
+</html>

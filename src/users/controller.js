@@ -1,5 +1,6 @@
 const pool = require('../../db');
-const queries = require('./queries');
+const queries = require('./userQueries');
+const utils = require('./userUtils');
 
 const getUsers = (req, res) => {
     pool.query(queries.getUsers, (error, result) => {
@@ -9,65 +10,24 @@ const getUsers = (req, res) => {
     });
 };
 
-const checkAndAddUser = (user, cb) => {
-    if (!user) {
-        console.log("User is null");
-        return;
-    }
-    const { steam_id, display_name, avatar, profile_url, email } = user;
-    
-    if (email != null)
-        pool.query(queries.checkEmailExists, [email], (error, results) => {
-            if (error) 
-                throw error;
-            if (results.rows.length)
-                throw new Error("Email already exists");
-        });
-    pool.query(queries.getUserById, [steam_id], (error, results) => {
-        if (error) 
-            throw error;
-        if (!results.rows.length)
-            addUserToDatabase(user, cb);
-    });
-}
-
-const addUserToDatabase = (user) => {
-    const { steam_id, display_name, avatar, profile_url } = user;
-    return pool.query(queries.addUser, [steam_id, display_name, avatar, profile_url], (err, result) => {
-        if (err) {
-            console.log(err);
-            throw err;
-        };
-        return result.rows[0];
-    });
-}
-
 const addUser = (req, res) => {
     try {
-        checkAndAddUser(req.body);
+        utils.addUserWithCheck(req.body);
         res.status(201).send("User added successfully.");
     } catch {
         res.status(500).send("Failed to add user to the database");
     }
 }
 
-const getUserById = (id) => {
-    return result = pool.query(queries.getUserById, [id], (err, results) => {
-        if (err) console.log(err);
-        console.log(results);
-        if (results.rows.length)
-            return results.rows[0];
-        return null;
-    });
-}
-
-const getUserByIdRouting = (req, res) => {
-    const ID = req.params.id;
-    pool.query(queries.getUserById, [ID], (error, result) => {
-        if (error) 
-            console.error(error.stack);
-        res.status(200).send(result.rows);
-    });
+const getUserById = (req, res) => {
+    try {
+        const res = utils.getUserById(req.params.id);
+        if (res.rows.length == 0)
+            throw new Error();
+        res.status(200).send(res.rows[0]);
+    } catch (error) {
+        res.status(500).send("User does not exist in the database");
+    }
 };
 
 const removeUser = (req, res) => {
@@ -90,26 +50,18 @@ const updateEmail = (req, res) => {
     const ID = req.params.id;
     const { email } = req.body;
 
-    pool.query(queries.getUserById, [ID], (error, results) => {
-        const noUserFound = !results.rows.length;
-        if (noUserFound) {
-            res.send("User does not exist in the database.");
-        }
-
-        pool.query(queries.updateEmail, [ID, email], (error, resulsts) => {
-            if (error) throw error;
-            res.status(200).send("Email updated successfully");
-        });
-    });
+    try {
+        utils.updateEmail(ID, email);
+        res.status(200).send("User email updated successfully");
+    } catch (error) {
+        res.status(500).send("User does not exist in the database")
+    }
 };
 
 module.exports = {
     getUsers,
-    checkAndAddUser,
-    addUserToDatabase,
     addUser,
     getUserById,
-    getUserByIdRouting,
     removeUser,
     updateEmail,
 };

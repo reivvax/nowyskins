@@ -44,6 +44,16 @@ const addUserToDatabase = (user) => {
     });
 }
 
+const updateTradelink = (id, tradelink) => {
+    pool.query(queries.getUserById, [id], (error, results) => {
+        const noUserFound = !results.rows.length;
+        if (noUserFound)
+            throw new Error();
+        
+        pool.query(queries.updateTradelink, [id, tradelink]);
+    });
+}
+
 const updateEmail = (id, email) => {
     pool.query(queries.getUserById, [id], (error, results) => {
         const noUserFound = !results.rows.length;
@@ -58,5 +68,6 @@ module.exports = {
     getUserById,
     addUserWithCheck,
     addUserToDatabase,
+    updateTradelink,
     updateEmail,
 }

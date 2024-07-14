@@ -52,15 +52,16 @@ exports.getInventory = (steamid, tradeable) => {
 }
 
 exports.getFilteredInventory = (steamid, tradeable) => {
-    var data = this.getInventory(steamid, tradeable).then(res => {
-        const desiredTypes = ["weapon_", "knife_", "gloves_", "sticker_", "case_", "key_"];
-        return res.items.filter(item => {
-            return desiredTypes.some(type => 
-                item.market_hash_name.toLowerCase().startsWith(type) || 
-                item.market_name.toLowerCase().startsWith(type)
-            );
+    return this.getInventory(steamid, tradeable).then(res => {
+        const desiredTags = [
+            "weapon_", "knife_", "gloves_", "sticker_",
+            "CSGO_Type_WeaponCase", "CSGO_Tool_WeaponCase_Key", "Type_CustomPlayer"
+        ];
+
+        res.items = res.items.filter(item => {
+            return desiredTags.includes(item.tags[0].internal_name) ||
+                   desiredTags.some(type => item.tags[1].internal_name.toLowerCase().startsWith(type)); 
         });
-    }).catch(err => console.error('Error fetching inventory:', err));
-    console.log(data);
-    return data;
+        return res;
+    });
 }

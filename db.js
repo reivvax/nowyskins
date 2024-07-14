@@ -21,6 +21,7 @@ const setup = `CREATE TABLE IF NOT EXISTS users (
   display_name VARCHAR(255),
   avatar VARCHAR(255),
   profile_url VARCHAR(255),
+  tradelink VARCHAR(255),
   registered_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
   email VARCHAR(255)
   );`;

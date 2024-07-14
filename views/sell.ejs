@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sell</title>
+    <link rel="stylesheet" href="basic.css">
+    <link rel="stylesheet" href="sell.css">
+</head>
+<body>
+    <%- include('./components/navbar.ejs') %>
+    <div class="container">
+        <h1>Your inventory</h1>
+        <div class="inventory">
+            <% items.forEach((item) => { %>
+                <div class="item-card">
+                    <h3><%= item.name %></h3>
+                    <img src="<%="http://cdn.steamcommunity.com/economy/image/" + item.icon_url%>" alt="<%= item.name%>">
+                    <p>$TODO PRICE</p>
+                    <button onclick="">Sell</button>
+                </div>
+            <% }); %>
+        </div>
+    </div>
+</body>
+</html>

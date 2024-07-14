@@ -1,0 +1,38 @@
+.inventory {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+.item-card {
+    background: #1e1e1e;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.7);
+    border-radius: 8px;
+    max-width: 200px;
+    text-align: center;
+}
+.item-card img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 5px;
+}
+.item-card h3 {
+    margin: 10px 0;
+    font-size: 18px;
+}
+.item-card p {
+    margin: 10px 0;
+    font-size: 16px;
+}
+.item-card button {
+    background-color: #3b7a57;
+    color: #e0e0e0;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 16px;
+}
+.item-card button:hover {
+    background-color: #2e5943;
+}

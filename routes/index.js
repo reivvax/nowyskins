@@ -18,7 +18,7 @@ router.get('/profile', ensureAuthenticated, function(req, res){
 });
 
 router.get('/sell', ensureAuthenticated, (req, res) => {
-    itemUtils.getinventory(req.user.steam_id, 1).then(data => {
+    itemUtils.getFilteredInventory(req.user.steam_id, 1).then(data => {
         res.render('sell', { user: req.user, items: data.items});
     });
 });

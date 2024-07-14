@@ -1,9 +1,9 @@
 const request = require('request');
 
-const appid = '730'; // CS:GO 2
-const contextid = '2';
+var appid = '730'; // CS:GO 2
+var contextid = '2';
 
-exports.getinventory = (steamid, tradeable) => {
+exports.getInventory = (steamid, tradeable) => {
     return new Promise((resolve, reject) => {
         if (typeof appid !== 'number') {
             appid = 730;
@@ -52,5 +52,15 @@ exports.getinventory = (steamid, tradeable) => {
 }
 
 exports.getFilteredInventory = (steamid, tradeable) => {
-    
+    var data = this.getInventory(steamid, tradeable).then(res => {
+        const desiredTypes = ["weapon_", "knife_", "gloves_", "sticker_", "case_", "key_"];
+        return res.items.filter(item => {
+            return desiredTypes.some(type => 
+                item.market_hash_name.toLowerCase().startsWith(type) || 
+                item.market_name.toLowerCase().startsWith(type)
+            );
+        });
+    }).catch(err => console.error('Error fetching inventory:', err));
+    console.log(data);
+    return data;
 }

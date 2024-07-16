@@ -4,8 +4,75 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Title</title>
+    <title>Homepage</title>
     <link rel="stylesheet" href="basic.css">
+    <style>
+        /* Style for the popup window */
+        .popup {
+            display: none;
+            position: fixed;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 300px;
+            padding: 20px;
+            background-color: #1e1e1e;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.7);
+            border-radius: 8px;
+            color: #e0e0e0;
+            z-index: 1000;
+        }
+
+        .popup-header {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .popup-content {
+            margin-bottom: 20px;
+            color: #e0e0e0;
+        }
+
+        .popup-close {
+            cursor: pointer;
+            color: #e0e0e0;
+            font-size: 20px;
+            line-height: 20px;
+        }
+
+        .email-input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #333;
+            border-radius: 5px;
+            background-color: #2a2a2a;
+            color: #e0e0e0;
+        }
+
+        .email-input:focus {
+            outline: none;
+            border-color: #555;
+        }
+
+        .submit-btn {
+            margin-top: 10px;
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            background-color: #3b7a57;
+            color: #e0e0e0;
+            cursor: pointer;
+        }
+
+        .submit-btn:hover {
+            background-color: #2e5943;
+        }
+    </style>
 </head>
 <body>
     <%- include('./components/navbar.ejs') %>
@@ -15,5 +82,24 @@
             <p>Here you can manage your transactions quickly and securely. <% if(!user) { %> Log in to get started. <% } %> </p>
         </div>
     </div>
+
+
+    <% if (user && !user.email) { %>
+        <!-- Popup Window HTML -->
+        <div id="popup" class="popup">
+            <div class="popup-header">
+                Update Email
+                <span id="popup-close" class="popup-close">&times;</span>
+            </div>
+            <div class="popup-content">
+                <p>Please enter your email to continue:</p>
+                <input type="email" id="email" class="email-input" placeholder="Enter your email">
+                <button class="submit-btn">Submit</button>
+            </div>
+        </div>
+    <% } %>
+
+
+    <script src="popup.js"></script>
 </body>
 </html>

@@ -18,33 +18,28 @@ exports.getInventory = (steamid, tradeable) => {
             tradeable = false;
         }
         request({
+            // uri: `/inventory/76561198086056329/730/2?l=english`,
             uri: `/inventory/${steamid}/${appid}/${contextid}?l=english`,
             baseUrl: 'https://steamcommunity.com/',
             json: true,
         }, (err, res, body) => {
             if (!body) return reject(`Please provide a steamid that exists, you provided value ${steamid}`);
-            let items = body.descriptions;
-            let assets = body.assets
-            let marketnames = [];
-            let assetids = [];
-            let data = {
-                raw: body,
-                items: items,
-                marketnames: marketnames,
-                assets: assets,
-                assetids: assetids
-            }
-            if (items !== undefined) {
-                for (var i = 0; i < items.length; i++) {
-                    marketnames.push(items[i].market_hash_name);
-                    assetids.push(assets[i].assetid);
-                }
-            } else if (items === undefined) {
-                return reject("Couldn't find any items in the inventory of the appid you set. :(");
-            }
-            if (tradeable) {
-                data.items = data.items.filter((x) => x.tradable === 1);
-            }
+            let descriptions = body.descriptions;
+            let assets = body.assets;
+            let data = [];
+
+            const classidToDescription = descriptions.reduce((map, description) => {
+                map[description.classid] = description;
+                return map;
+            }, {});
+
+            assets.forEach(a => {
+                data.push({
+                    asset: a.assetid,
+                    description: classidToDescription[a.classid],
+                });
+            });
+
             if (err) return reject(err);
             resolve(data);
         });
@@ -52,16 +47,17 @@ exports.getInventory = (steamid, tradeable) => {
 }
 
 exports.getFilteredInventory = (steamid, tradeable) => {
-    return this.getInventory(steamid, tradeable).then(res => {
+    return this.getInventory(steamid, tradeable).then(data => {
         const desiredTags = [
-            "weapon_", "knife_", "gloves_", "sticker_",
-            "CSGO_Type_WeaponCase", "CSGO_Tool_WeaponCase_Key", "Type_CustomPlayer"
+            "weapon_", "knife_", "sticker_",
+            "CSGO_Type_WeaponCase", "Type_CustomPlayer", "Type_Hands"
         ];
 
-        res.items = res.items.filter(item => {
-            return desiredTags.includes(item.tags[0].internal_name) ||
-                   desiredTags.some(type => item.tags[1].internal_name.toLowerCase().startsWith(type)); 
+        // filtering data
+        data = data.filter(item => {
+            return desiredTags.includes(item.description.tags[0].internal_name) ||
+                   desiredTags.some(type => item.description.tags[1].internal_name.toLowerCase().startsWith(type)); 
         });
-        return res;
+        return data;
     });
 }

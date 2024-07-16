@@ -8,8 +8,6 @@ function ensureAuthenticated(req, res, next) {
   }
 
 router.get('/', (req, res) => {
-    console.log(req.isAuthenticated());
-    console.log(req.user);
     res.render('index', { user: req.user });
 });
 
@@ -18,8 +16,8 @@ router.get('/profile', ensureAuthenticated, function(req, res){
 });
 
 router.get('/sell', ensureAuthenticated, (req, res) => {
-    itemUtils.getFilteredInventory(req.user.steam_id, 1).then(data => {
-        res.render('sell', { user: req.user, items: data.items});
+    itemUtils.getFilteredInventory(req.user.steam_id, true).then(data => {
+        res.render('sell', { user: req.user, items: data});
     });
 });
 

@@ -6,7 +6,7 @@
     <% if (typeof user !== 'undefined' && user) { %>
         <div class="dropdown">
             <button class="dropbtn">
-                <img src="<%=user.avatar%>" alt="Avatar" class="profile-img-navbar">
+                <img src="<%="https://avatars.steamstatic.com/" + user.avatar%>" alt="Avatar" class="profile-img-navbar">
                 <span class="profile-text-navbar"> <%=user.display_name%> </span>
                 <span class="caret">&#9660;</span>
             </button>

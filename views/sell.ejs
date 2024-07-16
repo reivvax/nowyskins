@@ -8,14 +8,15 @@
     <link rel="stylesheet" href="sell.css">
 </head>
 <body>
-    <%- include('./components/navbar.ejs') %>
+    <%-include('./components/navbar.ejs')%>
     <div class="container">
         <h1>Your inventory</h1>
+        <h2><%=items.length%> items</h2>
         <div class="inventory">
             <% items.forEach((item) => { %>
                 <div class="item-card">
-                    <h3><%= item.name %></h3>
-                    <img src="<%="http://cdn.steamcommunity.com/economy/image/" + item.icon_url%>" alt="<%= item.name%>">
+                    <h3><%=item.description.name%></h3>
+                    <img src="<%="http://cdn.steamcommunity.com/economy/image/" + item.description.icon_url%>" alt="<%=item.description.name%>">
                     <p>$TODO PRICE</p>
                     <button onclick="">Sell</button>
                 </div>

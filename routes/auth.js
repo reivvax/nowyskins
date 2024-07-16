@@ -12,15 +12,14 @@ passport.use(new SteamStrategy({
   }, 
   async (identifier, profile, cb) => {
     try {
-      // console.log(profile);
       const { id, displayName, photos, _json: { profileurl } } = profile;
       const avatar = photos[0].value;
       const search = await pool.query('SELECT * FROM users WHERE steam_id = $1', [id]);
       let user = search.rows[0];
       if (!user) {
         const insertResult = await pool.query(
-          "INSERT INTO users (steam_id, display_name, avatar, profile_url) VALUES ($1, $2, $3, $4) RETURNING *",
-          [id, displayName, avatar, profileurl]
+          "INSERT INTO users (steam_id, display_name, avatar) VALUES ($1, $2, $3) RETURNING *",
+          [id, displayName, avatar.substring(32)]
         );
         user = insertResult.rows[0];
       }

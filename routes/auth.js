@@ -1,7 +1,6 @@
 var express = require('express');
 var passport = require('passport');
 var SteamStrategy = require('passport-steam').Strategy;
-var userController = require('../src/users/controller');
 var router = express.Router();
 var pool = require('../db');
 
@@ -22,14 +21,13 @@ passport.use(new SteamStrategy({
           [id, displayName, avatar.substring(32)]
         );
         user = insertResult.rows[0];
-      }
+      };
       return cb(null, user);
     } catch (err) {
       return cb(err);
     }
   }
 ));
-
 
 passport.serializeUser((user, done) => {
   done(null, user.steam_id);

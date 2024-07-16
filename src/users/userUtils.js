@@ -37,25 +37,18 @@ const addUserToDatabase = (user) => {
     const { steam_id, display_name, avatar, profile_url } = user;
     return pool.query(queries.addUser, [steam_id, display_name, avatar, profile_url], (err, result) => {
         if (err) {
-            console.log(err);
             throw err;
         };
         return result.rows[0];
     });
 }
 
-const updateTradelink = (id, tradelink) => {
-    pool.query(queries.getUserById, [id], (error, results) => {
-        const noUserFound = !results.rows.length;
-        if (noUserFound)
-            throw new Error();
-        
-        pool.query(queries.updateTradelink, [id, tradelink]);
-    });
-}
-
 const updateEmail = (id, email) => {
-    pool.query(queries.getUserById, [id], (error, results) => {
+    pool.query(queries.getUserById, [id], (err, results) => {
+        if (err) {
+            throw err;
+        };
+        
         const noUserFound = !results.rows.length;
         if (noUserFound)
             throw new Error();
@@ -64,10 +57,39 @@ const updateEmail = (id, email) => {
     });
 }
 
+const updateTradelink = (id, tradelink) => {
+    pool.query(queries.getUserById, [id], (err, results) => {
+        if (err) {
+            throw err;
+        };
+        
+        const noUserFound = !results.rows.length;
+        if (noUserFound)
+            throw new Error();
+        
+        pool.query(queries.updateTradelink, [id, tradelink]);
+    });
+}
+
+const updateEmailTradeLink = (id, email, tradelink) => {
+    pool.query(queries.getUserById, [id], (err, results) => {
+        if (err) {
+            throw err;
+        };
+        
+        const noUserFound = !results.rows.length;
+        if (noUserFound)
+            throw new Error();
+        
+        pool.query(queries.updateEmailTradeLink, [id, email, tradelink]);
+    });
+}
+
 module.exports = {
     getUserById,
     addUserWithCheck,
     addUserToDatabase,
-    updateTradelink,
     updateEmail,
+    updateTradelink,
+    updateEmailTradeLink,
 }

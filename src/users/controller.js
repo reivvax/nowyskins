@@ -4,9 +4,10 @@ const utils = require('./userUtils');
 
 const getUsers = (req, res) => {
     pool.query(queries.getUsers, (error, result) => {
-        if (error) 
-            console.error(error.stack);
-        res.status(200).send(result.rows);
+        if (error)
+            res.status(500).send('Internal Server Error');
+        else
+            res.status(200).send(result.rows);
     });
 };
 
@@ -58,10 +59,37 @@ const updateEmail = (req, res) => {
     }
 };
 
+const updateTradeLink = (req, res) => {
+    const ID = req.params.id;
+    const { tradelink } = req.body;
+
+    try {
+        utils.updateTradelink(ID, tradelink);
+        res.status(200).send("User tradelink updated successfully");
+    } catch (error) {
+        res.status(500).send("User does not exist in the database")
+    }
+};
+
+const updateEmailTradeLink = (req, res) => {
+    const ID = req.params.id;
+    const { email, tradelink } = req.body;
+
+    try {
+        utils.updateEmailTradeLink(ID, email, tradelink);
+        
+        res.status(200).send("User email and tradelink updated successfully");
+    } catch (error) {
+        res.status(500).send("User does not exist in the database")
+    }
+};
+
 module.exports = {
     getUsers,
     addUser,
     getUserById,
     removeUser,
     updateEmail,
+    updateTradeLink,
+    updateEmailTradeLink,
 };

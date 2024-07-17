@@ -9,7 +9,7 @@ var passport = require('passport');
 
 var authRouter = require('./routes/auth');
 var indexRouter = require('./routes/index');
-var usersRouter = require('./src/users/routes');
+var usersRouter = require('./routes/users');
 
 const app = express();
 

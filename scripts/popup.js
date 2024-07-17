@@ -19,7 +19,6 @@ function hidePopup() {
 
 function clearError() {
     setError("", false);
-    
 }
 
 function setError(prompt, visible) {
@@ -28,51 +27,32 @@ function setError(prompt, visible) {
     errorMessage.style.display = visible ? 'block' : 'none';
 }
 
-async function sendData(email, tradelink) {
-    console.log(email, tradelink);
-    try {
-        const response = await fetch('/users/userinfo/' + user.steam_id, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ email, tradelink })
-        });
-        if (!response.ok) {
-            throw new Error('Failed to save data');
-        }
-        console.log(response);
-        hidePopup();
-    } catch (error) {
-        console.log(error);
-        setError("Error: ", error, "\nPlease try again.");
-    }
-}
-
 window.onload = function() {
     showPopup();
 }
+
 
 document.getElementById('submit-btn').onclick = function() {
     var email = document.getElementById('email').value;
     var tradelink = document.getElementById('tradelink').value;
     if (email && tradelink) {
-        //email validation
-        var regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-        if (!regex.test(email)) {
+        if (!validateEmail(email)) {
             setError("Invalid email", true);
             return;
         }
 
-        //tradelink validation
-        regex = /^https:\/\/steamcommunity\.com\/tradeoffer\/new\/\?partner=(\d+)&token=[a-zA-Z0-9]{8}$/;
-        const match = tradelink.match(regex);
-        const steamIDBase = 76561197960265728;
-        if (match == null || match.length < 2 || parseInt(match[1], 10) + steamIDBase != user.steam_id) {
+        if (!validateTradeLink(tradelink)) {
             setError("Invalid trade link", true);
             return;
         }
-        sendData(email, tradelink);
+
+        try {
+            sendData(email, tradelink);
+            hidePopup();
+        } catch (error) {
+            console.log(error);
+            setError("Error: ", error, "\nPlease try again.");
+        }
     } else {
        setError('Please fill in both email and trade link.', true);
     }

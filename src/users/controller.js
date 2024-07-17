@@ -23,11 +23,11 @@ const addUser = (req, res) => {
 const getUserById = (req, res) => {
     try {
         const res = utils.getUserById(req.params.id);
-        if (res.rows.length == 0)
-            throw new Error();
-        res.status(200).send(res.rows[0]);
+        if (!res)
+            throw new Error("User does not exist in the database");
+        res.status(200).send(res);
     } catch (error) {
-        res.status(500).send("User does not exist in the database");
+        res.status(500).send("Error: ", error);
     }
 };
 

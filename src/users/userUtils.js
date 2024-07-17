@@ -3,8 +3,8 @@ const pool = require('../../db');
 
 const getUserById = (id) => {
     return result = pool.query(queries.getUserById, [id], (err, results) => {
-        if (err) console.log(err);
-        console.log(results);
+        if (err)
+            throw err;
         if (results.rows.length)
             return results.rows[0];
         return null;

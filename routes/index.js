@@ -23,7 +23,11 @@ router.get('/sell', ensureAuthenticated, (req, res) => {
 });
 
 router.get('/stall/me', ensureAuthenticated, (req, res) => {
-    res.render('stall', { user : req.user });
+    itemUtils.getItemsFromUser(req.user.steam_id).then(items => {
+        console.log(items);
+        
+        res.render('stall', { user : req.user, items : items });
+    });
 });
 
 router.get('/stall/:id', (req, res) => {
@@ -31,7 +35,7 @@ router.get('/stall/:id', (req, res) => {
     if (!user) {
         res.redirect('/');
     }
-    const listed_items = 
+    // const listed_items =
     res.render('stall', { user : user });
 });
 

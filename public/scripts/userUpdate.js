@@ -7,7 +7,7 @@ async function sendEmail(email) {
         body: JSON.stringify({ email })
     });
     if (!response.ok) {
-        throw new Error('Failed to save data');
+        throw new Error(response.body);
     }
 }
 

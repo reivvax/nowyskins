@@ -11,7 +11,7 @@ const getUserById = (id) => {
     });
 }
 
-const addUserWithCheck = (user, cb) => {
+const addUserWithCheck = (user) => {
     if (!user) {
         console.log("User is null");
         throw new Error("User is null");
@@ -29,7 +29,7 @@ const addUserWithCheck = (user, cb) => {
         if (error) 
             throw error;
         if (!results.rows.length)
-            addUserToDatabase(user, cb);
+            addUserToDatabase(user);
     });
 }
 
@@ -47,13 +47,17 @@ const updateEmail = (id, email) => {
     pool.query(queries.getUserById, [id], (err, results) => {
         if (err) {
             throw err;
-        };
-        
+        }
+
         const noUserFound = !results.rows.length;
-        if (noUserFound)
-            throw new Error();
-        
-        pool.query(queries.updateEmail, [id, email]);
+        if (noUserFound) {
+            throw new Error('User not found');
+        }
+
+        pool.query(queries.updateEmail, [id, email], (err, results) => {
+            if (err)
+                throw err;
+        });
     });
 }
 

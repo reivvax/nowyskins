@@ -21,20 +21,21 @@ const setup = `CREATE TABLE IF NOT EXISTS users (
   steam_id VARCHAR(255) PRIMARY KEY,
   display_name VARCHAR(255),
   balance DECIMAL(12, 2) DEFAULT 0,
-  email VARCHAR(255),
+  email VARCHAR(255) UNIQUE,
   registered_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
   avatar VARCHAR(255),
   tradelink VARCHAR(255)
   );
-  drop table listed_items;
+
   CREATE TABLE IF NOT EXISTS listed_items (
   asset_id VARCHAR(20) PRIMARY KEY,
   class_id VARCHAR(20) NOT NULL,
   instance_id VARCHAR(20) NOT NULL,
+  name VARCHAR(255) NOT NULL,
   quality INT,
   exterior INT,
   price DECIMAL(12, 2) DEFAULT 0,
-  icon_url VARCHAR(255),
+  icon_url VARCHAR(255) NOT NULL,
   inspect_url VARCHAR(255),
   trade_lock INT,
   steam_id VARCHAR(255),

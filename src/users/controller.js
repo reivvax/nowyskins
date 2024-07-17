@@ -55,7 +55,13 @@ const updateEmail = (req, res) => {
         utils.updateEmail(ID, email);
         res.status(200).send("User email updated successfully");
     } catch (error) {
-        res.status(500).send("User does not exist in the database")
+        if (error.message === 'User not found') {
+            res.status(404).send("User does not exist in the database");
+        } else if (error.code === '23505') {
+            res.status(409).send("Email already exists");
+        } else {
+            res.status(500).send("Internal Server Error");
+        }
     }
 };
 

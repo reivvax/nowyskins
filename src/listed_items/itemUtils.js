@@ -30,7 +30,7 @@ const addItemWithCheck = (item) => {
         console.log("Item is null");
         throw new Error("Item is null");
     }
-    const { asset_id, class_id, instance_id, quality, exterior, icon_url, inspect_url, steam_id } = item;
+    const { asset_id } = item;
     
     pool.query(queries.getItem, [asset_id], (error, results) => {
         if (error) 

@@ -50,7 +50,6 @@ document.getElementById('submit-btn').onclick = function() {
             sendData(email, tradelink);
             hidePopup();
         } catch (error) {
-            console.log(error);
             setError("Error: ", error, "\nPlease try again.");
         }
     } else {

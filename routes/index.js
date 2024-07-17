@@ -6,9 +6,10 @@ const router = express.Router();
 function ensureAuthenticated(req, res, next) {
     if (req.isAuthenticated()) { return next(); }
     res.redirect('/');
-  }
+}
 
 router.get('/', (req, res) => {
+    console.log("GETTING /");
     res.render('index', { user: req.user });
 });
 

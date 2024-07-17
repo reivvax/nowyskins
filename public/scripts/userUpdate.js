@@ -32,7 +32,8 @@ async function sendData(email, tradelink) {
         },
         body: JSON.stringify({ email, tradelink })
     });
-    if (!response.ok) {
+    console.log(response);
+    if (!response.status != 200) {
         throw new Error('Failed to save data');
     }
 }

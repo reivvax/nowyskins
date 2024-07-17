@@ -80,10 +80,10 @@ const updateTradeLink = (req, res) => {
 const updateEmailTradeLink = (req, res) => {
     const ID = req.params.id;
     const { email, tradelink } = req.body;
-
+    console.log("UPDATING");
     try {
         utils.updateEmailTradeLink(ID, email, tradelink);
-        
+            
         res.status(200).send("User email and tradelink updated successfully");
     } catch (error) {
         res.status(500).send("User does not exist in the database")

@@ -23,8 +23,6 @@ const getItemsFromUser = (steam_id) => {
     });
 }
 
-
-
 const addItemWithCheck = (item) => {
     if (!item) {
         console.log("Item is null");

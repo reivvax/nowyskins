@@ -17,7 +17,8 @@ pool.connect((err) => {
 });
 
 //item exterior: 0 = BS, ..., 4 = FN
-const setup = `CREATE TABLE IF NOT EXISTS users (
+const setup = `
+CREATE TABLE IF NOT EXISTS users (
   steam_id VARCHAR(255) PRIMARY KEY,
   display_name VARCHAR(255),
   balance DECIMAL(12, 2) DEFAULT 0,

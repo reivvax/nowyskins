@@ -10,6 +10,40 @@ const addItem = (req, res) => {
 }
 
 
+const fetchItemData = (req, res, next) => {
+    const { asset_id, class_id, instance_id } = req.body;
+    utils.fetchItemData(asset_id, class_id, instance_id, req.user.steam_id).then(item => {
+        req.body = item;
+        return next();
+    }).catch(
+        (err) => res.status(500).send("Failed to add item to database")
+    );
+}
+
+const ensurePrivilegedToDelete = (req, res, next) => {
+    const asset_id = req.params.id;
+    utils.getItem(asset_id).then(item => {
+        if (item.steam_id != req.user.steam_id) {
+            console.log("UNPRIVILEGED TO DELETE ITEM");
+            res.redirect('/');
+        }
+        return next();
+    }).catch((err) => res.status(500).send("Failed to fetch item from database"));
+}
+
+const deleteItem = (req, res) => {
+    try {
+        utils.removeItem(req.params.id);
+        res.status(200).send("Item removed successfully");
+    } catch (err) {
+        res.status(500).send("Failed to remove item from database");
+    }
+}
+
+
 module.exports = {
     addItem,
+    fetchItemData,
+    ensurePrivilegedToDelete,
+    deleteItem,
 }

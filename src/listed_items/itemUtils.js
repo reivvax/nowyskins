@@ -5,12 +5,13 @@ var appid = '730'; // CS:GO 2
 var contextid = '2'; // default context
 
 const getItem = (asset_id) => {
-    return pool.query(queries.getItem, [asset_id], (err, results) => {
-        if (err)
-            throw err;
-        if (results.rows.length)
-            return results.rows[0];
-        return null;
+    return new Promise((resolve, reject) => {pool.query(queries.getItem, [asset_id], (err, results) => {
+            if (err)
+                reject(err);
+            if (results.rows.length)
+                resolve(results.rows[0]);
+            resolve(null);
+        });
     });
 }
 
@@ -30,15 +31,16 @@ const addItemWithCheck = (item) => {
     }
     const { asset_id } = item;
     
-    pool.query(queries.getItem, [asset_id], (error, results) => {
+    return pool.query(queries.getItem, [asset_id], (error, results) => {
         if (error) 
             throw error;
         if (!results.rows.length)
-            addItemToDatabase(item);
+            return addItemToDatabase(item);
     });
 }
 
 const addItemToDatabase = (item) => {
+    console.log(item);
     const { asset_id, class_id, instance_id, name, quality, exterior, icon_url, inspect_url, steam_id } = item;
     return pool.query(queries.addItem, [asset_id, class_id, instance_id, name, quality, exterior, icon_url, inspect_url, steam_id], (err, result) => {
         if (err) {
@@ -46,6 +48,65 @@ const addItemToDatabase = (item) => {
         };
         return result.rows[0];
     });
+}
+
+const qualityMap = {
+    "Normal": 0,
+    "Souvenir": 1,
+    "StatTrak": 2,
+}
+
+const exteriorMap = {
+    "Battle-Scarred": 0,
+    "Well-Worn": 1,
+    "Field-Tested": 2,
+    "Minimal Wear": 3,
+    "Factory New": 4,
+}
+
+const getTagValue = (tags, search) => {
+    for (let tagId in tags) {
+        if (tags.hasOwnProperty(tagId)) {
+            let tagInfo = tags[tagId];
+            if (tagInfo.category === search) {
+                return tagInfo.name;
+            }
+        }
+    }
+    return null;
+}
+
+const fetchItemData = (asset_id, class_id, instance_id, user_id) => {
+    return new Promise((resolve, reject) => {
+        request({
+            uri: `/?key=${process.env['STEAM_API_KEY']}&appid=${appid}&language=en&class_count=1&classid0=${class_id}&instanceid0=${instance_id}`,
+            baseUrl: 'https://api.steampowered.com/ISteamEconomy/GetAssetClassInfo/v1/',
+            json: true,
+        }, (err, res, body) => {
+            if (err) return reject(err);
+            if (!body) return reject(`Please check the parameters again, provided values: ${class_id}, ${instance_id}`);
+            //process the body
+            const key = Object.keys(body.result)[0];
+            body = body.result[key];
+
+            var quality = qualityMap[getTagValue(body.tags, "Quality")];
+            var exterior = exteriorMap[getTagValue(body.tags, "Exterior")];
+            var inspect_url = body.actions ? body.actions[0].link.replace('%owner_steamid%', user_id).replace('%assetid%', asset_id) : undefined;
+
+            const item = {
+                asset_id: asset_id,
+                class_id: class_id,
+                instance_id: instance_id,
+                name: body.name,
+                quality: quality,
+                exterior: exterior,
+                icon_url: body.icon_url,
+                inspect_url: inspect_url,
+                steam_id: user_id
+            }
+            resolve(item);
+        });
+    })
 }
 
 const removeItem = (asset_id) => {
@@ -86,7 +147,7 @@ const getInventory = (steamid, tradeable) => {
 
             assets.forEach(a => {
                 data.push({
-                    asset: a.assetid,
+                    asset_id: a.assetid,
                     description: classidToDescription[a.classid],
                 });
             });
@@ -118,6 +179,7 @@ module.exports = {
     getItemsFromUser,
     addItemWithCheck,
     addItemToDatabase,
+    fetchItemData,
     removeItem,
     getInventory,
     getFilteredInventory,

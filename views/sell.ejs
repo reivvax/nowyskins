@@ -14,42 +14,16 @@
         <h2><%=items.length%> items</h2>
         <div class="inventory">
             <% items.forEach((item) => { %>
-                <div class="item-card">
+                <div id="<%=item.asset_id%>" class="item-card">
                     <h3><%=item.description.name%></h3>
                     <img src="<%="http://cdn.steamcommunity.com/economy/image/" + item.description.icon_url%>" alt="<%=item.description.name%>">
-                    <p>$TODO PRICE</p>
-                    <button class="sell-button" data-item-id="<%=item.asset_id%>">Sell</button>
+                    <p>$<%=item.price%></p>
+                    <button class="sell-button" data-asset-id="<%=item.asset_id%>" data-class-id="<%=item.description.classid%>" data-instance-id="<%=item.description.instanceid%>">Sell</button>
                 </div>
             <% }); %>
         </div>
     </div>
 
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            const sellButtons = document.querySelectorAll('.sell-button');
-    
-            sellButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    const itemId = this.getAttribute('data-item-id');
-                    
-                    fetch('/listed_items', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({ itemId: itemId })
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        console.log('Success:', data);
-                        // Optionally, you can add code here to update the UI or give feedback to the user
-                    })
-                    .catch((error) => {
-                        console.error('Error:', error);
-                    });
-                });
-            });
-        });
-    </script>
+    <script src="/sell.js"></script>
 </body>
 </html>

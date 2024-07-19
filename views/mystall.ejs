@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stall</title>
+    <link rel="stylesheet" href="/basic.css">
+    <link rel="stylesheet" href="/stall.css">
+    <link rel="stylesheet" href="/mystallcards.css">
+</head>
+<body>
+    <%-include('./components/navbar.ejs')%>
+    
+    <div class="user-section">
+        <img src="<%="https://avatars.steamstatic.com/" + user.avatar.substring(0, user.avatar.length - 4) + "_full.jpg"%>" alt="avatar" class="user-photo">
+        <h2><%= user.display_name %></h2>
+    </div>
+    
+    <div class="container">
+        <div class="inventory">
+            <% items.forEach((item) => { %>
+                <div id="<%=item.asset_id%>" class="item-card">
+                    <h3><%=item.name%></h3>
+                    <img src="<%="http://cdn.steamcommunity.com/economy/image/" + item.icon_url%>" alt="<%=item.name%>">
+                    <p>$<%=item.price%></p>
+                    <button class="sell-button" data-asset-id="<%=item.asset_id%>">Remove Listing</button>
+                </div>
+            <% }); %>
+        </div>
+    </div>
+
+    <script src="/mystall.js"></script>
+</body>
+</html>

@@ -33,13 +33,12 @@ router.get('/stall/me', ensureAuthenticated, (req, res) => {
 router.get('/stall/:id', (req, res) => {
     const id = req.params.id;
     itemUtils.getItemsFromUser(id).then(items => {
-        if (id === req.user.steam_id) { // render user's own stall
+        if (req.isAuthenticated() && id === req.user.steam_id) { // render user's own stall
             res.render('mystall', { user : req.user, items : items });
         } else { // render other user's stall
-            const user = userUtils.getUserById(id);
-            if (!user)
-                res.redirect('/');
-            res.render('stall', { user : user, items : items });
+            userUtils.getUserById(id).then(user => {
+                res.render('stall', { user : user, items : items })
+            }).catch(err => { throw err; });
         }
     }).catch((err) => res.redirect('/'));
 });

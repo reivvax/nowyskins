@@ -2,12 +2,13 @@ const queries = require('./userQueries');
 const pool = require('../../db');
 
 const getUserById = (id) => {
-    return result = pool.query(queries.getUserById, [id], (err, results) => {
-        if (err)
-            throw err;
-        if (results.rows.length)
-            return results.rows[0];
-        return null;
+    return new Promise((resolve, reject) => { pool.query(queries.getUserById, [id], (err, results) => {
+            if (err)
+                reject(err);
+            if (results.rows.length)
+                resolve(results.rows[0]);
+            resolve(null);
+        });
     });
 }
 

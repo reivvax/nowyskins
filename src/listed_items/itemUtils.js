@@ -51,7 +51,6 @@ const addItemWithCheck = (item) => {
 }
 
 const addItemToDatabase = (item) => {
-    console.log(item);
     const { asset_id, class_id, instance_id, name, quality, exterior, icon_url, inspect_url, steam_id } = item;
     return pool.query(queries.addItem, [asset_id, class_id, instance_id, name, quality, exterior, icon_url, inspect_url, steam_id], (err, result) => {
         if (err) {

@@ -6,6 +6,7 @@
     <title>Stall</title>
     <link rel="stylesheet" href="/basic.css">
     <link rel="stylesheet" href="/stall.css">
+    <link rel="stylesheet" href="/cards.css">
     <link rel="stylesheet" href="/mystallcards.css">
 </head>
 <body>
@@ -21,6 +22,7 @@
             <% items.forEach((item) => { %>
                 <div id="<%=item.asset_id%>" class="item-card">
                     <h3><%=item.name%></h3>
+                    <h4><%=maps.exteriorMapIntToString[item.exterior] ? maps.exteriorMapIntToString[item.exterior] : ""%></h4>
                     <img src="<%="http://cdn.steamcommunity.com/economy/image/" + item.icon_url%>" alt="<%=item.name%>">
                     <p>$<%=item.price%></p>
                     <button class="sell-button" data-asset-id="<%=item.asset_id%>">Remove Listing</button>

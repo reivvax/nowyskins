@@ -18,8 +18,18 @@
 }
 .item-card h3 {
     margin: 10px 0;
-    font-size: 18px;
+    font-size: 14px;
+    text-align: left;
 }
+
+.item-card h4 {
+    margin: 10px 0;
+    font-size: 11px;
+    text-align: left;
+    color: rgb(158, 167, 177);
+    min-height: 1em;
+}
+
 .item-card p {
     margin: 10px 0;
     font-size: 16px;

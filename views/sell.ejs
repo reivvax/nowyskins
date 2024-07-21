@@ -6,16 +6,20 @@
     <title>Sell</title>
     <link rel="stylesheet" href="basic.css">
     <link rel="stylesheet" href="cards.css">
+    <% 
+        
+    %>
 </head>
 <body>
     <%-include('./components/navbar.ejs')%>
     <div class="container">
         <h1>Your inventory</h1>
-        <h2><%=items.length%> items</h2>
+        <h2 id="itemCount"><%=items.length%> items</h2>
         <div class="inventory">
             <% items.forEach((item) => { %>
                 <div id="<%=item.asset_id%>" class="item-card">
                     <h3><%=item.description.name%></h3>
+                    <h4><%=item.exterior ? item.exterior : ""%></h4>
                     <img src="<%="http://cdn.steamcommunity.com/economy/image/" + item.description.icon_url%>" alt="<%=item.description.name%>">
                     <p>$<%=item.price%></p>
                     <button class="sell-button" data-asset-id="<%=item.asset_id%>" data-class-id="<%=item.description.classid%>" data-instance-id="<%=item.description.instanceid%>">Sell</button>
@@ -24,6 +28,9 @@
         </div>
     </div>
 
+    <script>
+        let itemCount = <%= items.length %>;
+    </script>
     <script src="/sell.js"></script>
 </body>
 </html>

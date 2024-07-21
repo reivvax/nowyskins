@@ -3,6 +3,7 @@
 const express = require('express');
 const userUtils = require('../src/users/userUtils');
 const itemUtils = require('../src/listed_items/itemUtils');
+const item_maps = require('../src/utils/item_attributes_maps');
 const ensureAuthenticated = require('../src/utils/ensure_authentication');
 const router = express.Router();
 
@@ -32,7 +33,7 @@ router.get('/sell', ensureAuthenticated, (req, res) => {
 
 router.get('/stall/me', ensureAuthenticated, (req, res) => {
     itemUtils.getItemsFromUser(req.user.steam_id).then(items => {
-        res.render('mystall', { user : req.user, items : items });
+        res.render('mystall', { user : req.user, items : items, maps : item_maps });
     }).catch((err) => res.redirect('/'));
 });
 
@@ -40,10 +41,10 @@ router.get('/stall/:id', (req, res) => {
     const id = req.params.id;
     itemUtils.getItemsFromUser(id).then(items => {
         if (req.isAuthenticated() && id === req.user.steam_id) { // render user's own stall
-            res.render('mystall', { user : req.user, items : items });
+            res.render('mystall', { user : req.user, items : items, maps : item_maps });
         } else { // render other user's stall
             userUtils.getUserById(id).then(user => {
-                res.render('stall', { user : user, items : items })
+                res.render('stall', { user : user, items : items, maps : item_maps })
             }).catch(err => { throw err; });
         }
     }).catch((err) => res.redirect('/'));

@@ -1,3 +1,11 @@
+const decrementItemCount = () => {
+    if (itemCount > 0) {
+        itemCount--;
+        document.getElementById('itemCount').textContent = itemCount + ' items';
+    }
+}
+
+
 document.addEventListener("DOMContentLoaded", function() {
     const sellButtons = document.querySelectorAll('.sell-button');
 
@@ -14,15 +22,18 @@ document.addEventListener("DOMContentLoaded", function() {
                 },
                 body: JSON.stringify({ asset_id: asset_id, class_id: class_id, instance_id: instance_id })
             })
-            .then(data => {
-                console.log('Success:', data);
+            .then(response => {
+                if (response.status >= 400)
+                    throw new Error("Unauthorized");
+                console.log('Success listing item');
                 var div = document.getElementById(asset_id);
                 if (div) {
                     div.remove();
                 }
+                decrementItemCount();
             })
             .catch((error) => {
-                console.error('Error:', error);
+                console.error('Error: ', error);
             });
         });
     });

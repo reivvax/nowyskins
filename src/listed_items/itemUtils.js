@@ -1,6 +1,8 @@
 const request = require('request');
 const pool = require('../../db');
 const queries = require('./itemQueries');
+const item_maps = require('../utils/item_attributes_maps');
+
 var appid = '730'; // CS:GO 2
 var contextid = '2'; // default context
 
@@ -50,26 +52,12 @@ const addItemToDatabase = (item) => {
     });
 }
 
-const qualityMap = {
-    "Normal": 0,
-    "Souvenir": 1,
-    "StatTrak": 2,
-}
-
-const exteriorMap = {
-    "Battle-Scarred": 0,
-    "Well-Worn": 1,
-    "Field-Tested": 2,
-    "Minimal Wear": 3,
-    "Factory New": 4,
-}
-
 const getTagValue = (tags, search) => {
     for (let tagId in tags) {
         if (tags.hasOwnProperty(tagId)) {
             let tagInfo = tags[tagId];
             if (tagInfo.category === search) {
-                return tagInfo.name;
+                return tagInfo.name ? tagInfo.name : tagInfo.localized_tag_name;
             }
         }
     }
@@ -89,8 +77,8 @@ const fetchItemData = (asset_id, class_id, instance_id, user_id) => {
             const key = Object.keys(body.result)[0];
             body = body.result[key];
 
-            var quality = qualityMap[getTagValue(body.tags, "Quality")];
-            var exterior = exteriorMap[getTagValue(body.tags, "Exterior")];
+            var quality = item_maps.qualityMapStringToInt[getTagValue(body.tags, "Quality")];
+            var exterior = item_maps.exteriorMapStringToInt[getTagValue(body.tags, "Exterior")];
             var inspect_url = body.actions ? body.actions[0].link.replace('%owner_steamid%', user_id).replace('%assetid%', asset_id) : undefined;
 
             const item = {
@@ -118,11 +106,8 @@ const removeItem = (asset_id) => {
 };
 
 // Returns raw result from steam api
-const getRawInventory = (steam_id, tradeable) => {
+const getRawInventory = (steamid) => {
     return new Promise((resolve, reject) => {
-        if (typeof tradeable !== "boolean") {
-            tradeable = false;
-        }
         request({
             // uri: `/inventory/76561198086056329/730/2?l=english`,
             uri: `/inventory/${steamid}/${appid}/${contextid}?l=english`,
@@ -139,6 +124,7 @@ const getRawInventory = (steam_id, tradeable) => {
 // Returns processed result from steam api, the result is array of objects
 // {
 //  asset_id
+//  exterior (if applicable)
 //  description
 // }
 const getInventory = (steamid, tradeable) => {
@@ -163,12 +149,14 @@ const getInventory = (steamid, tradeable) => {
             }, {});
 
             assets.forEach(a => {
-                data.push({
-                    asset_id: a.assetid,
-                    description: classidToDescription[a.classid],
-                });
+                let description = classidToDescription[a.classid];
+                if (!tradeable || description.tradable)
+                    data.push({
+                        asset_id: a.assetid,
+                        exterior: getTagValue(description.tags, "Exterior"),
+                        description: description,
+                    });
             });
-
             if (err) return reject(err);
             resolve(data);
         });

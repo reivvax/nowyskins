@@ -20,6 +20,17 @@ const fetchItemData = (req, res, next) => {
     );
 }
 
+const ensurePrivilegedToAdd = (req, res, next) => {
+    const { asset_id } = req.body;
+    utils.getRawInventory(req.user.steam_id, true).then(data => {
+        if (!data.assets.map(asset => asset.assetid).includes(asset_id)) {
+            console.log("UNATHORIZED TO LIST ITEM");
+            res.status(400).redirect('/');
+        }
+        return next();
+    }).catch(err => res.status(500).send("Failed to authorize:", err));
+}
+
 const ensurePrivilegedToDelete = (req, res, next) => {
     const asset_id = req.params.id;
     utils.getItem(asset_id).then(item => {
@@ -44,6 +55,7 @@ const deleteItem = (req, res) => {
 module.exports = {
     addItem,
     fetchItemData,
+    ensurePrivilegedToAdd,
     ensurePrivilegedToDelete,
     deleteItem,
 }

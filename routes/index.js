@@ -1,12 +1,18 @@
+//Routes for pages
+
 const express = require('express');
 const userUtils = require('../src/users/userUtils');
 const itemUtils = require('../src/listed_items/itemUtils');
-const ensureAuthenticated = require('../utils/ensure_authentication');
+const ensureAuthenticated = require('../src/utils/ensure_authentication');
 const router = express.Router();
 
 router.get('/', (req, res) => {
     res.render('index', { user: req.user });
 });
+
+// router.get('/market', (req, res) => {
+//     res.render('market', {})
+// });
 
 router.get('/profile', ensureAuthenticated, (req, res) => {
     res.render('profile', { user: req.user });

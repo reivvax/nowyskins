@@ -98,6 +98,8 @@ const fetchItemData = (asset_id, class_id, instance_id, user_id) => {
                 class_id: class_id,
                 instance_id: instance_id,
                 name: body.name,
+                // float: undefined,
+                pattern: undefined, // TODO actually get those attributes
                 quality: quality,
                 exterior: exterior,
                 icon_url: body.icon_url,
@@ -115,17 +117,32 @@ const removeItem = (asset_id) => {
     })
 };
 
+// Returns raw result from steam api
+const getRawInventory = (steam_id, tradeable) => {
+    return new Promise((resolve, reject) => {
+        if (typeof tradeable !== "boolean") {
+            tradeable = false;
+        }
+        request({
+            // uri: `/inventory/76561198086056329/730/2?l=english`,
+            uri: `/inventory/${steamid}/${appid}/${contextid}?l=english`,
+            baseUrl: 'https://steamcommunity.com/',
+            json: true,
+        }, (err, res, body) => {
+            if (!body) return reject(`Please provide a steamid that exists, you provided value ${steamid}`);
+            if (err) return reject(err);
+            resolve(body);
+        });
+    })
+}
+
+// Returns processed result from steam api, the result is array of objects
+// {
+//  asset_id
+//  description
+// }
 const getInventory = (steamid, tradeable) => {
     return new Promise((resolve, reject) => {
-        if (typeof appid !== 'number') {
-            appid = 730;
-        }
-        if (!contextid) {
-            contextid = 2;
-        }
-        if (typeof contextid === 'string') {
-            contextid = parseInt(contextid);
-        }
         if (typeof tradeable !== "boolean") {
             tradeable = false;
         }
@@ -181,6 +198,7 @@ module.exports = {
     addItemToDatabase,
     fetchItemData,
     removeItem,
+    getRawInventory,
     getInventory,
     getFilteredInventory,
 }

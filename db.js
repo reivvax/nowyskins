@@ -33,6 +33,8 @@ CREATE TABLE IF NOT EXISTS users (
   class_id VARCHAR(20) NOT NULL,
   instance_id VARCHAR(20) NOT NULL,
   name VARCHAR(255) NOT NULL,
+  float VARCHAR(20),
+  pattern VARCHAR(20),
   quality INT,
   exterior INT,
   price DECIMAL(12, 2) DEFAULT 0,

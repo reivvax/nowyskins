@@ -1,5 +1,3 @@
-// Assumes the user object is passed to the script
-
 function showPopup() {
     var popup = document.getElementById('popup');
     var overlay = document.getElementById('overlay');

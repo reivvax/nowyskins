@@ -1,5 +1,7 @@
+// Assumes steam_id is passed to the script
+
 async function sendEmail(email) {
-    const response = await fetch('/users/email/' + user.steam_id, {
+    const response = await fetch('/users/email/' + steam_id, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -12,7 +14,7 @@ async function sendEmail(email) {
 }
 
 async function sentTradeLink(tradelink) {
-    const response = await fetch('/users/tradelink/' + user.steam_id, {
+    const response = await fetch('/users/tradelink/' + steam_id, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -25,7 +27,7 @@ async function sentTradeLink(tradelink) {
 }
 
 async function sendData(email, tradelink) {
-    const response = await fetch('/users/userinfo/' + user.steam_id, {
+    const response = await fetch('/users/userinfo/' + steam_id, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'

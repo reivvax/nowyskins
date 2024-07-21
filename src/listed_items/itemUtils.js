@@ -6,6 +6,15 @@ const item_maps = require('../utils/item_attributes_maps');
 var appid = '730'; // CS:GO 2
 var contextid = '2'; // default context
 
+const getItems = () => {
+    return new Promise((resolve, object) => { pool.query(queries.getItems, [], (err, results) => {
+            if (err)
+                reject(err);
+            resolve(results);
+        });
+    })
+}
+
 const getItem = (asset_id) => {
     return new Promise((resolve, reject) => {pool.query(queries.getItem, [asset_id], (err, results) => {
             if (err)
@@ -180,6 +189,7 @@ const getFilteredInventory = (steamid, tradeable) => {
 }
 
 module.exports = {
+    getItems,
     getItem,
     getItemsFromUser,
     addItemWithCheck,

@@ -11,9 +11,11 @@ router.get('/', (req, res) => {
     res.render('index', { user: req.user });
 });
 
-// router.get('/market', (req, res) => {
-//     res.render('market', {})
-// });
+router.get('/market', (req, res) => {
+    itemUtils.getItems().then(items => {
+        res.render('market', { items : items });
+    }).catch((err) => res.redirect('/'));
+});
 
 router.get('/profile', ensureAuthenticated, (req, res) => {
     res.render('profile', { user: req.user });

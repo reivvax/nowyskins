@@ -52,10 +52,6 @@ document.getElementById('submit-btn').onclick = () => {
         sendData(email, tradelink)
             .then((response) => hidePopup())
             .catch((errMessage) => setError("Error: " + errMessage + "\nPlease try again.", true));
-        // if (response.status == 200)
-        //     hidePopup();
-        // else
-        //     setError("Error: " + response.body + "\nPlease try again.", true);
     } else {
        setError('Please fill in both email and trade link.', true);
     }

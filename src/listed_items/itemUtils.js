@@ -4,13 +4,13 @@ const queries = require('./itemQueries');
 const item_maps = require('../utils/item_attributes_maps');
 
 var appid = '730'; // CS:GO 2
-var contextid = '2'; // default context
+var contextid = '2'; // default CS:GO 2 context
 
 const getItems = () => {
-    return new Promise((resolve, object) => { pool.query(queries.getItems, [], (err, results) => {
+    return new Promise((resolve, object) => { pool.query(queries.getItems, (err, results) => {
             if (err)
                 reject(err);
-            resolve(results);
+            resolve(results.rows);
         });
     })
 }

@@ -1,4 +1,4 @@
-//Routes for pages
+//Routes for primary pages
 
 const express = require('express');
 const userUtils = require('../src/users/userUtils');
@@ -13,7 +13,7 @@ router.get('/', (req, res) => {
 
 router.get('/market', (req, res) => {
     itemUtils.getItems().then(items => {
-        res.render('market', { items : items, maps : item_maps});
+        res.render('market', { user : req.user, items : items, maps : item_maps});
     }).catch((err) => res.redirect('/'));
 });
 

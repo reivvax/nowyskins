@@ -28,7 +28,7 @@ CREATE TABLE IF NOT EXISTS users (
   tradelink VARCHAR(255)
   );
 
-  CREATE TABLE IF NOT EXISTS listed_items (
+CREATE TABLE IF NOT EXISTS listed_items (
   asset_id VARCHAR(20) PRIMARY KEY,
   class_id VARCHAR(20) NOT NULL,
   instance_id VARCHAR(20) NOT NULL,
@@ -41,6 +41,7 @@ CREATE TABLE IF NOT EXISTS users (
   icon_url VARCHAR(255) NOT NULL,
   inspect_url VARCHAR(255),
   trade_lock INT,
+  time_added TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
   steam_id VARCHAR(255),
   FOREIGN KEY (steam_id) REFERENCES users(steam_id)
   );

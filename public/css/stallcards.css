@@ -1,0 +1,6 @@
+.item-card button {
+    background-color: #199223;
+}
+.item-card button:hover {
+    background-color: #126130;
+}

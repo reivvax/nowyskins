@@ -13,7 +13,7 @@ router.get('/', (req, res) => {
 
 router.get('/market', (req, res) => {
     itemUtils.getItems().then(items => {
-        res.render('market', { items : items });
+        res.render('market', { items : items, maps : item_maps});
     }).catch((err) => res.redirect('/'));
 });
 
@@ -43,10 +43,10 @@ router.get('/stall/:id', (req, res) => {
     const id = req.params.id;
     itemUtils.getItemsFromUser(id).then(items => {
         if (req.isAuthenticated() && id === req.user.steam_id) { // render user's own stall
-            res.render('mystall', { user : req.user, items : items, maps : item_maps });
+            res.render('mystall', { user : req.user, seller : req.user, items : items, maps : item_maps });
         } else { // render other user's stall
-            userUtils.getUserById(id).then(user => {
-                res.render('stall', { user : user, items : items, maps : item_maps })
+            userUtils.getUserById(id).then(seller => {
+                res.render('stall', { user : req.user, seller : seller, items : items, maps : item_maps })
             }).catch(err => { throw err; });
         }
     }).catch((err) => res.redirect('/'));

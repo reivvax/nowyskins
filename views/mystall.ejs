@@ -18,16 +18,20 @@
     </div>
     
     <div class="container">
-        <div class="inventory">
-            <% items.forEach((item) => { %>
+        <div class="cards-container">
+            <% if (items.length)
+                items.forEach((item) => { %>
                 <div id="<%=item.asset_id%>" class="item-card">
                     <h3><%=item.name%></h3>
                     <h4><%=maps.exteriorMapIntToString[item.exterior] ? maps.exteriorMapIntToString[item.exterior] : ""%></h4>
                     <img src="<%="http://cdn.steamcommunity.com/economy/image/" + item.icon_url%>" alt="<%=item.name%>">
                     <p>$<%=item.price%></p>
-                    <button class="sell-button" data-asset-id="<%=item.asset_id%>">Remove Listing</button>
+                    <button class="remove-button" data-asset-id="<%=item.asset_id%>">Remove Listing</button>
                 </div>
-            <% }); %>
+            <% });
+            else { %>
+                <h2>No items in the stall</h2>
+            <% } %>
         </div>
     </div>
 

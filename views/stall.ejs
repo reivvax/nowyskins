@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stall</title>
+    <link rel="stylesheet" href="/basic.css">
+    <link rel="stylesheet" href="/stall.css">
+    <link rel="stylesheet" href="/cards.css">
+    <link rel="stylesheet" href="/stallcards.css">
+</head>
+<body>
+    <%-include('./components/navbar.ejs')%>
+    
+    <div class="user-section">
+        <img src="<%="https://avatars.steamstatic.com/" + seller.avatar.substring(0, seller.avatar.length - 4) + "_full.jpg"%>" alt="avatar" class="user-photo">
+        <h2><%= seller.display_name %></h2>
+    </div>
+    
+    <div class="container">
+        <div class="cards-container">
+            <% if (items.length)
+                items.forEach((item) => { %>
+                <div id="<%=item.asset_id%>" class="item-card">
+                    <h3><%=item.name%></h3>
+                    <h4><%=maps.exteriorMapIntToString[item.exterior] ? maps.exteriorMapIntToString[item.exterior] : ""%></h4>
+                    <img src="<%="http://cdn.steamcommunity.com/economy/image/" + item.icon_url%>" alt="<%=item.name%>">
+                    <p>$<%=item.price%></p>
+                    <button class="buy-button" data-asset-id="<%=item.asset_id%>">Buy</button>
+                </div>
+            <% });
+            else { %>
+                <h2>No items in the stall</h2>
+            <% } %>
+        </div>
+    </div>
+
+    <script src="/mystall.js"></script>
+</body>
+</html>

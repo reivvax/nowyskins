@@ -30,32 +30,38 @@ window.onload = function() {
 }
 
 
-document.getElementById('submit-btn').onclick = function() {
+// document.getElementById('submit-btn').onclick = () => {
+//     var email = document.getElementById('email').value;
+//     var tradelink = document.getElementById('tradelink').value;
+//     if (email && tradelink) {
+//         try {
+//             sendData(email, tradelink);
+//             hidePopup();
+//         } catch (error) {
+//             setError("Error: ", error, "\nPlease try again.");
+//         }
+//     } else {
+//        setError('Please fill in both email and trade link.', true);
+//     }
+// };
+
+document.getElementById('submit-btn').onclick = () => {
     var email = document.getElementById('email').value;
     var tradelink = document.getElementById('tradelink').value;
     if (email && tradelink) {
-        if (!validateEmail(email)) {
-            setError("Invalid email", true);
-            return;
-        }
-
-        if (!validateTradeLink(tradelink)) {
-            setError("Invalid trade link", true);
-            return;
-        }
-
-        try {
-            sendData(email, tradelink);
-            hidePopup();
-        } catch (error) {
-            setError("Error: ", error, "\nPlease try again.");
-        }
+        sendData(email, tradelink)
+            .then((response) => hidePopup())
+            .catch((errMessage) => setError("Error: " + errMessage + "\nPlease try again.", true));
+        // if (response.status == 200)
+        //     hidePopup();
+        // else
+        //     setError("Error: " + response.body + "\nPlease try again.", true);
     } else {
        setError('Please fill in both email and trade link.', true);
     }
 };
 
-document.addEventListener('keydown', function(event) {
+document.addEventListener('keydown', (event) => {
     if (event.key === 'Enter')
         document.getElementById('submit-btn').click();
 });

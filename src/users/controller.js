@@ -51,6 +51,10 @@ const updateEmail = (req, res) => {
     const ID = req.params.id;
     const { email } = req.body;
 
+    if (!validateEmail(email)) {
+        res.status(400).send("Invalid email.");
+    }
+
     try {
         utils.updateEmail(ID, email);
         res.status(200).send("User email updated successfully");
@@ -69,6 +73,10 @@ const updateTradeLink = (req, res) => {
     const ID = req.params.id;
     const { tradelink } = req.body;
 
+    if (!validateTradeLink(ID, tradelink)) {
+        res.status(400).send("Invalid trade link.");
+    }
+
     try {
         utils.updateTradelink(ID, tradelink);
         res.status(200).send("User tradelink updated successfully");
@@ -80,12 +88,21 @@ const updateTradeLink = (req, res) => {
 const updateEmailTradeLink = (req, res) => {
     const ID = req.params.id;
     const { email, tradelink } = req.body;
-    try {
-        utils.updateEmailTradeLink(ID, email, tradelink);
-        res.status(200).send("User email and tradelink updated successfully");
-    } catch (error) {
-        res.status(500).send("User does not exist in the database")
+
+    if (!utils.validateEmail(email)) {
+        res.status(400).send("Invalid email.");
+        return;
     }
+    if (!utils.validateTradeLink(ID, tradelink)) {
+        res.status(400).send("Invalid trade link.");
+        return;
+    }
+
+    utils.updateEmailTradeLink(ID, email, tradelink).then( 
+        () => res.status(200).send("User email and tradelink updated successfully")
+    ).catch(
+        err => res.status(500).send("User does not exist in the database")
+    );
 };
 
 module.exports = {

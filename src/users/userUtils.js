@@ -44,6 +44,18 @@ const addUserToDatabase = (user) => {
     });
 }
 
+const validateEmail = (email) => {
+    var regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    return regex.test(email);
+}
+
+const validateTradeLink = (steam_id, tradelink) => {
+    regex = /^https:\/\/steamcommunity\.com\/tradeoffer\/new\/\?partner=(\d+)&token=[a-zA-Z0-9]{8}$/;
+    const match = tradelink.match(regex);
+    const steamIDBase = 76561197960265728;
+    return match != null && match.length >= 2 && parseInt(match[1], 10) + steamIDBase == steam_id;
+}
+
 const updateEmail = (id, email) => {
     pool.query(queries.getUserById, [id], (err, results) => {
         if (err) {
@@ -77,16 +89,15 @@ const updateTradelink = (id, tradelink) => {
 }
 
 const updateEmailTradeLink = (id, email, tradelink) => {
-    pool.query(queries.getUserById, [id], (err, results) => {
-        if (err) {
-            throw err;
-        };
-        
-        const noUserFound = !results.rows.length;
-        if (noUserFound)
-            throw new Error();
-        
-        pool.query(queries.updateEmailTradeLink, [id, email, tradelink]);
+    return new Promise((resolve, reject) => { pool.query(queries.getUserById, [id], (err, results) => {
+            if (err)
+                reject(err);
+            
+            const noUserFound = !results.rows.length;
+            if (noUserFound)
+                reject(new Error("User not found"));
+            resolve(pool.query(queries.updateEmailTradeLink, [id, email, tradelink]));
+        });
     });
 }
 
@@ -94,6 +105,8 @@ module.exports = {
     getUserById,
     addUserWithCheck,
     addUserToDatabase,
+    validateEmail,
+    validateTradeLink,
     updateEmail,
     updateTradelink,
     updateEmailTradeLink,

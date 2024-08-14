@@ -15,7 +15,7 @@
     <div class="container">
         <h1>Your inventory</h1>
         <h2 id="itemCount"><%=items.length%> items</h2>
-        <div class="inventory">
+        <div class="cards-container">
             <% items.forEach((item) => { %>
                 <div id="<%=item.asset_id%>" class="item-card">
                     <h3><%=item.description.name%></h3>

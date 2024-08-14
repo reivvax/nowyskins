@@ -1,4 +1,4 @@
-.inventory {
+.cards-container {
     display: flex;
     flex-wrap: wrap;
     gap: 20px;
@@ -35,7 +35,7 @@
     font-size: 16px;
 }
 .item-card button {
-    background-color: #3b7a57;
+    background-color: #0059ff;
     color: #e0e0e0;
     border: none;
     padding: 10px 20px;
@@ -44,5 +44,5 @@
     font-size: 16px;
 }
 .item-card button:hover {
-    background-color: #2e5943;
+    background-color: #1b4164;
 }

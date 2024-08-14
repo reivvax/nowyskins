@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", function() {
-    const sellButtons = document.querySelectorAll('.sell-button');
+    const sellButtons = document.querySelectorAll('.remove-button');
 
     sellButtons.forEach(button => {
         button.addEventListener('click', function() {

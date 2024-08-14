@@ -13,7 +13,7 @@ async function sendEmail(email) {
     }
 }
 
-async function sentTradeLink(tradelink) {
+async function sendTradeLink(tradelink) {
     const response = await fetch('/users/tradelink/' + steam_id, {
         method: 'POST',
         headers: {
@@ -26,15 +26,24 @@ async function sentTradeLink(tradelink) {
     }
 }
 
-async function sendData(email, tradelink) {
-    const response = await fetch('/users/userinfo/' + steam_id, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ email, tradelink })
+function sendData(email, tradelink) {
+    return new Promise(async (resolve, reject) => {
+        try {
+            var response = await fetch('/users/userinfo/' + steam_id, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ email, tradelink })
+            });
+            if (response.ok)
+                resolve(response);
+            else {
+                var errMessage = await response.text();
+                reject(errMessage);
+            }
+        } catch (error) {
+            reject("Network error: " + error.message);
+        }
     });
-    if (!response.status != 200) {
-        throw new Error('Failed to save data');
-    }
 }

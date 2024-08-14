@@ -43,10 +43,9 @@
 
 
     <script>
-        var steam_id = <%= JSON.stringify(user ? user.steam_id : undefined) %>;
+        var steam_id = <%-JSON.stringify(user ? user.steam_id : undefined)%>;
     </script>
     <script src="userUpdate.js"></script>
-    <script src="userDataValidation.js"></script>
     <script src="popup.js"></script>
     
 </body>

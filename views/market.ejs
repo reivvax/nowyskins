@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Market</title>
+    <link rel="stylesheet" href="/basic.css">
+    <link rel="stylesheet" href="/cards.css">
+    <link rel="stylesheet" href="/marketcards.css">
+</head>
+<body>
+    <%-include('./components/navbar.ejs')%>
+    
+    <div class="container">
+        <div class="cards-container">
+            <% items.forEach((item) => { %>
+                <div id="<%=item.asset_id%>" class="item-card">
+                    <h3><%=item.name%></h3>
+                    <h4><%=maps.exteriorMapIntToString[item.exterior] ? maps.exteriorMapIntToString[item.exterior] : ""%></h4>
+                    <img src="<%="http://cdn.steamcommunity.com/economy/image/" + item.icon_url%>" alt="<%=item.name%>">
+                    <p>$<%=item.price%></p>
+                    <button class="buy-button" data-asset-id="<%=item.asset_id%>">Buy</button>
+                </div>
+            <% }); %>
+        </div>
+    </div>
+
+    <script src="/market.js"></script>
+</body>
+</html>

@@ -8,7 +8,6 @@ router.put("/:id", controller.updateEmail);
 router.post("/email/:id", controller.updateEmail);
 router.post("/tradelink/:id", controller.updateTradeLink);
 
-
 router.post("/userinfo/:id", controller.updateEmailTradeLink);
 
 module.exports = router;

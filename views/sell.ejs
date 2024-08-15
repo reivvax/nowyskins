@@ -16,15 +16,25 @@
         <h1>Your inventory</h1>
         <h2 id="itemCount"><%=items.length%> items</h2>
         <div class="cards-container">
-            <% items.forEach((item) => { %>
+            <% items.forEach((item) => { if (item) { %>
                 <div id="<%=item.asset_id%>" class="item-card">
-                    <h3><%=item.description.name%></h3>
+                    <h3><%=item.name%></h3>
                     <h4><%=item.exterior ? item.exterior : ""%></h4>
-                    <img src="<%="http://cdn.steamcommunity.com/economy/image/" + item.description.icon_url%>" alt="<%=item.description.name%>">
+                    <img src="<%="http://cdn.steamcommunity.com/economy/image/" + item.icon_url%>" alt="<%=item.name%>">
+                    
+                    <div class="paint-info">
+                        <h3 class="paint-wear"><%=item.paint_wear%></h3>
+                        <h3 class="paint-seed"><%=item.paint_seed%></h3>
+                    </div>
+                    
                     <p>$<%=item.price%></p>
-                    <button class="sell-button" data-asset-id="<%=item.asset_id%>" data-class-id="<%=item.description.classid%>" data-instance-id="<%=item.description.instanceid%>">Sell</button>
+                    <button class="sell-button" 
+                        data-asset-id="<%=item.asset_id%>" 
+                        data-inspect-url="<%=item.inspect_url%>">
+                        Sell
+                    </button>
                 </div>
-            <% }); %>
+            <% }}); %>
         </div>
     </div>
 

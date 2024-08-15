@@ -24,9 +24,8 @@ router.get('/profile', ensureAuthenticated, (req, res) => {
 router.get('/sell', ensureAuthenticated, (req, res) => {
     itemUtils.getFilteredInventory(req.user.steam_id, true).then(data => {
         itemUtils.getItemsFromUser(req.user.steam_id).then(listed_items => { // fetch listed items' ids, they won't be displayed in sell tab
-            listed_items = listed_items.map(item => { return item.asset_id; }); 
-            data = data.filter(item => { 
-                return !listed_items.includes(item.asset_id); });
+            listed_items = listed_items.map(item => item.asset_id); 
+            data = data.filter(item => !listed_items.includes(item.asset_id) );
             res.render('sell', { user: req.user, items: data});
         })
         .catch((err) => res.redirect('/'));

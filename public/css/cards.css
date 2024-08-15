@@ -11,6 +11,7 @@
     max-width: 200px;
     text-align: center;
 }
+
 .item-card img {
     max-width: 100%;
     height: auto;
@@ -32,8 +33,30 @@
 
 .item-card p {
     margin: 10px 0;
-    font-size: 16px;
+    font-size: 14px;
 }
+
+.paint-info {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.paint-wear, .paint-seed {
+    /* font-size: 10px; */
+    color: rgb(158, 167, 177);
+    min-height: 1em;
+}
+
+.paint-wear {
+    text-align: left;
+}
+
+.paint-seed {
+    text-align: right;
+}
+
 .item-card button {
     background-color: #0059ff;
     color: #e0e0e0;

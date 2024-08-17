@@ -26,9 +26,19 @@ const exteriorMapIntToString = {
     4: "Factory New"
 };
 
+const rarityMapStringToInt = {
+
+}
+
+const rarityMapIntToString = {
+
+}
+
 module.exports = {
     qualityMapStringToInt,
     qualityMapIntToString,
     exteriorMapStringToInt,
     exteriorMapIntToString,
+    rarityMapStringToInt,
+    rarityMapIntToString,
 }

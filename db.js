@@ -30,8 +30,6 @@ CREATE TABLE IF NOT EXISTS users (
 
 CREATE TABLE IF NOT EXISTS listed_items (
   asset_id VARCHAR(20) PRIMARY KEY,
-  class_id VARCHAR(20) NOT NULL,
-  instance_id VARCHAR(20) NOT NULL,
   name VARCHAR(255) NOT NULL,
   paint_wear VARCHAR(20),
   paint_seed VARCHAR(20),

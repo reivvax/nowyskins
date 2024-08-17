@@ -9,10 +9,9 @@ const addItem = (req, res) => {
     }
 }
 
-
 const fetchItemData = (req, res, next) => {
-    const { asset_id, inspect_url } = req.body;
-    utils.fetchItemData(inspect_url).then(item => {
+    const { asset_id, class_id, instance_id, inspect_url } = req.body;
+    utils.constructItem(req.user.steam_id, asset_id, class_id, instance_id, inspect_url).then(item => {
         req.body = item;
         return next();
     }).catch(

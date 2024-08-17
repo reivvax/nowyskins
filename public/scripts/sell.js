@@ -12,8 +12,8 @@ document.addEventListener("DOMContentLoaded", function() {
     sellButtons.forEach(button => {
         button.addEventListener('click', function() {
             const asset_id = this.getAttribute('data-asset-id');
-            // const class_id = this.getAttribute('data-class-id');
-            // const instance_id = this.getAttribute('data-instance-id');
+            const class_id = this.getAttribute('data-class-id');
+            const instance_id = this.getAttribute('data-instance-id');
             const inspect_url = this.getAttribute('data-inspect-url');
 
             fetch('/listeditems', {
@@ -21,8 +21,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                // body: JSON.stringify({ asset_id: asset_id, class_id: class_id, instance_id: instance_id })
-                body: JSON.stringify({ asset_id: asset_id, inspect_url: inspect_url })
+                body: JSON.stringify({ asset_id: asset_id, class_id: class_id, instance_id: instance_id, inspect_url: inspect_url })
             })
             .then(response => {
                 if (response.status >= 400)

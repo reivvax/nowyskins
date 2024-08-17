@@ -17,7 +17,14 @@
                 <div id="<%=item.asset_id%>" class="item-card">
                     <h3><%=item.name%></h3>
                     <h4><%=maps.exteriorMapIntToString[item.exterior] ? maps.exteriorMapIntToString[item.exterior] : ""%></h4>
-                    <img src="<%="http://cdn.steamcommunity.com/economy/image/" + item.icon_url%>" alt="<%=item.name%>">
+                    
+                    <img src="<%=item.icon_url.startsWith("http") ? item.icon_url : "http://cdn.steamcommunity.com/economy/image/" + item.icon_url%>" alt="<%=item.name%>">
+                    
+                    <div class="paint-info">
+                        <h3 class="paint-wear"><%=item.paint_wear%></h3>
+                        <h3 class="paint-seed"><%=item.paint_seed%></h3>
+                    </div>
+                    
                     <p>$<%=item.price%></p>
                     <button class="buy-button" data-asset-id="<%=item.asset_id%>">Buy</button>
                 </div>

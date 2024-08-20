@@ -52,10 +52,10 @@ const addItemWithCheck = (item) => {
 }
 
 const addItemToDatabase = (item) => {
-    const { asset_id, name, quality, exterior, rarity, paint_wear, paint_seed, icon_url, inspect_url, steam_id } = item;
+    const { asset_id, name, quality, exterior, rarity, paint_wear, paint_seed, icon_url, inspect_url, steam_id, price } = item;
     return pool.query(
         queries.addItem, 
-        [asset_id, name, quality, exterior, undefined, paint_wear, paint_seed, icon_url, inspect_url, steam_id], 
+        [asset_id, name, quality, exterior, undefined, paint_wear, paint_seed, icon_url, inspect_url, steam_id, price], 
         (err, result) => {
             if (err) {
                 throw err;
@@ -87,7 +87,7 @@ const fillInspectLink = (steam_id, asset_id, inspect_url) => {
     return inspect_url.replace('%owner_steamid%', steam_id).replace('%assetid%', asset_id);
 }
 
-// Takes inspect link as an argument and returns an item object from steam API
+// Takes inspect link as an argument and returns an item object from valve API
 // https://github.com/csfloat/inspect?tab=readme-ov-file#reply
 const fetchRawItemData = (url) => {
     return new Promise((resolve, reject) => {
@@ -97,11 +97,24 @@ const fetchRawItemData = (url) => {
         }, (err, res, body) => {
             if (err) return reject(err);
             if (!body) return reject(`Please check the parameters again, provided value: ${url}`);
-            //Adjust values for own purposes
             resolve(body.iteminfo);
         });
     });
 }
+
+const constructItemFromDescription = (steam_id, asset_id, description) => {
+    if (description.actions) // has inspect link
+        return constructItemFromInspectLink(steam_id, asset_id, description.actions[0].link); 
+    // no inspect link
+    return constructItemWithNoInspectLink(steam_id, asset_id, description.classid, description.instanceid);
+}
+
+const constructItem = (steam_id, asset_id, class_id, instance_id, inspect_url) => {
+    if (!inspect_url || inspect_url === '')
+        return constructItemWithNoInspectLink(steam_id, asset_id, class_id, instance_id);
+    return constructItemFromInspectLink(steam_id, asset_id, inspect_url);
+}
+
 
 // Uses 'fetchRawItemData' and reconstructs the object to desired form:
 // {
@@ -131,19 +144,6 @@ const constructItemFromInspectLink = (steam_id, asset_id, inspect_url) => {
         item.inspect_url = filled_url;
         return item;
     }).catch((err) => { console.log(err); return null; });
-}
-
-const constructItemFromDescription = (steam_id, asset_id, description) => {
-    if (description.actions) // has inspect link
-        return constructItemFromInspectLink(steam_id, asset_id, description.actions[0].link); 
-    // no inspect link
-    return constructItemWithNoInspectLink(steam_id, asset_id, description.classid, description.instanceid);
-}
-
-const constructItem = (steam_id, asset_id, class_id, instance_id, inspect_url) => {
-    if (!inspect_url || inspect_url === '')
-        return constructItemWithNoInspectLink(steam_id, asset_id, class_id, instance_id);
-    return constructItemFromInspectLink(steam_id, asset_id, inspect_url);
 }
 
 const constructItemWithNoInspectLink = (steam_id, asset_id, class_id, instance_id) => {

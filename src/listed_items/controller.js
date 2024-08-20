@@ -10,9 +10,10 @@ const addItem = (req, res) => {
 }
 
 const fetchItemData = (req, res, next) => {
-    const { asset_id, class_id, instance_id, inspect_url } = req.body;
+    const { asset_id, class_id, instance_id, inspect_url, price } = req.body;
     utils.constructItem(req.user.steam_id, asset_id, class_id, instance_id, inspect_url).then(item => {
         req.body = item;
+        req.body.price = price;
         return next();
     }).catch(
         (err) => { console.log(err); res.status(500).send("Failed to add item to database"); }

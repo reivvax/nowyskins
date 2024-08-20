@@ -6,6 +6,7 @@
     <title>Sell</title>
     <link rel="stylesheet" href="basic.css">
     <link rel="stylesheet" href="cards.css">
+    <link rel="stylesheet" href="modal.css">
 </head>
 <body>
     <%-include('./components/navbar.ejs')%>
@@ -15,28 +16,47 @@
         <div class="cards-container">
             <% items.forEach((item) => { if (item) { %>
                 <div id="<%=item.asset_id%>" class="item-card">
-                    <h3><%=item.name%></h3>
-                    <h4><%=item.exterior ? maps.exteriorMapIntToString[item.exterior] : ""%></h4>
+                    <h3 class="item-name"><%=item.name%></h3>
+                    <h4 class="item-exterior"><%=item.exterior ? maps.exteriorMapIntToString[item.exterior] : ""%></h4>
 
-                    <img src="<%=item.icon_url.startsWith("http") ? item.icon_url : "http://cdn.steamcommunity.com/economy/image/" + item.icon_url%>" alt="<%=item.name%>">
+                    <img class="item-icon" src="<%=item.icon_url.startsWith("http") ? item.icon_url : "http://cdn.steamcommunity.com/economy/image/" + item.icon_url%>" alt="<%=item.name%>">
 
                     <div class="paint-info">
                         <h3 class="paint-wear"><%=item.paint_wear%></h3>
                         <h3 class="paint-seed"><%=item.paint_seed%></h3>
                     </div>
 
-                    <p>$<%=item.price%></p>
+                    <p class="item-price">$<%=item.price%></p>
                     <button class="sell-button"
                         data-asset-id="<%=item.asset_id%>"
                         data-class-id="<%=item.class_id%>"
                         data-instance-id="<%=item.instance_id%>"
-                        data-inspect-url="<%=item.inspect_url%>">
+                        data-inspect-url="<%=item.inspect_url%>"
+                        data-icon-url="<%=item.icon_url.startsWith("http") ? item.icon_url : "http://cdn.steamcommunity.com/economy/image/" + item.icon_url%>">
                         Sell
                     </button>
                 </div>
             <% }}); %>
         </div>
     </div>
+
+    <div id="sellModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div class="modal-card">
+                <h3 id="modal-item-name"></h3>
+                <h4 id="modal-item-exterior"></h4>
+                <img id="modal-item-image" src="" alt="">
+                <div class="paint-info">
+                    <h3 class="paint-wear" id="modal-item-wear"></h3>
+                    <h3 class="paint-seed" id="modal-item-seed"></h3>
+                </div>
+                <p>$<span id="modal-item-price"></span></p>
+                <input type="number" id="custom-price" placeholder="Enter custom price">
+                <button id="confirm-sell">Confirm Sell</button>
+            </div>
+        </div>
+    </div>    
 
     <script>
         let itemCount = <%= items.length %>;

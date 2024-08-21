@@ -61,12 +61,10 @@ document.addEventListener('DOMContentLoaded', function() {
         document.body.classList.remove('no-scroll');
     }
 
-    // Close modal when user clicks on <span> (x)
     closeBtn.addEventListener('click', function() {
         closeModal();
     });
 
-    // Close modal when user clicks anywhere outside of the modal
     window.addEventListener('click', function(event) {
         if (event.target == modal) {
             closeModal();
@@ -84,6 +82,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
         sendData(asset_id, class_id, instance_id, inspect_url, customPrice);
 
-        modal.style.display = "none";
+        closeModal();
     });
 });

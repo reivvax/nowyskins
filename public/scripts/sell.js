@@ -25,6 +25,7 @@ const sendData = (asset_id, class_id, instance_id, inspect_url, price) => {
     })
     .catch((error) => {
         console.error('Error: ', error);
+        throw error;
     });
 }
 
@@ -80,8 +81,11 @@ document.addEventListener('DOMContentLoaded', function() {
         const inspect_url = this.getAttribute('data-inspect-url');
         const customPrice = customPriceInput.value;
 
-        sendData(asset_id, class_id, instance_id, inspect_url, customPrice);
-
-        closeModal();
+        try {
+            sendData(asset_id, class_id, instance_id, inspect_url, customPrice);
+            closeModal();
+        } catch(err) {
+            console.log(err);
+        }
     });
 });

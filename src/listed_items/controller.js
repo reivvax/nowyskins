@@ -1,60 +1,32 @@
-const utils = require('./itemUtils');
+const listedItems = require('./itemUtils');
 
 const addItem = (req, res) => {
-    try {
-        utils.addItemWithCheck(req.body);
-        res.status(201).send("Item added successfully.");
-    } catch {
-        res.status(500).send("Failed to add item to the database");
-    }
-}
-
-const fetchItemData = (req, res, next) => {
-    const { asset_id, class_id, instance_id, inspect_url, price } = req.body;
-    utils.constructItem(req.user.steam_id, asset_id, class_id, instance_id, inspect_url).then(item => {
-        req.body = item;
-        req.body.price = price;
-        return next();
-    }).catch(
-        (err) => { console.log(err); res.status(500).send("Failed to add item to database"); }
-    );
-}
-
-const ensurePrivilegedToAdd = (req, res, next) => {
-    const { asset_id } = req.body;
-    utils.getRawInventory(req.user.steam_id).then(data => {
-        if (!data.assets.map(asset => asset.assetid).includes(asset_id)) {
-            console.log("UNATHORIZED TO LIST ITEM");
-            res.status(401).redirect('/');
-        }
-        return next();
-    }).catch(err => res.status(500).send("Failed to authorize:" + err));
+    listedItems.addItemWithCheck(req.body)
+        .then(item => { res.status(201).send("Item added successfully"); })
+        .catch(err => { console.log(err); res.status(500).send("Failed to add item to the database"); })
 }
 
 const ensurePrivilegedToDelete = (req, res, next) => {
     const asset_id = req.params.id;
-    utils.getItem(asset_id).then(item => {
-        if (item.steam_id != req.user.steam_id) {
-            console.log("UNPRIVILEGED TO DELETE ITEM");
-            res.status(401).redirect('/');
-        }
-        return next();
-    }).catch((err) => res.status(500).send("Failed to fetch item from database"));
+    listedItems.getItem(asset_id)
+        .then(item => {
+            if (item.steam_id != req.user.steam_id) {
+                console.log("Unauthorized to delete item");
+                res.status(401).redirect('/');
+            } else
+                return next();
+        })
+        .catch((err) => { console.log(err); res.status(500).send("Failed to fetch item from database") });
 }
 
 const deleteItem = (req, res) => {
-    try {
-        utils.removeItem(req.params.id);
-        res.status(200).send("Item removed successfully");
-    } catch (err) {
-        res.status(500).send("Failed to remove item from database");
-    }
+    listedItems.removeItem(req.params.id)
+        .then(() => { res.status(200).send("Item removed successfully"); })
+        .catch(err => { console.log(err); res.status(500).send("Failed to remove item from database"); });
 }
 
 module.exports = {
     addItem,
-    fetchItemData,
-    ensurePrivilegedToAdd,
     ensurePrivilegedToDelete,
     deleteItem,
 }

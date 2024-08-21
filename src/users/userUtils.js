@@ -7,7 +7,7 @@ const getUserById = (id) => {
                 reject(err);
             if (results.rows.length)
                 resolve(results.rows[0]);
-            resolve(null);
+            resolve(reject("No user found."));
         });
     });
 }

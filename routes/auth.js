@@ -3,6 +3,7 @@ var passport = require('passport');
 var SteamStrategy = require('passport-steam').Strategy;
 var router = express.Router();
 var pool = require('../db');
+var steamItemsUtils = require('../src/steam_items/itemUtils');
 
 passport.use(new SteamStrategy({
     returnURL: 'http://localhost:3000/auth/steam/return',
@@ -48,6 +49,10 @@ router.get('/login', passport.authenticate('steam'), (req, res) => {});
 router.get('/auth/steam/return',
   passport.authenticate('steam', { failureRedirect: '/' }),
   (req, res) => {
+    // Load users items as soon as possible
+    if (!req.user.email || !req.user.tradelink)
+      steamItemsUtils.loadUsersInspectableItems(req.user.steam_id);
+
     // Successful authentication, redirect home.
     res.redirect('/');
   });

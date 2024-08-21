@@ -1,9 +1,11 @@
 const { Router } = require('express');
-const controller = require('../src/listed_items/controller');
+const listedItemsController = require('../src/listed_items/controller');
+const steamItemsController = require('../src/steam_items/controller');
 const ensureAuthenticated = require('../src/utils/ensure_authentication');
 const router = Router();
 
-router.post("/", ensureAuthenticated, controller.ensurePrivilegedToAdd, controller.fetchItemData, controller.addItem);
-router.delete("/:id", ensureAuthenticated, controller.ensurePrivilegedToDelete, controller.deleteItem);
+router.post("/", ensureAuthenticated, steamItemsController.ensurePrivilegedToAdd, steamItemsController.fetchItemData, listedItemsController.addItem);
+
+router.delete("/:id", ensureAuthenticated, listedItemsController.ensurePrivilegedToDelete, listedItemsController.deleteItem);
 
 module.exports = router;

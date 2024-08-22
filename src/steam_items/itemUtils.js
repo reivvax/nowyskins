@@ -91,8 +91,8 @@ const constructItemsFromInspectLinks = (steam_id, links) => {
                 paint_wear: item.floatvalue,
                 paint_seed: item.paintseed,
                 exterior: item_maps.exteriorMapStringToInt[item.wear_name],
-                quality: item_maps.qualityMapStringToInt[item.quality],
-                // rarity: item_maps.rarityMapStringToInt[item.rarity],
+                quality: item.quality,
+                rarity: item.rarity,
                 icon_url: item.imageurl,
                 inspect_url: 'steam://rungame/730/76561202255233023/+csgo_econ_action_preview%20S' + steam_id + 'A' + key + 'D' + item.d
             });
@@ -125,8 +125,6 @@ const constructItemFromInspectLink = (steam_id, inspect_url, asset_id) => {
         item.paint_wear = item.floatvalue;
         item.paint_seed = item.paintseed;
         item.exterior = item_maps.exteriorMapStringToInt[item.wear_name];
-        item.quality = item_maps.qualityMapStringToInt[item.quality];
-        // item.rarity = item_maps.rarityMapStringToInt[item.rarity];
         item.icon_url = item.imageurl;
         item.inspect_url = filled_url;
         return item;

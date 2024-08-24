@@ -11,7 +11,7 @@
     <%- include('./components/navbar.ejs') %>
     <div class="container">
         <div class="profile-content">
-            <img src="<%="https://avatars.steamstatic.com/" + user.avatar.substring(0, user.avatar.length - 4) + "_full.jpg"%>" alt="Avatar" class="profile-img">
+            <a href="<%="https://steamcommunity.com/profiles/" + user.steam_id%>"><img src="<%="https://avatars.steamstatic.com/" + user.avatar.substring(0, user.avatar.length - 4) + "_full.jpg"%>" alt="Avatar" class="profile-img"></a>
             <h2><%= user.display_name %>'s Profile</h2>
             <div class="profile-info">
                 <strong>Username:</strong> <%= user.display_name%>

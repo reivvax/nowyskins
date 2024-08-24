@@ -12,7 +12,7 @@ passport.use(new SteamStrategy({
   }, 
   async (identifier, profile, cb) => {
     try {
-      const { id, displayName, photos, _json: { profileurl } } = profile;
+      const { id, displayName, photos } = profile;
       const avatar = photos[0].value;
       const search = await pool.query('SELECT * FROM users WHERE steam_id = $1', [id]);
       let user = search.rows[0];

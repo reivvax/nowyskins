@@ -35,8 +35,8 @@ const addUserWithCheck = (user) => {
 }
 
 const addUserToDatabase = (user) => {
-    const { steam_id, display_name, avatar, profile_url } = user;
-    return pool.query(queries.addUser, [steam_id, display_name, avatar, profile_url], (err, result) => {
+    const { steam_id, display_name, avatar } = user;
+    return pool.query(queries.addUser, [steam_id, display_name, avatar], (err, result) => {
         if (err) {
             throw err;
         };

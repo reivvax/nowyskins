@@ -84,18 +84,19 @@ const constructItemsFromInspectLinks = (steam_id, links) => {
         let result = [];
         for (key of Object.keys(body)) {
             var item = body[key];
-            result.push({
-                asset_id: key,
-                steam_id: steam_id,
-                name: item.weapon_type + ' | ' + item.item_name,
-                paint_wear: item.floatvalue,
-                paint_seed: item.paintseed,
-                exterior: item_maps.exteriorMapStringToInt[item.wear_name],
-                quality: item.quality,
-                rarity: item.rarity,
-                icon_url: item.imageurl,
-                inspect_url: 'steam://rungame/730/76561202255233023/+csgo_econ_action_preview%20S' + steam_id + 'A' + key + 'D' + item.d
-            });
+            if (!item.error)
+                result.push({
+                    asset_id: key,
+                    steam_id: steam_id,
+                    name: item.weapon_type === "Sticker" ? item.full_item_name : item.weapon_type + ' | ' + item.item_name,
+                    paint_wear: item.floatvalue,
+                    paint_seed: item.paintseed,
+                    exterior: item.wear_name ? item_maps.exteriorMapStringToInt[item.wear_name] : undefined,
+                    quality: item.quality,
+                    rarity: item.rarity,
+                    icon_url: item.imageurl,
+                    inspect_url: 'steam://rungame/730/76561202255233023/+csgo_econ_action_preview%20S' + steam_id + 'A' + key + 'D' + item.d
+                });
         }
         return result;
     }).catch(err => { console.log(err); return null; });
@@ -238,15 +239,17 @@ const getRawSteamInventory = (steam_id) => {
 
 /* Tags for items that are to be displayed */
 const desiredTags = [
-    "weapon_", "knife_", "sticker_",
-    "CSGO_Type_WeaponCase", "Type_CustomPlayer", "Type_Hands"
+    "weapon_", "knife_",
+    "CSGO_Type_WeaponCase", "Type_CustomPlayer", "Type_Hands", "StickerCategory"
 ];
 
 /* Filtering function used to filter out graffiti and keys */
 const filterFunction = (tags) => {
     return  desiredTags.includes(tags[0].internal_name) 
             ||
-            desiredTags.some(type => tags[1].internal_name.toLowerCase().startsWith(type));
+            desiredTags.some(type => tags[1].internal_name.toLowerCase().startsWith(type))
+            ||
+            tags.some(tag => tag.category === "StickerCategory")
 }
 
 /** Returns result from Steam/Valve api, items like graffiti and keys are filtered out, 
@@ -281,7 +284,7 @@ const getFilteredSteamInventory = (steam_id, tradeable) => {
             assets.forEach(a => {
                 let description = classidToDescription[a.classid];
                 if ((!tradeable || description.tradable) && filterFunction(description.tags)) {
-                    if (description.actions) // has inspect link
+                    if (description.actions && description.tags[0].internal_name !== "CSGO_Tool_Sticker") // has inspect link and is not a sticker
                         inspectableItems.push(fillInspectLink(steam_id, a.assetid, description.actions[0].link));
                     else // no inspect link
                         notInspectableItems.push({ asset_id: a.assetid, class_id: description.classid, instance_id: description.instanceid });

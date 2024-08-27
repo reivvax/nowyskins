@@ -17,7 +17,9 @@ pool.connect((err) => {
 });
 
 //item exterior: 0 = BS, ..., 4 = FN
+//item types: 'weapon', 'case', 'gloves', 'sticker', 'operator'
 const setup = `
+DROP table listed_items;
 CREATE TABLE IF NOT EXISTS users (
   steam_id VARCHAR(20) PRIMARY KEY,
   display_name VARCHAR(255),
@@ -26,7 +28,7 @@ CREATE TABLE IF NOT EXISTS users (
   registered_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
   avatar VARCHAR(255),
   tradelink VARCHAR(255)
-  );
+);
 
 CREATE TABLE IF NOT EXISTS listed_items (
   asset_id VARCHAR(20) PRIMARY KEY,
@@ -41,10 +43,20 @@ CREATE TABLE IF NOT EXISTS listed_items (
   inspect_url VARCHAR(255),
   trade_lock INT,
   time_added TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+  type VARCHAR(20),
   steam_id VARCHAR(20),
   FOREIGN KEY (steam_id) REFERENCES users(steam_id)
-  );
-  `;
+); 
+
+CREATE TABLE IF NOT EXISTS prices (
+  type VARCHAR(20) NOT NULL,  
+  weapon_name VARCHAR(30),
+  skin_name VARCHAR(30) NOT NULL,
+  exterior INT,
+  quality INT,
+  price DECIMAL(12, 2) NOT NULL
+);
+`;
 
 //Database setup
 pool.query(

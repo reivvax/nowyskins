@@ -1,5 +1,5 @@
 const qualityMapStringToInt = {
-    "Normal": 0,
+    "Normal": 4,
     "Souvenir": 1,
     "StatTrak": 2,
 }

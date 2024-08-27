@@ -10,7 +10,7 @@ const renderIndex = (req, res) => {
 }
 
 const renderMarket = (req, res) => {
-    steamItems.getItems()
+    listedItems.getItems()
         .then(items => res.render('market', { user : req.user, items : items, maps : item_maps}))
         .catch(err => { console.log(err); res.redirect('/') });
 }

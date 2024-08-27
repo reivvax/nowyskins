@@ -3,20 +3,25 @@
 */
 
 var stattrackString = "StatTrak™";
+var souvenirString = "Souvenir";
 var starString = "★";
 var foilString = "(Foil)";
 var stickerString = "Sticker |";
+var caseString = "Case"
 var caseKeyString = "Case Key";
 var keyString = "Key";
 
 /**
  * Helper method to format URL for weapon request.
  */
-exports.gunHash = function (wep, skin, wear, stattrak) {
+exports.gunHash = function (wep, skin, wear, stattrak, souvenir) {
   var url = '';
   if (stattrak) {
     url += stattrackString + ' ';
   }
+  if (souvenir) {
+	  url += souvenirString + ' ';
+	}
   return url + wep + ' | ' + skin + ' (' + wear + ')';
 };
 
@@ -65,6 +70,10 @@ exports.stickerHash = function(stickerName, foil) {
       + ' ' + stickerName;
   }
 };
+
+exports.caseHash = function(name) {
+  return name + ' ' + caseString;
+}
 
 /**
 * Helper method to format URL for key request.

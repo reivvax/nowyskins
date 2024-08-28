@@ -1,13 +1,15 @@
+// Quality mapping is same as responses from valve servers
+
 const qualityMapStringToInt = {
     "Normal": 4,
-    "Souvenir": 1,
-    "StatTrak": 2,
+    "StatTrak": 9,
+    "Souvenir": 12,
 }
 
 const qualityMapIntToString = {
-    0: "Normal",
-    1: "Souvenir",
-    2: "StatTrak"
+    4: "Normal",
+    9: "StatTrak",
+    12: "Souvenir",
 }
 
 const exteriorMapStringToInt = {

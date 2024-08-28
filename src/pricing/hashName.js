@@ -10,29 +10,33 @@ var stickerString = "Sticker |";
 var caseString = "Case"
 var caseKeyString = "Case Key";
 var keyString = "Key";
+var specialItem = 3;
+var normalItem = 4;
+var stattrakItem = 9;
+var souvenirItem = 12;
+
+var qualityMap = {
+  3: starString,
+  4: '',
+  9: stattrackString,
+  12: souvenirString
+}
 
 /**
  * Helper method to format URL for weapon request.
  */
-exports.gunHash = function (wep, skin, wear, stattrak, souvenir) {
+exports.gunHash = function (wep, skin, wear, quality) {
   var url = '';
-  if (stattrak) {
-    url += stattrackString + ' ';
-  }
-  if (souvenir) {
-	  url += souvenirString + ' ';
-	}
+  url += qualityMap[quality] ? qualityMap[quality] + ' ' : ''; 
   return url + wep + ' | ' + skin + ' (' + wear + ')';
 };
 
 /**
 * Helper method to format URL for knife request.
 */
-exports.knifeHash = function(knife, skin, wear, stattrak) {
+exports.knifeHash = function(knife, skin, wear, quality) {
 	var url = starString + ' ';
-	if (stattrak) {
-	  url += stattrackString + ' ';
-	}
+	url += quality === stattrakItem ? stattrackString + ' ' : ''; 
 	url += knife;
 	if (skin === null) {
 	  return url;
@@ -73,6 +77,14 @@ exports.stickerHash = function(stickerName, foil) {
 
 exports.caseHash = function(name) {
   return name + ' ' + caseString;
+}
+
+exports.glovesHash = function(wep, skin, wear) {
+  return starString + ' ' + wep + ' | ' + skin + ' (' + wear + ')';
+}
+
+exports.agentHash = function(name, skin) {
+  return name + ' | ' + skin;
 }
 
 /**

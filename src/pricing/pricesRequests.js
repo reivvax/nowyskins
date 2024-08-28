@@ -216,6 +216,99 @@ exports.getSingleStickerPrice = function(stickerName, foil, callback) {
 };
 
 /**
+ * Retrieve price for a single case.
+ *
+ * @param {String} name name of a case for request
+ * @param {Function} callback Return requested data
+ */
+exports.getSingleCasePrice = function(name, callback) {
+  // Requires a callback
+  if (typeof callback !== 'function') {
+    throw new Error('No callback supplied');
+  }
+
+  var market_hash_name = hashName.caseHash(
+    name
+  );
+
+  makeRequest(market_hash_name, function(err, body) {
+    !err ? (
+      bodyJSON = body,
+      bodyJSON.name = market_hash_name,
+      callback(null, bodyJSON)
+    ) :
+    (
+      callback(err)
+    )
+  });
+};
+
+/**
+ * Retrieve price for a single gloves.
+ *
+ * @param {String} glovesName name of gloves for request
+ * @param {String} skin skin of gloves
+ * @param {String} wear wear of a skin
+ * @param {Function} callback Return requested data
+ */
+exports.getSingleGlovesPrice = function(glovesName, skin, wear, callback) {
+  // Requires a callback
+  if (typeof callback !== 'function') {
+    throw new Error('No callback supplied');
+  }
+
+  var market_hash_name = hashName.glovesHash(
+    glovesName,
+    skin,
+    wear
+  );
+
+  makeRequest(market_hash_name, function(err, body) {
+    !err ? (
+      bodyJSON = body,
+      bodyJSON.glovesName = glovesName,
+      bodyJSON.skin = skin,
+      bodyJSON.wear = wear,
+      callback(null, bodyJSON)
+    ) :
+    (
+      callback(err)
+    )
+  });
+};
+
+/**
+ * Retrieve price for a single agent.
+ *
+ * @param {String} agentName name of an agent
+ * @param {String} skin skin of an agent
+ * @param {Function} callback Return requested data
+ */
+exports.getSingleAgentPrice = function(agentName, skin, callback) {
+  // Requires a callback
+  if (typeof callback !== 'function') {
+    throw new Error('No callback supplied');
+  }
+
+  var market_hash_name = hashName.agentHash(
+    agentName,
+    skin
+  );
+
+  makeRequest(market_hash_name, function(err, body) {
+    !err ? (
+      bodyJSON = body,
+      bodyJSON.agentName = agentName,
+      bodyJSON.skin = skin,
+      callback(null, bodyJSON)
+    ) :
+    (
+      callback(err)
+    )
+  });
+};
+
+/**
 * Retrieve price for a single key.
 *
 * @param {string} key: name of the key.

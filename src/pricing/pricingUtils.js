@@ -15,7 +15,7 @@ const addRecord = (type, weapon, skin, wear_name, quality, price) => {
     });
 }
 
-const getPrice = async (type, weapon, skin, wear_name, quality) => {
+const getPrice = async (type, weapon, skin, wear_name, quality, foil = false) => {
     // If item in database, return price from db
     var price = await pool.query(queries.getPrice, [weapon, skin, wear_name, quality], (err, res) => {
         if (err) {
@@ -46,7 +46,7 @@ const getPrice = async (type, weapon, skin, wear_name, quality) => {
                 price = await pricesRequests.getSingleOperatorPrice(...args);
                 break;
             case 'sticker':
-                price = await pricesRequests.getSingleStickerPrice(...args);
+                price = await pricesRequests.getSingleStickerPrice(skin, foil, callback);
                 break;
         }
         if (price) { // Successful fetch

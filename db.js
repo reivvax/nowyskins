@@ -17,7 +17,7 @@ pool.connect((err) => {
 });
 
 //item exterior: 0 = BS, ..., 4 = FN
-//item types: 'weapon', 'knife', 'case', 'gloves', 'sticker', 'operator'
+//item types: 'weapon', 'knife', 'case', 'gloves', 'sticker', 'agent'
 const setup = `
 DROP table listed_items;
 CREATE TABLE IF NOT EXISTS users (

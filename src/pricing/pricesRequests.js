@@ -1,7 +1,6 @@
 var request = require('request');
 var getClosest = require('get-closest');
 var Levenshtein = require('levenshtein');
-var Q = require('q');
 var hashName = require('./hashname.js');
 var allNames = require('./matchingnames');
 
@@ -86,6 +85,20 @@ var makeRequest = function(market_hash_name, callback) {
 }
 
 exports.strictNameMode = true;
+
+exports.getPriceForAnyItem = function (market_hash_name, callback) {
+  makeRequest(market_hash_name, function(err, body) {
+    !err ? (
+      bodyJSON = body,
+      bodyJSON.market_hash_name = market_hash_name,
+      callback(null, bodyJSON)
+    ) :
+    (
+      callback(err)
+    )
+  });
+}
+
 /**
  * Retrieve price for a given weapon, skin, and wear. Also gives an option for StatTrak.
  *
@@ -336,6 +349,18 @@ exports.getSingleKeyPrice = function(key, callback) {
   });
 };
 
+exports.getPriceForAnyItemAsync = function(market_hash_name) {
+  return new Promise(function(resolve, reject) {
+    exports.getPriceForAnyItem(market_hash_name, function(err, result) {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(result);
+      }
+    });
+  });
+}
+
 /**
 * Promisified version of the getSinglePrice function.
 * Big thanks Roamer-1888 on Stackoverflow for help with this function.
@@ -345,7 +370,7 @@ exports.getSinglePriceAsync = function(wep, skin, wear, stattrak) {
   return new Promise(function(resolve, reject) {
     exports.getSinglePrice(wep, skin, wear, stattrak, function(err, result) {
       if (err) {
-        reject(result);
+        reject(err);
       } else {
         resolve(result);
       }

@@ -49,7 +49,7 @@ router.get('/login', passport.authenticate('steam'), (req, res) => {});
 router.get('/auth/steam/return',
   passport.authenticate('steam', { failureRedirect: '/' }),
   (req, res) => {
-    // Load users items as soon as possible
+    // Load users items as soon as possible if login for a first time
     if (!req.user.email || !req.user.tradelink)
       steamItemsUtils.loadUsersInspectableItems(req.user.steam_id);
 

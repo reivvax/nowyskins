@@ -3,6 +3,7 @@
 const request = require('request');
 const listedItemsUtils = require('../listed_items/itemUtils');
 const item_maps = require('../utils/item_attributes_maps');
+const pricingUtils = require('../pricing/pricingUtils');
 
 var appid = '730'; // CS:GO 2
 var contextid = '2'; // default CS:GO 2 context
@@ -89,6 +90,7 @@ const constructItemsFromInspectLinks = (steam_id, links) => {
                     asset_id: key,
                     steam_id: steam_id,
                     name: item.weapon_type === "Sticker" ? item.full_item_name : item.weapon_type + ' | ' + item.item_name,
+                    market_hash_name: item.full_item_name,
                     paint_wear: item.floatvalue,
                     paint_seed: item.paintseed,
                     exterior: item.wear_name ? item_maps.exteriorMapStringToInt[item.wear_name] : undefined,
@@ -110,6 +112,7 @@ const constructItemsFromInspectLinks = (steam_id, links) => {
         quality,
         exterior,
         rarity,
+        market_hash_name,
         paint_wear,
         paint_seed,
         inspect_url,
@@ -126,6 +129,7 @@ const constructItemFromInspectLink = (steam_id, inspect_url, asset_id) => {
         item.paint_wear = item.floatvalue;
         item.paint_seed = item.paintseed;
         item.exterior = item_maps.exteriorMapStringToInt[item.wear_name];
+        item.market_hash_name = item.full_item_name
         item.icon_url = item.imageurl;
         item.inspect_url = filled_url;
         return item;
@@ -174,6 +178,7 @@ const constructItemsWithNoInspectLink = (steam_id, items) => {
                     quality: quality,
                     exterior: exterior,
                     rarity: undefined, 
+                    market_hash_name: data.market_hash_name,
                     icon_url: data.icon_url,
                     steam_id: steam_id
                 });
@@ -206,6 +211,7 @@ const constructItemWithNoInspectLink = (steam_id, asset_id, class_id, instance_i
                 quality: quality,
                 exterior: exterior,
                 rarity: undefined, 
+                market_hash_name: body.market_hash_name,
                 icon_url: body.icon_url,
                 steam_id: steam_id
             };
@@ -237,6 +243,63 @@ const getRawSteamInventory = (steam_id) => {
     });
 }
 
+const completeItemsWithPrices = (items) => {
+    return new Promise((resolve, reject) => {
+        let market_names = new Set();
+        items.forEach(item => {
+            market_names.add(item.market_hash_name);
+        });
+
+        let prices = {};
+
+        market_names.forEach(name => {
+            prices[name] = pricingUtils.getPrice(name);
+        });
+
+
+        items.forEach(item => {
+            item.price = prices[item.market_hash_name];
+        });
+
+        Promise.all(items.map(item => item.price)).then(resolvedPrices => resolve(items)); 
+
+        // let market_names = new Set();
+        // items.forEach(item => {
+        //     market_names.add(item.market_hash_name);
+        // });
+
+        // var prices = {};
+
+        // market_names.forEach(name => {
+        //     prices[name] = pricingUtils.getPrice(name);
+        // });
+
+        // Promise.all(Object.values(prices)).then(resolvedPrices => {
+        //     items.forEach(item => {
+        //         item.price = prices[item.market_hash_name];
+        //     });
+        //     resolve(items);
+        // }).catch(err => { 
+        //     console.log(err); 
+        //     resolve(items); 
+        // });
+    })
+    // let market_names = new Set();
+    // items.forEach(item => {
+    //     market_names.add(item.market_hash_name);
+    // });
+
+    // const prices = new Map();
+
+    // const pricePromises = await market_names.forEach(async name => {
+    //     prices.set(name, await pricingUtils.getPrice(name));
+    // });
+
+    // await Promise.all(pricePromises);
+
+    // items.forEach(item => item.price = prices.get(item.market_hash_name));
+}
+
 /* Tags for items that are to be displayed */
 const desiredTags = [
     "weapon_", "knife_",
@@ -260,10 +323,12 @@ the result is an array of objects:
  quality,
  exterior,
  rarity,
+ market_hash_name,
  paint_wear,
  paint_seed,
  inspect_url,
  icon_url,
+ price,
  steam_id
 }
 */
@@ -290,7 +355,7 @@ const getFilteredSteamInventory = (steam_id, tradeable) => {
                         notInspectableItems.push({ asset_id: a.assetid, class_id: description.classid, instance_id: description.instanceid });
                 }
             });
-            
+
             let data = [];
 
             // Merge inspectable and not inspectable items to one array
@@ -298,11 +363,14 @@ const getFilteredSteamInventory = (steam_id, tradeable) => {
                 data = inspectItems;
                 constructItemsWithNoInspectLink(steam_id, notInspectableItems).then(noInspectItems => {
                     data = data.concat(noInspectItems);
-
-                    Promise.all(data.map(item => Promise.resolve(item)))
-                    .then(resolvedData => resolve(resolvedData.filter(item => item !== null)))
-                    .catch(err => reject(err));
-                }).catch(err => reject(err));
+                    Promise.all(data.map(item => Promise.resolve(item))).then(resolvedData => 
+                        resolve(resolvedData.filter(item => item !== null)));
+                    // completeItemsWithPrices(data).then(pricedItems => { // Add prices
+                    //     Promise.all(pricedItems.map(item => Promise.resolve(item))).then(resolvedData => 
+                    //         resolve(resolvedData.filter(item => item !== null))
+                    //     );
+                    // });
+                });
             });
         }).catch(err => reject(err));
     });
@@ -317,10 +385,12 @@ the result is an array of objects:
  quality,
  exterior,
  rarity,
+ market_hash_name,
  paint_wear,
  paint_seed,
  inspect_url,
  icon_url,
+ price,
  steam_id
 }
 */

@@ -19,7 +19,6 @@ pool.connect((err) => {
 //item exterior: 0 = BS, ..., 4 = FN
 //item types: 'weapon', 'knife', 'case', 'gloves', 'sticker', 'agent'
 const setup = `
-DROP table listed_items;
 CREATE TABLE IF NOT EXISTS users (
   steam_id VARCHAR(20) PRIMARY KEY,
   display_name VARCHAR(255),
@@ -32,12 +31,13 @@ CREATE TABLE IF NOT EXISTS users (
 
 CREATE TABLE IF NOT EXISTS listed_items (
   asset_id VARCHAR(20) PRIMARY KEY,
-  name VARCHAR(255) NOT NULL,
+  name VARCHAR(100) NOT NULL,
   paint_wear VARCHAR(20),
   paint_seed VARCHAR(20),
   quality INT,
   exterior INT,
   rarity INT DEFAULT 0,
+  market_hash_name VARCHAR(100),
   price DECIMAL(12, 2) DEFAULT 0,
   icon_url VARCHAR(255) NOT NULL,
   inspect_url VARCHAR(255),
@@ -49,14 +49,19 @@ CREATE TABLE IF NOT EXISTS listed_items (
 ); 
 
 CREATE TABLE IF NOT EXISTS prices (
-  type VARCHAR(20) NOT NULL,  
-  weapon_name VARCHAR(30),
-  skin_name VARCHAR(30) NOT NULL,
-  exterior INT,
-  quality INT,
+  market_hash_name VARCHAR(100) PRIMARY KEY,
   price DECIMAL(12, 2) NOT NULL
 );
 `;
+
+// CREATE TABLE IF NOT EXISTS prices (
+//   type VARCHAR(20) NOT NULL,  
+//   weapon_name VARCHAR(30),
+//   skin_name VARCHAR(30) NOT NULL,
+//   exterior INT,
+//   quality INT,
+//   price DECIMAL(12, 2) NOT NULL
+// );
 
 //Database setup
 pool.query(

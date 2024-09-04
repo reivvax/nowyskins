@@ -2,69 +2,60 @@ const pricesRequests = require('./pricesRequests');
 const queries = require('./pricesQueries');
 const pool = require('../../db');
 
-const callback = (err, res) => {
-    if (err)
+// Helper function to extract the price value from JSON result
+const computePrice = (res) => {
+    if (!res.lowest_price || !res.median_price)
         return null;
-    return res;
+    return (parseFloat(res.lowest_price.substring(1).replace(",",".")) + parseFloat(res.median_price.substring(1).replace(",","."))) / 2; // take the average of median an lowest price for now
 }
 
-const addRecord = (type, weapon, skin, wear_name, quality, price) => {
-    return pool.query(queries.addRecord, [type, weapon, skin, wear_name, quality, price], (err, res) => {
-        if (err)
-            throw err;
-    });
+const addRecord = (market_hash_name, price) => {
+    return new Promise((resolve, reject) => {
+        pool.query(queries.addRecord, [market_hash_name, price], (err, res) => {
+            if (err)
+                reject(err);
+            else
+                resolve(res);
+        });
+    })
 }
 
-const getPrice = async (type, weapon, skin, wear_name, quality, foil = false) => {
+const getPrice = (market_hash_name) => {
     // If item in database, return price from db
-    var price = await pool.query(queries.getPrice, [weapon, skin, wear_name, quality], (err, res) => {
-        if (err) {
-            console.log(err);
-            return null;
-        }
-        return res.rows[0];
-    });
-
-    let args = [weapon, skin, wear_name, quality, callback];
-
-    // If not, query the steam market
-    if (!price) {
-        switch (type) {
-            case 'weapon':
-                price = await pricesRequests.getSinglePrice(...args);
-                break;
-            case 'knife':
-                price = await pricesRequests.getSingleKnifePrice(...args);
-                break;
-            case 'gloves':
-                price = await pricesRequests.getSingleGlovesPrice(...args);
-                break;
-            case 'case':
-                price = await pricesRequests.getSingleCasePrice(...args);
-                break;
-            case 'operator':
-                price = await pricesRequests.getSingleOperatorPrice(...args);
-                break;
-            case 'sticker':
-                price = await pricesRequests.getSingleStickerPrice(skin, foil, callback);
-                break;
-        }
-        if (price) { // Successful fetch
-            try {
-                await addRecord(type, weapon, skin, wear_name, quality, price);
-            } catch (error) {
-                console.log("Failed to add price record: ", err);
+    return new Promise((resolve, reject) => {
+        pool.query(queries.getPrice, [market_hash_name], (err, res) => {
+            if (err) {
+                console.log(err);
+                reject(err);
             }
-        }
-    }
-
-    return price;
+            if (res.rows.length)
+                resolve(res.rows[0].price);
+            else
+                reject(new Error("Item not found")); // no match
+        });
+    })
+    .then(price => { return price; } )
+    .catch(err => { // If not, fetch from steam
+        return pricesRequests.getPriceForAnyItemAsync(market_hash_name).then(response => {
+            const price = computePrice(response);
+            return addRecord(market_hash_name, price)
+                .then(added => { return price; })
+                .catch(err => { console.log("Failed to add price record: ", err); return price });
+        }).catch(err => {
+            console.log(err);
+            return undefined;
+        });
+    });
 }
 
-const updatePrice = (weapon, skin, wear_name, quality, price) => {
-    return pool.query(queries.updatePrice, [weapon, skin, wear_name, quality, price], (err, res) => {
-        if (err)
-            throw err;
+const updatePrice = (market_hash_name, price) => {
+    return new Promise((resolve, reject) => { 
+        pool.query(queries.updatePrice, [market_hash_name, price], (err, res) => {
+            if (err)
+                reject(err);
+            else
+                resolve(res);
+        });
     });
 }
 

@@ -243,25 +243,52 @@ const getRawSteamInventory = (steam_id) => {
     });
 }
 
+const getName = (traits) => {
+    let res = "";
+    if (traits.quality == 9)
+        res += 'stattrak-';
+    if (traits.quality == 12)
+        res += 'souvenir-';
+
+    res += traits.name.replace(/ \| | |\(|\)|\./g, "-").replace(/-+/g, "-").toLowerCase();
+    return res;
+}
+
 const completeItemsWithPrices = (items) => {
     return new Promise((resolve, reject) => {
-        let market_names = new Set();
+        let names_and_wears = new Set();
+        
         items.forEach(item => {
-            market_names.add(item.market_hash_name);
+            names_and_wears.add(
+                { hash_name: item.market_hash_name, name: getName({ name: item.name, exterior: item.exterior, quality: item.quality }), wear: item.exterior ? 4 - item.exterior : -1 }
+            );
         });
 
         let prices = {};
 
-        market_names.forEach(name => {
-            prices[name] = pricingUtils.getPrice(name);
+        let urls = [];
+        let exteriors = [];
+
+        names_and_wears.forEach(obj => {
+            urls.push("https://csgo.steamanalyst.com/skin/" + obj.name);
+            exteriors.push(obj.wear);
         });
 
+        pricingUtils.getPrice(urls, exteriors).then(prices => {    
+            let pricesMap = {};
+            let i = 0;
+            // map the prices
+            names_and_wears.forEach(obj => {
+                pricesMap[obj.hash_name] = prices[i];
+                i++;
+            });
+            // assign the values
+            items.forEach(item => item.price = pricesMap[item.market_hash_name]);
 
-        items.forEach(item => {
-            item.price = prices[item.market_hash_name];
-        });
-
-        Promise.all(items.map(item => item.price)).then(resolvedPrices => resolve(items)); 
+            resolve(items);
+        }).catch(
+            err => reject(err)
+        );
 
         // let market_names = new Set();
         // items.forEach(item => {
@@ -283,22 +310,52 @@ const completeItemsWithPrices = (items) => {
         //     console.log(err); 
         //     resolve(items); 
         // });
-    })
-    // let market_names = new Set();
-    // items.forEach(item => {
-    //     market_names.add(item.market_hash_name);
-    // });
-
-    // const prices = new Map();
-
-    // const pricePromises = await market_names.forEach(async name => {
-    //     prices.set(name, await pricingUtils.getPrice(name));
-    // });
-
-    // await Promise.all(pricePromises);
-
-    // items.forEach(item => item.price = prices.get(item.market_hash_name));
+    });
 }
+
+// const completeItemsWithPrices = (items) => {
+//     return new Promise((resolve, reject) => {
+//         let market_names = new Set();
+//         items.forEach(item => {
+//             market_names.add(item.market_hash_name);
+//         });
+
+//         let prices = {};
+
+//         market_names.forEach(name => {
+//             prices[name] = pricingUtils.getPrice(name);
+//         });
+
+
+//         Promise.all(Object.values(prices)).then(
+//             resolvedPrices => {
+//                 items.forEach(item => {
+//                     item.price = prices[item.market_hash_name];
+//                 });
+//                 resolve(items);
+//             }); 
+//         // let market_names = new Set();
+//         // items.forEach(item => {
+//         //     market_names.add(item.market_hash_name);
+//         // });
+
+//         // var prices = {};
+
+//         // market_names.forEach(name => {
+//         //     prices[name] = pricingUtils.getPrice(name);
+//         // });
+
+//         // Promise.all(Object.values(prices)).then(resolvedPrices => {
+//         //     items.forEach(item => {
+//         //         item.price = prices[item.market_hash_name];
+//         //     });
+//         //     resolve(items);
+//         // }).catch(err => { 
+//         //     console.log(err); 
+//         //     resolve(items); 
+//         // });
+//     })
+// }
 
 /* Tags for items that are to be displayed */
 const desiredTags = [
@@ -363,13 +420,13 @@ const getFilteredSteamInventory = (steam_id, tradeable) => {
                 data = inspectItems;
                 constructItemsWithNoInspectLink(steam_id, notInspectableItems).then(noInspectItems => {
                     data = data.concat(noInspectItems);
-                    Promise.all(data.map(item => Promise.resolve(item))).then(resolvedData => 
-                        resolve(resolvedData.filter(item => item !== null)));
-                    // completeItemsWithPrices(data).then(pricedItems => { // Add prices
-                    //     Promise.all(pricedItems.map(item => Promise.resolve(item))).then(resolvedData => 
-                    //         resolve(resolvedData.filter(item => item !== null))
-                    //     );
-                    // });
+                    // Promise.all(data.map(item => Promise.resolve(item))).then(resolvedData => 
+                    //     resolve(resolvedData.filter(item => item !== null)));
+                    completeItemsWithPrices(data).then(pricedItems => { // Add prices
+                        Promise.all(pricedItems.map(item => Promise.resolve(item))).then(resolvedData => 
+                            resolve(resolvedData.filter(item => item !== null))
+                        );
+                    }).catch(err => reject(err));
                 });
             });
         }).catch(err => reject(err));

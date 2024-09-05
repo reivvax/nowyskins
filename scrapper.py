@@ -13,6 +13,9 @@ def fetch_html(url):
 
 
 def get_table_column_mean(html_content, column_number):
+    if column_number == -1:
+        column_number = 0
+        
     soup = BeautifulSoup(html_content, 'html.parser')
 
     table = soup.find('table')
@@ -41,7 +44,7 @@ def get_table_column_mean(html_content, column_number):
         sys.exit(1)
 
     mean_value = sum(values) / len(values)
-    print(f"{mean_value:.2f}")
+    return mean_value
 
 
 def main():
@@ -61,6 +64,11 @@ def main():
         html_content = fetch_html(url)
 
         mean_values.append(get_table_column_mean(html_content, column_number))
+
+    res = ""
+    for value in mean_values:
+        res += f"{value:.2f} "
+    print(res)
 
 
 if __name__ == "__main__":

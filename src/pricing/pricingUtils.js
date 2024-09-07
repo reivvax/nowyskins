@@ -24,8 +24,16 @@ const addRecord = (market_hash_name, price) => {
     });
 }
 
+/**
+ * Helper function that runs the python scrapping script
+ * @param url URL of site to scrap the data from, in form 'https://csgo.steamanalyst.com/skin/{skin_name}'
+ * @param wear string representation of wear, if item does not have wear, then '-' or ''
+ * @returns Promise that returns desired price, or throws an error if script fails to execute
+ */
 const fetchPriceFromCSAnalyst = (url, wear) => {
     return new Promise((resolve, reject) => {
+        if (wear == '')
+            wear = '-';
         args = [url, wear];
 
         const pythonProcess = spawn('python', ['scrapper.py', ...args]);
@@ -40,7 +48,7 @@ const fetchPriceFromCSAnalyst = (url, wear) => {
         pythonProcess.stderr.on('data', (data) => {
             data = data.toString();
             if (data.startsWith("Error"))
-                console.log(new Error(`Error from price scrapping script: ${data.substring(7)}`));
+                console.log(`Error from price scrapping script: ${data.substring(7)}`);
         });
 
         pythonProcess.stdout.on('data', (data) => {
@@ -51,7 +59,8 @@ const fetchPriceFromCSAnalyst = (url, wear) => {
     });
 }
 
-const constructLink = (market_hash_name, name) => {
+/* Construct the suffix of CSAnalyst link based on market hash name and ordinary name */
+const constructLinkSuffix = (market_hash_name, name) => {
     let res = "";
     if (market_hash_name.startsWith("StatTrak"))
         res += 'stattrak-';
@@ -62,7 +71,7 @@ const constructLink = (market_hash_name, name) => {
     return res;
 }
 
-
+/* Fetches the price for provided item from CSAnalyst, if it failes, fetches it from steam market */
 const getPrice = (market_hash_name, name, wear) => {
     // If item in database, return price from db
     return new Promise((resolve, reject) => {
@@ -79,7 +88,7 @@ const getPrice = (market_hash_name, name, wear) => {
     })
     .then(price => { return price; } )
     .catch(err => { // If not, fetch from cs analyst
-        return fetchPriceFromCSAnalyst("https://csgo.steamanalyst.com/skin/" + constructLink(market_hash_name, name), wear)
+        return fetchPriceFromCSAnalyst("https://csgo.steamanalyst.com/skin/" + constructLinkSuffix(market_hash_name, name), wear)
             .then(price => { // successful fetch from cs analyst
                 if (price != -1)
                     return addRecord(market_hash_name, price)

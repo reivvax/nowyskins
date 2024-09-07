@@ -256,60 +256,95 @@ const getName = (traits) => {
 
 const completeItemsWithPrices = (items) => {
     return new Promise((resolve, reject) => {
-        let names_and_wears = new Set();
+        // let names_and_wears = new Set();
         
+        // items.forEach(item => {
+        //     names_and_wears.add(
+        //         { 
+        //             hash_name: item.market_hash_name, 
+        //             name: getName(
+        //                 { 
+        //                     name: item.name, 
+        //                     exterior: item.exterior, quality: item.quality 
+        //                 }
+        //             ), 
+        //             wear: item.exterior ? item_maps.exteriorMapIntToString[4 - item.exterior].replace(" ", "_") : "-" 
+        //         }
+        //     );
+        // });
+
+        // let prices = {};
+
+        // let urls = [];
+        // let exteriors = [];
+        // str = "";
+        // names_and_wears.forEach(obj => {
+        //     urls.push("https://csgo.steamanalyst.com/skin/" + obj.name);
+        //     exteriors.push(obj.wear);
+        // });
+
+        // for (let i = 0; i < urls.length; i++)
+        //     str += urls[i] + " " + exteriors[i] + " ";
+        // console.log(str);
+        // reject(new Error("xd"));
+
+        // pricingUtils.getPrice(urls, exteriors).then(prices => {    
+        //     let pricesMap = {};
+        //     let i = 0;
+        //     // map the prices
+        //     names_and_wears.forEach(obj => {
+        //         pricesMap[obj.hash_name] = prices[i];
+        //         i++;
+        //     });
+        //     // assign the values
+        //     items.forEach(item => item.price = pricesMap[item.market_hash_name]);
+
+        //     resolve(items);
+        // }).catch(
+        //     err => reject(err)
+        // );
+
+        let names_and_wears = new Set();
+
         items.forEach(item => {
             names_and_wears.add(
-                { hash_name: item.market_hash_name, name: getName({ name: item.name, exterior: item.exterior, quality: item.quality }), wear: item.exterior ? 4 - item.exterior : -1 }
+                { 
+                    hash_name: item.market_hash_name, 
+                    name: item.name,
+                    wear: item.exterior ? item_maps.exteriorMapIntToString[4 - item.exterior].replace(" ", "_") : "-"
+                }
             );
         });
 
-        let prices = {};
-
-        let urls = [];
-        let exteriors = [];
-
-        names_and_wears.forEach(obj => {
-            urls.push("https://csgo.steamanalyst.com/skin/" + obj.name);
-            exteriors.push(obj.wear);
-        });
-
-        pricingUtils.getPrice(urls, exteriors).then(prices => {    
-            let pricesMap = {};
-            let i = 0;
-            // map the prices
-            names_and_wears.forEach(obj => {
-                pricesMap[obj.hash_name] = prices[i];
-                i++;
-            });
-            // assign the values
-            items.forEach(item => item.price = pricesMap[item.market_hash_name]);
-
-            resolve(items);
-        }).catch(
-            err => reject(err)
-        );
-
-        // let market_names = new Set();
-        // items.forEach(item => {
-        //     market_names.add(item.market_hash_name);
-        // });
-
         // var prices = {};
 
-        // market_names.forEach(name => {
-        //     prices[name] = pricingUtils.getPrice(name);
+        // names_and_wears.forEach(obj => {
+        //     prices[obj.hash_name] = pricingUtils.getPrice(obj.hash_name, obj.name, obj.wear);
         // });
 
-        // Promise.all(Object.values(prices)).then(resolvedPrices => {
-        //     items.forEach(item => {
-        //         item.price = prices[item.market_hash_name];
-        //     });
-        //     resolve(items);
-        // }).catch(err => { 
-        //     console.log(err); 
-        //     resolve(items); 
-        // });
+        let pricePromises = Array.from(names_and_wears).map(obj => {
+            return pricingUtils.getPrice(obj.hash_name, obj.name, obj.wear)
+                .then(price => ({ hash_name: obj.hash_name, price }));
+        });
+
+        Promise.all(pricePromises)
+            .then(resolvedPrices => {
+                let priceMap = {}; 
+                resolvedPrices.forEach(({ hash_name, price }) => {
+                    priceMap[hash_name] = price;
+                });
+
+                items.forEach(item => {
+                    item.price = priceMap[item.market_hash_name];
+                    if (item.price == "-1") {
+                        item.price = undefined;
+                    }
+                });
+                resolve(items); })
+            .catch(err => { 
+                console.log(err); 
+                resolve(items); 
+            });
     });
 }
 

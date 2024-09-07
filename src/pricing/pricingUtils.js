@@ -21,68 +21,91 @@ const addRecord = (market_hash_name, price) => {
     })
 }
 
-const getPrice = (urls, wears) => {
+const fetchPrice = (url, wear) => {
     return new Promise((resolve, reject) => {
-        if (urls.length != wears.length)
-            reject(new Error("Urls do not match wears"));
+        args = [url, wear];
 
-        args = []        
-        for (let i = 0; i < urls.length; i++) {
-            args.push(urls[i]);
-            args.push(wears[i]);
-        }
         let str = ""
-        args.forEach(element => {
-            str += element + " ";
-        });
-        console.log(str);
+        // args.forEach(element => {
+        //     str += element + " ";
+        // });
+        // console.log(str);
 
         const pythonProcess = spawn('python', ['scrapper.py', ...args]);
 
         pythonProcess.on('close', (code) => {
-            console.log(`Scrapping script finished with code ${code}`);
+            if (code != 0) {
+                console.log(`Scrapping script finished with code ${code}`);
+                reject(new Error("Failed to execute the script"));
+            }
         });
 
         pythonProcess.stderr.on('data', (data) => {
-            reject(new Error(`Error from price scrapping script: ${data}`));
+            data = data.toString();
+            if (data.startsWith("Error"))
+                console.log(new Error(`Error from price scrapping script: ${data.substring(7)}`));
         });
 
         pythonProcess.stdout.on('data', (data) => {
-            data = data.toString();
+            data = data.toString().trim();
             console.log(data);
-            resolve(data.split(" "));
+            resolve(data);
         });
     });
-    
 }
 
-// const getPrice = (market_hash_name) => {
-//     // If item in database, return price from db
-//     return new Promise((resolve, reject) => {
-//         pool.query(queries.getPrice, [market_hash_name], (err, res) => {
-//             if (err) {
-//                 console.log(err);
-//                 reject(err);
-//             }
-//             if (res.rows.length)
-//                 resolve(res.rows[0].price);
-//             else
-//                 reject(new Error("Item not found")); // no match
-//         });
-//     })
-//     .then(price => { return price; } )
-//     .catch(err => { // If not, fetch from steam
-//         return pricesRequests.getPriceForAnyItemAsync(market_hash_name).then(response => {
-//             const price = computePrice(response);
-//             return addRecord(market_hash_name, price)
-//                 .then(added => { return price; })
-//                 .catch(err => { console.log("Failed to add price record: ", err); return price });
-//         }).catch(err => {
-//             console.log(err);
-//             return undefined;
-//         });
-//     });
-// }
+const constructLink = (market_hash_name, name) => {
+    let res = "";
+    if (market_hash_name.startsWith("StatTrak"))
+        res += 'stattrak-';
+    if (market_hash_name.startsWith("Souvenir"))
+        res += 'souvenir-';
+
+    res += name.replace(/ \| | |\(|\)|\./g, "-").replace(/-+/g, "-").toLowerCase();
+    return res;
+}
+
+
+const getPrice = (market_hash_name, name, wear) => {
+    // If item in database, return price from db
+    return new Promise((resolve, reject) => {
+        pool.query(queries.getPrice, [market_hash_name], (err, res) => {
+            if (err) {
+                console.log(err);
+                reject(err);
+            }
+            if (res.rows.length)
+                resolve(res.rows[0].price);
+            else
+                reject(new Error("Item not found")); // no match
+        });
+    })
+    .then(price => { return price; } )
+    .catch(async err => { // If not, fetch from cs analyst
+        return fetchPrice("https://csgo.steamanalyst.com/skin/" + constructLink(market_hash_name, name), wear)
+            .then(price => {
+                    if (price != -1)
+                        return addRecord(market_hash_name, price)
+                            .then(() => { return price; })
+                            .catch(err => { console.log("Failed to add price record: ", err); return price })
+                    return price;
+            })
+            .catch(err => {
+                console.log(err);
+                return -1;
+            });
+
+        // return pricesRequests.getPriceForAnyItemAsync(market_hash_name).then(response => {
+        //     const price = computePrice(response);
+        //     return addRecord(market_hash_name, price)
+        //         .then(added => { return price; })
+        //         .catch(err => { console.log("Failed to add price record: ", err); return price });
+        // }).catch(err => {
+        //     console.log(err);
+        //     return undefined;
+        // });
+    });
+}
 
 const updatePrice = (market_hash_name, price) => {
     return new Promise((resolve, reject) => { 

@@ -2,6 +2,7 @@ const pricesRequests = require('./pricesRequests');
 const queries = require('./pricesQueries');
 const { spawn } = require('child_process');
 const pool = require('../../db');
+const res = require('express/lib/response');
 
 // Helper function to extract the price value from JSON result
 const computePrice = (res) => {
@@ -16,20 +17,16 @@ const addRecord = (market_hash_name, price) => {
             if (err)
                 reject(err);
             else
-                resolve(res);
+                resolve(res.rows[0].price);
         });
-    })
+    }).catch(err => {
+        console.log("Failed to add price record: ", err); return price; 
+    });
 }
 
-const fetchPrice = (url, wear) => {
+const fetchPriceFromCSAnalyst = (url, wear) => {
     return new Promise((resolve, reject) => {
         args = [url, wear];
-
-        let str = ""
-        // args.forEach(element => {
-        //     str += element + " ";
-        // });
-        // console.log(str);
 
         const pythonProcess = spawn('python', ['scrapper.py', ...args]);
 
@@ -81,29 +78,26 @@ const getPrice = (market_hash_name, name, wear) => {
         });
     })
     .then(price => { return price; } )
-    .catch(async err => { // If not, fetch from cs analyst
-        return fetchPrice("https://csgo.steamanalyst.com/skin/" + constructLink(market_hash_name, name), wear)
-            .then(price => {
-                    if (price != -1)
-                        return addRecord(market_hash_name, price)
-                            .then(() => { return price; })
-                            .catch(err => { console.log("Failed to add price record: ", err); return price })
-                    return price;
+    .catch(err => { // If not, fetch from cs analyst
+        return fetchPriceFromCSAnalyst("https://csgo.steamanalyst.com/skin/" + constructLink(market_hash_name, name), wear)
+            .then(price => { // successful fetch from cs analyst
+                if (price != -1)
+                    return addRecord(market_hash_name, price)
+                else
+                    throw new Error(`Failed to fetch price from CSAnalyst for ${market_hash_name}`);
             })
-            .catch(err => {
+            .catch(err => { // failed to fetch price from CSAnalyst
                 console.log(err);
-                return -1;
+                console.log(`FETCHING PRICE FROM STEAM MARKET FOR ${market_hash_name}`)
+                return pricesRequests.getPriceForAnyItemAsync(market_hash_name) // fetch from steam market
+                    .then(response => {
+                        return addRecord(market_hash_name, computePrice(response));
+                    })
+                    .catch(error => { // failed to get price from steam market
+                        console.log(error)
+                        return -1;
+                    })
             });
-
-        // return pricesRequests.getPriceForAnyItemAsync(market_hash_name).then(response => {
-        //     const price = computePrice(response);
-        //     return addRecord(market_hash_name, price)
-        //         .then(added => { return price; })
-        //         .catch(err => { console.log("Failed to add price record: ", err); return price });
-        // }).catch(err => {
-        //     console.log(err);
-        //     return undefined;
-        // });
     });
 }
 

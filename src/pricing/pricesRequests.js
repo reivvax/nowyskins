@@ -1,3 +1,5 @@
+// Module that fetches prices from steam market
+
 var request = require('request');
 var getClosest = require('get-closest');
 var Levenshtein = require('levenshtein');

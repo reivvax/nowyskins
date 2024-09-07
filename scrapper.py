@@ -9,7 +9,7 @@ def fetch_html(url):
     if response.status_code == 200:
         return response.text
     else:
-        print(f"Error: Failed to fetch HTML with status code {response.status_code}", file=sys.stderr)
+        print(f"Error: Failed to fetch HTML for {url} with status code {response.status_code}", file=sys.stderr)
         return None
 
 

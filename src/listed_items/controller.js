@@ -1,9 +1,10 @@
 const listedItems = require('./itemUtils');
+const logs = require('../utils/logging');
 
 const addItem = (req, res) => {
     listedItems.addItemWithCheck(req.body)
         .then(item => { res.status(201).send("Item added successfully"); })
-        .catch(err => { console.log(err); res.status(500).send("Failed to add item to the database"); })
+        .catch(err => { logs.warn(err); res.status(500).send("Failed to add item to the database"); })
 }
 
 const ensurePrivilegedToDelete = (req, res, next) => {
@@ -11,18 +12,18 @@ const ensurePrivilegedToDelete = (req, res, next) => {
     listedItems.getItem(asset_id)
         .then(item => {
             if (item.steam_id != req.user.steam_id) {
-                console.log("Unauthorized to delete item");
+                logs.verboseLog("Unauthorized to delete item");
                 res.status(401).redirect('/');
             } else
                 return next();
         })
-        .catch((err) => { console.log(err); res.status(500).send("Failed to fetch item from database") });
+        .catch((err) => { logs.debugLog(err); res.status(500).send("Failed to fetch item from database") });
 }
 
 const deleteItem = (req, res) => {
     listedItems.removeItem(req.params.id)
         .then(() => { res.status(200).send("Item removed successfully"); })
-        .catch(err => { console.log(err); res.status(500).send("Failed to remove item from database"); });
+        .catch(err => { log.debugLog(err); res.status(500).send("Failed to remove item from database"); });
 }
 
 module.exports = {

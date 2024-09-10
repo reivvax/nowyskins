@@ -46,6 +46,13 @@ var closest_name = function(item, choices) {
 
 };
 
+// Helper function to extract the price value from JSON result
+const computePrice = (res) => {
+  if (!res.lowest_price || !res.median_price)
+      return null;
+  return (parseFloat(res.lowest_price.substring(1).replace(",",".")) + parseFloat(res.median_price.substring(1).replace(",","."))) / 2; // take the average of median an lowest price for now
+}
+
 var makeRequest = function(market_hash_name, callback) {
 
   // Requires a callback
@@ -90,10 +97,11 @@ exports.strictNameMode = true;
 
 exports.getPriceForAnyItem = function (market_hash_name, callback) {
   makeRequest(market_hash_name, function(err, body) {
-    !err ? (
-      bodyJSON = body,
-      bodyJSON.market_hash_name = market_hash_name,
-      callback(null, bodyJSON)
+    (!err && body.lowest_price && body.median_price) ? (
+      // bodyJSON = body,
+      // bodyJSON.market_hash_name = market_hash_name,
+      price = computePrice(body),
+      callback(null, price)
     ) :
     (
       callback(err)
@@ -354,7 +362,7 @@ exports.getSingleKeyPrice = function(key, callback) {
 exports.getPriceForAnyItemAsync = function(market_hash_name) {
   return new Promise(function(resolve, reject) {
     exports.getPriceForAnyItem(market_hash_name, function(err, result) {
-      if (err) {
+      if (err || !result) {
         reject(err);
       } else {
         resolve(result);

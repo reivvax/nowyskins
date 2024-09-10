@@ -1,6 +1,7 @@
 //Utils to perform operations on listed items
 const pool = require('../../db');
 const queries = require('./itemQueries');
+const logs = require('../utils/logging');
 
 const getItems = () => {
     return new Promise((resolve, reject) => { pool.query(queries.getItems, (err, results) => {
@@ -49,7 +50,6 @@ const addItemToDatabase = (item) => {
 const addItemWithCheck = (item) => {
     return new Promise((resolve, reject) => {
         if (!item) {
-            console.log("Item is null");
             reject(new Error("Item is null"));
         }
 
@@ -59,7 +59,7 @@ const addItemWithCheck = (item) => {
             if (!results.rows.length) { // no item with such id found
                 addItemToDatabase(item)
                     .then(item => resolve(item))
-                    .catch(err => { console.log(err); reject(err); });
+                    .catch(err => { reject(err); });
             } else
                 reject(new Error("Item is already listed"));
         });

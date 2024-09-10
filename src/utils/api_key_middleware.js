@@ -1,4 +1,5 @@
 const API_KEY = process.env['API_KEY'];
+const logs = require('./logging');
 
 const apiKeySetterMiddleware = (req, res, next) => {
     req.headers['api-key'] = process.env.API_KEY; // Ensure API_KEY is set in environment variables
@@ -10,7 +11,7 @@ const apiKeyMiddleware = (req, res, next) => {
     if (apiKey && apiKey === API_KEY) {
         next();
     } else {
-        console.log("UNAUTHORIZED");
+        logs.verboseLog("UNAUTHORIZED");
         res.status(401).json({ message: 'Unauthorized' });
     }
 };

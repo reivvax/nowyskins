@@ -13,10 +13,9 @@ const getUserById = (id) => {
 }
 
 const addUserWithCheck = (user) => {
-    if (!user) {
-        console.log("User is null");
+    if (!user)
         throw new Error("User is null");
-    }
+    
     const { steam_id, email } = user;
     
     if (email != null)

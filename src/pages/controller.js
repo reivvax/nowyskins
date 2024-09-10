@@ -4,6 +4,7 @@ const userUtils = require('../users/userUtils');
 const item_maps = require('../utils/item_attributes_maps');
 const steamItems = require('../steam_items/itemUtils');
 const listedItems = require('../listed_items/itemUtils');
+const logs = require('../utils/logging');
 
 const renderIndex = (req, res) => {
     res.render('index', { user: req.user });
@@ -12,7 +13,7 @@ const renderIndex = (req, res) => {
 const renderMarket = (req, res) => {
     listedItems.getItems()
         .then(items => res.render('market', { user : req.user, items : items, maps : item_maps}))
-        .catch(err => { console.log(err); res.redirect('/') });
+        .catch(err => { logs.debugLog(err); res.redirect('/') });
 }
 
 const renderProfile = (req, res) => {
@@ -22,13 +23,13 @@ const renderProfile = (req, res) => {
 const renderSell = (req, res) => {
     steamItems.getFilteredSteamInventoryWithoutListedItems(req.user.steam_id, true)
         .then(items => res.render('sell', { user: req.user, items: items, maps : item_maps }))
-        .catch(err => { console.log(err); res.redirect('/') });
+        .catch(err => { logs.debugLog(err); res.redirect('/') });
 }
 
 const renderMyStall = (req, res) => {
     listedItems.getItemsFromUser(req.user.steam_id)
         .then(items => res.render('mystall', { user : req.user, items : items, maps : item_maps }))
-        .catch(err => { console.log(err); res.redirect('/') });
+        .catch(err => { logs.debugLog(err); res.redirect('/') });
 }
 
 const renderStall = (req, res) => {
@@ -42,9 +43,8 @@ const renderStall = (req, res) => {
         .then(items => {
             userUtils.getUserById(id)
                 .then(seller => res.render('stall', { user : req.user, seller : seller, items : items, maps : item_maps }))
-                .catch(err => { console.log(err); res.redirect('/') });
         })
-        .catch((err) => { console.log(err); res.redirect('/') });
+        .catch((err) => { logs.debugLog(err); res.redirect('/') });
 }
 
 module.exports = {

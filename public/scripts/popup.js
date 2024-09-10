@@ -29,28 +29,12 @@ window.onload = function() {
     showPopup();
 }
 
-
-// document.getElementById('submit-btn').onclick = () => {
-//     var email = document.getElementById('email').value;
-//     var tradelink = document.getElementById('tradelink').value;
-//     if (email && tradelink) {
-//         try {
-//             sendData(email, tradelink);
-//             hidePopup();
-//         } catch (error) {
-//             setError("Error: ", error, "\nPlease try again.");
-//         }
-//     } else {
-//        setError('Please fill in both email and trade link.', true);
-//     }
-// };
-
 document.getElementById('submit-btn').onclick = () => {
     var email = document.getElementById('email').value;
     var tradelink = document.getElementById('tradelink').value;
     if (email && tradelink) {
         sendData(email, tradelink)
-            .then((response) => hidePopup())
+            .then(() => hidePopup())
             .catch((errMessage) => setError("Error: " + errMessage + "\nPlease try again.", true));
     } else {
        setError('Please fill in both email and trade link.', true);

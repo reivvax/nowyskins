@@ -6,7 +6,7 @@ const decrementItemCount = () => {
 }
 
 const sendData = (asset_id, class_id, instance_id, inspect_url, price) => {
-    fetch('/listeditems', {
+    return fetch('/listeditems', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -16,17 +16,14 @@ const sendData = (asset_id, class_id, instance_id, inspect_url, price) => {
     .then(response => {
         if (response.status >= 400)
             throw new Error("Unauthorized");
-        console.log('Success listing item');
         var div = document.getElementById(asset_id);
         if (div) {
             div.remove();
         }
         decrementItemCount();
+        return true;
     })
-    .catch((error) => {
-        console.error('Error: ', error);
-        throw error;
-    });
+    .catch(err => { return false; })
 }
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -85,7 +82,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Handle confirm sell button
-    confirmSellBtn.addEventListener('click', function() {
+    confirmSellBtn.addEventListener('click', async function() {
         // Call sendData with the necessary data
         const asset_id = this.getAttribute('data-asset-id');
         const class_id = this.getAttribute('data-class-id');
@@ -93,11 +90,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const inspect_url = this.getAttribute('data-inspect-url');
         const customPrice = customPriceInput.value;
 
-        try {
-            sendData(asset_id, class_id, instance_id, inspect_url, customPrice);
+        let success = await sendData(asset_id, class_id, instance_id, inspect_url, customPrice);
+        if (success)
             closeModal();
-        } catch(err) {
-            console.log(err);
-        }
     });
 });

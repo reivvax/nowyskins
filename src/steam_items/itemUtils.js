@@ -4,6 +4,7 @@ const request = require('request');
 const listedItemsUtils = require('../listed_items/itemUtils');
 const item_maps = require('../utils/item_attributes_maps');
 const pricingUtils = require('../pricing/pricingUtils');
+const logs = require('../utils/logging');
 
 var appid = '730'; // CS:GO 2
 var contextid = '2'; // default CS:GO 2 context
@@ -101,7 +102,7 @@ const constructItemsFromInspectLinks = (steam_id, links) => {
                 });
         }
         return result;
-    }).catch(err => { console.log(err); return null; });
+    }).catch(err => { return null; });
 }
 
 /** 
@@ -133,7 +134,7 @@ const constructItemFromInspectLink = (steam_id, inspect_url, asset_id) => {
         item.icon_url = item.imageurl;
         item.inspect_url = filled_url;
         return item;
-    }).catch((err) => { console.log(err); return null; });
+    }).catch((err) => { return null; });
 }
 
 /* Performs simple query about asset info to Steam server */
@@ -278,7 +279,7 @@ const completeItemsWithPrices = (items) => {
                 });
                 resolve(items); })
             .catch(err => { 
-                console.log(err); 
+                logs.warnLog(err); 
                 resolve(items); 
             });
     });

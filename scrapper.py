@@ -69,7 +69,7 @@ def get_table_column_mean(html_content, column):
 
 def main():
     if len(sys.argv) % 2 == 0:
-        print("Usage: python script.py [{<url>, <wear>}]")
+        print("Error: Usage: python script.py [{<url>, <wear>}]", file=sys.stderr)
         sys.exit(1)
     mean_values = []
 
@@ -84,6 +84,7 @@ def main():
             mean_values.append(-1)
 
     res = " ".join(map(str, mean_values))
+    
     print(res)
 
 

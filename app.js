@@ -6,6 +6,8 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var session = require('express-session');
 var passport = require('passport');
+var MongoStore = require('connect-mongo');
+
 
 var authRouter = require('./routes/auth');
 var indexRouter = require('./routes/index');
@@ -27,8 +29,16 @@ app.use(express.static(path.join(__dirname, 'public/scripts')));
 app.use(session({
     secret: process.env['SESSION_SECRET'],
     resave: false,
-    saveUninitialized: false }
-));
+    saveUninitialized: false,
+    store: MongoStore.create({
+        mongoUrl: 'mongodb://localhost:27017/user_sessions',
+        collectionName: 'mySessions',
+        ttl: 14 * 24 * 60 * 60
+    }),
+    cookie: {
+        maxAge: 14 * 24 * 60 * 60 * 1000  // (14 days)
+    }
+}));
 
 app.use(passport.initialize());
 app.use(passport.session());

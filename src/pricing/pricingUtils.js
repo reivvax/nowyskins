@@ -2,7 +2,7 @@ const pricesRequests = require('./pricesRequests');
 const queries = require('./pricesQueries');
 const { spawn } = require('child_process');
 const pool = require('../../db');
-const res = require('express/lib/response');
+const { debugLog } = require('../utils/debug');
 
 // Helper function to extract the price value from JSON result
 const computePrice = (res) => {
@@ -21,6 +21,21 @@ const addRecord = (market_hash_name, price) => {
         });
     }).catch(err => {
         console.log("Failed to add price record: ", err); return price; 
+    });
+}
+
+const getItemPriceFromDatabase = (market_hash_name) => {
+    return new Promise((resolve, reject) => {
+        pool.query(queries.getPrice, [market_hash_name], (err, res) => {
+            if (err) {
+                debugLog(err);
+                reject(err);
+            }
+            if (res.rows.length)
+                resolve(res.rows[0].price);
+            else
+                reject(new Error("Item not found")); // no match
+        });
     });
 }
 

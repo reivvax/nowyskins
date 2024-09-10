@@ -26,7 +26,7 @@
                         <h3 class="paint-seed"><%=item.paint_seed%></h3>
                     </div>
 
-                    <p class="item-price">$<%=item.price%></p>
+                    <p class="item-price"><%= item.price ? "$" + item.price : "Reference price not available"%></p>
                     <button class="sell-button"
                         data-asset-id="<%=item.asset_id%>"
                         data-class-id="<%=item.class_id%>"
@@ -51,8 +51,7 @@
                     <h3 class="paint-wear" id="modal-item-wear"></h3>
                     <h3 class="paint-seed" id="modal-item-seed"></h3>
                 </div>
-                <p>$<span id="modal-item-price"></span></p>
-                <input type="number" id="custom-price" placeholder="Enter custom price">
+                <input type="number" id="modal-custom-price" placeholder="Enter custom price">
                 <button id="confirm-sell">Confirm Sell</button>
             </div>
         </div>

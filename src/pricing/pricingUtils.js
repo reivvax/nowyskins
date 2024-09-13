@@ -67,9 +67,12 @@ const updatePrice = (market_hash_name, price) => {
             if (err)
                 reject(err);
             else
-                resolve(res);
+                resolve(res.rows[0]);
         });
-    });
+    }).catch(err => {
+        logs.debugLog(err);
+        return -1;
+    })
 }
 
 /**
@@ -131,10 +134,13 @@ const getWearFromMarketHashName = (market_hash_name) => {
 /* Construct the suffix of CSAnalyst link based on market hash name and ordinary name */
 const constructLinkSuffix = (market_hash_name, wear) => {
     let res = '';
+    if (market_hash_name.startsWith('★')) {
+        market_hash_name = market_hash_name.substring(1).trim();
+    }
     
     if (market_hash_name.startsWith("StatTrak")) {
         res += 'stattrak-';
-        market_hash_name = market_hash_name.substring(10);
+        market_hash_name = market_hash_name.substring(10); // 'StatTrak™ ' is 10 characters long
     }
 
     if (wear) {
@@ -146,12 +152,12 @@ const constructLinkSuffix = (market_hash_name, wear) => {
     return res;
 }
 
-const fetchAndSavePrice = (market_hash_name) => {
+const fetchAndCallback = (market_hash_name, cb) => {
     const wear = getWearFromMarketHashName(market_hash_name);
     return fetchPriceFromCSAnalyst("https://csgo.steamanalyst.com/skin/" + constructLinkSuffix(market_hash_name, wear), wear)
         .then(price => { // successful fetch from cs analyst
             if (price != -1)
-                return addRecord(market_hash_name, price)
+                return cb(market_hash_name, price)
             else
                 throw new Error(`Failed to fetch price from CSAnalyst for ${market_hash_name}`);
         })
@@ -159,7 +165,7 @@ const fetchAndSavePrice = (market_hash_name) => {
             logs.verboseLog(err.message);
             return pricesRequests.getPriceForAnyItemAsync(market_hash_name) // fetch from steam market
                 .then(price => {
-                    return addRecord(market_hash_name, price);
+                    return cb(market_hash_name, price);
                 })
                 .catch(error => { // failed to get price from steam market
                     logs.warnLog(error);
@@ -168,13 +174,21 @@ const fetchAndSavePrice = (market_hash_name) => {
         });
 }
 
+const fetchAndSavePrice = (market_hash_name) => {
+    return fetchAndCallback(market_hash_name, addRecord);
+}
+
+const fetchAndUpdatePrice = (market_hash_name) => {
+    return fetchAndCallback(market_hash_name, updatePrice);
+}
+
 /* Fetches the price for provided item from CSAnalyst, if it failes, fetches it from steam market */
-const getPrice = (market_hash_name, wear) => {
+const getPrice = (market_hash_name) => {
     // If item in database, return price from db
     return getItemPriceFromDatabase(market_hash_name)
         .catch(err => {
             logs.verboseLog("Fetching the price for new item: ", market_hash_name);
-            return fetchAndSavePrice(market_hash_name, wear);
+            return fetchAndSavePrice(market_hash_name);
         });
 }
 
@@ -183,6 +197,7 @@ module.exports = {
     getAllHashNames,
     addRecord,
     fetchAndSavePrice,
+    fetchAndUpdatePrice,
     getPrice,
     updatePrice,
 }

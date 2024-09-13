@@ -247,19 +247,14 @@ const getRawSteamInventory = (steam_id) => {
 /* Completes provided items with their prices */
 const completeItemsWithPrices = (items) => {
     return new Promise((resolve, reject) => {
-        let names_and_wears = new Set();
+        let names = new Set();
 
         items.forEach(item => {
-            names_and_wears.add(
-                { 
-                    hash_name: item.market_hash_name, 
-                    wear: item.exterior ? item_maps.exteriorMapIntToString[4 - item.exterior].replace(" ", "_") : "-"
-                }
-            );
+            names.add(item.market_hash_name);
         });
 
-        let pricePromises = Array.from(names_and_wears).map(obj => {
-            return pricingUtils.getPrice(obj.hash_name, obj.wear)
+        let pricePromises = Array.from(names).map(obj => {
+            return pricingUtils.getPrice(obj.hash_name)
                 .then(price => ({ hash_name: obj.hash_name, price }));
         });
 

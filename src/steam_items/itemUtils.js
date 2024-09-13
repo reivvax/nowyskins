@@ -253,9 +253,9 @@ const completeItemsWithPrices = (items) => {
             names.add(item.market_hash_name);
         });
 
-        let pricePromises = Array.from(names).map(obj => {
-            return pricingUtils.getPrice(obj.hash_name)
-                .then(price => ({ hash_name: obj.hash_name, price }));
+        let pricePromises = Array.from(names).map(hash_name => {
+            return pricingUtils.getPrice(hash_name)
+                .then(price => ({ hash_name: hash_name, price }));
         });
 
         Promise.all(pricePromises)

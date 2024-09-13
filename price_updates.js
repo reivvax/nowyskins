@@ -13,7 +13,6 @@ const getRandomTime = (baseInterval) => {
 
 const startPricesUpdate = async () => {
     const items = await pricingUtils.getAllRecords();
-    console.log(items);
     const interval = cycleLength / items.length;
 
     let index = 0;

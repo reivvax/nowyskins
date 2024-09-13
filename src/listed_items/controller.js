@@ -23,7 +23,7 @@ const ensurePrivilegedToDelete = (req, res, next) => {
 const deleteItem = (req, res) => {
     listedItems.removeItem(req.params.id)
         .then(() => { res.status(200).send("Item removed successfully"); })
-        .catch(err => { log.debugLog(err); res.status(500).send("Failed to remove item from database"); });
+        .catch(err => { log.debugLog(ere); res.status(500).send("Failed to remove item from database"); });
 }
 
 module.exports = {

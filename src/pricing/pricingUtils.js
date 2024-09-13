@@ -4,6 +4,34 @@ const { spawn } = require('child_process');
 const pool = require('../../db');
 const logs = require('../utils/logging');
 
+const getAllRecords = () => {
+    return new Promise((resolve, reject) => {
+        pool.query(queries.getAllRecords, [], (err, res) => {
+            if (err)
+                reject(err);
+            else
+                resolve(res.rows);
+        });
+    }).catch(err => {
+        logs.debugLog("Failed to get all price records: ", err);
+        return [];
+    });
+}
+
+const getAllHashNames = () => {
+    return new Promise((resolve, reject) => {
+        pool.query(queries.getAllHashNames, [], (err, res) => {
+            if (err)
+                reject(err);
+            else
+                resolve(res.rows.map(record => { return record.market_hash_name; }));
+        });
+    }).catch(err => {
+        logs.debugLog("Failed to get all price records: ", err);
+        return [];
+    });
+}
+
 const addRecord = (market_hash_name, price) => {
     return new Promise((resolve, reject) => {
         pool.query(queries.addRecord, [market_hash_name, price], (err, res) => {
@@ -33,6 +61,17 @@ const getItemPriceFromDatabase = (market_hash_name) => {
     });
 }
 
+const updatePrice = (market_hash_name, price) => {
+    return new Promise((resolve, reject) => { 
+        pool.query(queries.updatePrice, [market_hash_name, price], (err, res) => {
+            if (err)
+                reject(err);
+            else
+                resolve(res);
+        });
+    });
+}
+
 /**
  * Helper function that runs the python scrapping script
  * @param url URL of site to scrap the data from, in form 'https://csgo.steamanalyst.com/skin/{skin_name}'
@@ -57,7 +96,7 @@ const fetchPriceFromCSAnalyst = (url, wear) => {
         pythonProcess.stderr.on('data', (data) => {
             data = data.toString();
             if (data.startsWith("Error"))
-                logs.debugLog(`Price scrapping script: ${data.substring(7)}`);
+                logs.debugLog(`Pcrapping script: ${data.substring(7)}`);
         });
 
         pythonProcess.stdout.on('data', (data) => {
@@ -67,20 +106,49 @@ const fetchPriceFromCSAnalyst = (url, wear) => {
     });
 }
 
-/* Construct the suffix of CSAnalyst link based on market hash name and ordinary name */
-const constructLinkSuffix = (market_hash_name, name) => {
-    let res = "";
-    if (market_hash_name.startsWith("StatTrak"))
-        res += 'stattrak-';
-    if (market_hash_name.startsWith("Souvenir"))
-        res += 'souvenir-';
+let exteriors = [
+    "Battle-Scarred",
+    "Well-Worn",
+    "Field-Tested",
+    "Minimal Wear",
+    "Factory New"
+]
 
-    res += name.replace(/ \| | |\(|\)|\./g, "-").replace(/-+/g, "-").toLowerCase();
+/* Extracts the wear string value from market hash name, if the item does not contain wear parameter, returns empty string */
+const getWearFromMarketHashName = (market_hash_name) => {
+    let res = '';
+    if (market_hash_name.charAt(market_hash_name.length - 1) == ')') {
+        for (let e of exteriors) {
+            if (market_hash_name.endsWith(e, market_hash_name.length - 1)) {
+                res = e;
+                break;
+            }
+        }
+    }
     return res;
 }
 
-const fetchAndSavePrice = (market_hash_name, name, wear) => {
-    return fetchPriceFromCSAnalyst("https://csgo.steamanalyst.com/skin/" + constructLinkSuffix(market_hash_name, name), wear)
+/* Construct the suffix of CSAnalyst link based on market hash name and ordinary name */
+const constructLinkSuffix = (market_hash_name, wear) => {
+    let res = '';
+    
+    if (market_hash_name.startsWith("StatTrak")) {
+        res += 'stattrak-';
+        market_hash_name = market_hash_name.substring(10);
+    }
+
+    if (wear) {
+        let newLength = market_hash_name.length - wear.length - 3;
+        market_hash_name = market_hash_name.substring(0, newLength);
+    }
+
+    res += market_hash_name.replace(/ \| | |\(|\)|\./g, "-").replace(/-+/g, "-").toLowerCase(); // replace spaces and ' | ' to dashes and make lowercase
+    return res;
+}
+
+const fetchAndSavePrice = (market_hash_name) => {
+    const wear = getWearFromMarketHashName(market_hash_name);
+    return fetchPriceFromCSAnalyst("https://csgo.steamanalyst.com/skin/" + constructLinkSuffix(market_hash_name, wear), wear)
         .then(price => { // successful fetch from cs analyst
             if (price != -1)
                 return addRecord(market_hash_name, price)
@@ -88,6 +156,7 @@ const fetchAndSavePrice = (market_hash_name, name, wear) => {
                 throw new Error(`Failed to fetch price from CSAnalyst for ${market_hash_name}`);
         })
         .catch(err => { // failed to fetch from CSAnalyst
+            logs.verboseLog(err.message);
             return pricesRequests.getPriceForAnyItemAsync(market_hash_name) // fetch from steam market
                 .then(price => {
                     return addRecord(market_hash_name, price);
@@ -100,27 +169,20 @@ const fetchAndSavePrice = (market_hash_name, name, wear) => {
 }
 
 /* Fetches the price for provided item from CSAnalyst, if it failes, fetches it from steam market */
-const getPrice = (market_hash_name, name, wear) => {
+const getPrice = (market_hash_name, wear) => {
     // If item in database, return price from db
     return getItemPriceFromDatabase(market_hash_name)
         .catch(err => {
-            return fetchAndSavePrice(market_hash_name, name, wear)
+            logs.verboseLog("Fetching the price for new item: ", market_hash_name);
+            return fetchAndSavePrice(market_hash_name, wear);
         });
-}
-
-const updatePrice = (market_hash_name, price) => {
-    return new Promise((resolve, reject) => { 
-        pool.query(queries.updatePrice, [market_hash_name, price], (err, res) => {
-            if (err)
-                reject(err);
-            else
-                resolve(res);
-        });
-    });
 }
 
 module.exports = {
+    getAllRecords,
+    getAllHashNames,
     addRecord,
+    fetchAndSavePrice,
     getPrice,
     updatePrice,
 }

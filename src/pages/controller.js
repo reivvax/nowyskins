@@ -13,7 +13,7 @@ const renderIndex = (req, res) => {
 const renderMarket = (req, res) => {
     listedItems.getItems()
         .then(items => res.render('market', { user : req.user, items : items, maps : item_maps}))
-        .catch(err => { logs.debugLog(err); res.redirect('/') });
+        .catch(err => { logs.warnLog(err); res.redirect('/') });
 }
 
 const renderProfile = (req, res) => {
@@ -23,13 +23,13 @@ const renderProfile = (req, res) => {
 const renderSell = (req, res) => {
     steamItems.getFilteredSteamInventoryWithoutListedItems(req.user.steam_id, true)
         .then(items => res.render('sell', { user: req.user, items: items, maps : item_maps }))
-        .catch(err => { logs.debugLog(err); res.redirect('/') });
+        .catch(err => { logs.warnLog(err); res.redirect('/') });
 }
 
 const renderMyStall = (req, res) => {
     listedItems.getItemsFromUser(req.user.steam_id)
         .then(items => res.render('mystall', { user : req.user, items : items, maps : item_maps }))
-        .catch(err => { logs.debugLog(err); res.redirect('/') });
+        .catch(err => { logs.warnLog(err); res.redirect('/') });
 }
 
 const renderStall = (req, res) => {

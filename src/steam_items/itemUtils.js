@@ -253,14 +253,13 @@ const completeItemsWithPrices = (items) => {
             names_and_wears.add(
                 { 
                     hash_name: item.market_hash_name, 
-                    name: item.name,
                     wear: item.exterior ? item_maps.exteriorMapIntToString[4 - item.exterior].replace(" ", "_") : "-"
                 }
             );
         });
 
         let pricePromises = Array.from(names_and_wears).map(obj => {
-            return pricingUtils.getPrice(obj.hash_name, obj.name, obj.wear)
+            return pricingUtils.getPrice(obj.hash_name, obj.wear)
                 .then(price => ({ hash_name: obj.hash_name, price }));
         });
 
@@ -285,7 +284,7 @@ const completeItemsWithPrices = (items) => {
     });
 }
 
-/* Tags for items that are to be displayed */
+/* Tag values for items that are to be displayed */
 const desiredTags = [
     "weapon_", "knife_",
     "CSGO_Type_WeaponCase", "Type_CustomPlayer", "Type_Hands", "StickerCategory"
@@ -348,8 +347,6 @@ const getFilteredSteamInventory = (steam_id, tradeable) => {
                 data = inspectItems;
                 constructItemsWithNoInspectLink(steam_id, notInspectableItems).then(noInspectItems => {
                     data = data.concat(noInspectItems);
-                    // Promise.all(data.map(item => Promise.resolve(item))).then(resolvedData => 
-                    //     resolve(resolvedData.filter(item => item !== null)));
                     completeItemsWithPrices(data).then(pricedItems => { // Add prices
                         Promise.all(pricedItems.map(item => Promise.resolve(item))).then(resolvedData => 
                             resolve(resolvedData.filter(item => item !== null))
@@ -390,6 +387,11 @@ const getFilteredSteamInventoryWithoutListedItems = (steam_id, tradeable) => {
     })
 }
 
+
+/**
+ * Loads user's items to the database. Is called when user logs in for the first time
+ * @param steam_id
+ */
 const loadUsersInspectableItems = (steam_id) => {
     getRawSteamInventory(steam_id, true).then(body => {
         let descriptions = body.descriptions;

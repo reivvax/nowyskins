@@ -21,7 +21,7 @@
         <div class="cards-container">
             <% if (items.length)
                 items.forEach((item) => { %>
-                <%- include('./components/buycard.ejs') %>
+                <%- include('./components/buycard.ejs', { item: item, maps: maps }) %>
             <% });
             else { %>
                 <h2>No items in the stall</h2>

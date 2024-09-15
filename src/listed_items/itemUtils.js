@@ -33,11 +33,11 @@ const getItemsFromUser = (steam_id) => {
 }
 
 const addItemToDatabase = (item) => {
-    const { asset_id, name, quality, exterior, rarity, paint_wear, paint_seed, icon_url, inspect_url, steam_id, price } = item;
+    const { asset_id, name, quality, exterior, rarity, paint_wear, paint_seed, market_hash_name, icon_url, inspect_url, steam_id, price } = item;
     return new Promise((resolve, reject) => {
         pool.query(
             queries.addItem, 
-            [asset_id, name, quality, exterior, undefined, paint_wear, paint_seed, icon_url, inspect_url, steam_id, price], 
+            [asset_id, name, quality, exterior, undefined, paint_wear, paint_seed, market_hash_name, icon_url, inspect_url, steam_id, price], 
             (err, result) => {
                 if (err)
                     reject(err);

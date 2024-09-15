@@ -323,14 +323,16 @@ const getFilteredSteamInventory = (steam_id, tradeable) => {
             }, {});
 
             let inspectableItems = [];
+            let names = [];
             let notInspectableItems = [];
 
             assets.forEach(a => {
                 let description = classidToDescription[a.classid];
                 if ((!tradeable || description.tradable) && filterFunction(description.tags)) {
-                    if (description.actions && description.tags[0].internal_name !== "CSGO_Tool_Sticker") // has inspect link and is not a sticker
+                    if (description.actions && description.tags[0].internal_name !== "CSGO_Tool_Sticker") { // has inspect link and is not a sticker
                         inspectableItems.push(fillInspectLink(steam_id, a.assetid, description.actions[0].link));
-                    else // no inspect link
+                        names.push(description.name);
+                    } else // no inspect link
                         notInspectableItems.push({ asset_id: a.assetid, class_id: description.classid, instance_id: description.instanceid });
                 }
             });

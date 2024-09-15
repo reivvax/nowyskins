@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="/mystallcards.css">
 </head>
 <body>
-    <%-include('./components/navbar.ejs')%>
+    <%- include('./components/navbar.ejs', { user : user }) %>
     
     <div class="user-section">
         <img src="<%="https://avatars.steamstatic.com/" + user.avatar.substring(0, user.avatar.length - 4) + "_full.jpg"%>" alt="avatar" class="user-photo">

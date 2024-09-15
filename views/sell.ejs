@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="modal.css">
 </head>
 <body>
-    <%-include('./components/navbar.ejs')%>
+    <%- include('./components/navbar.ejs', { user : user }) %>
     <div class="container">
         <h1>Your inventory</h1>
         <h2 id="itemCount"><%=items.length%> items</h2>

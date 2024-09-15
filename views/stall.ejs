@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="/marketcards.css">
 </head>
 <body>
-    <%-include('./components/navbar.ejs')%>
+    <%- include('./components/navbar.ejs', { user : user }) %>
     
     <div class="user-section">
         <img src="<%="https://avatars.steamstatic.com/" + seller.avatar.substring(0, seller.avatar.length - 4) + "_full.jpg"%>" alt="avatar" class="user-photo">

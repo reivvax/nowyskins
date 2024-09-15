@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="profile.css">
 </head>
 <body>
-    <%- include('./components/navbar.ejs') %>
+    <%- include('./components/navbar.ejs', { user : user }) %>
     <div class="container">
         <div class="profile-content">
             <a href="<%="https://steamcommunity.com/profiles/" + user.steam_id%>"><img src="<%="https://avatars.steamstatic.com/" + user.avatar.substring(0, user.avatar.length - 4) + "_full.jpg"%>" alt="Avatar" class="profile-img"></a>

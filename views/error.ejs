@@ -32,7 +32,7 @@
     </style>
 </head>
 <body>
-    <%- include('./components/navbar.ejs') %>
+    <%- include('./components/navbar.ejs', { user : user }) %>
     <div class="container">
         <div class="error-content">
             <h1><%= message %></h1>

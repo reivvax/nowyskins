@@ -12,7 +12,7 @@ const renderIndex = (req, res) => {
 
 const renderMarket = (req, res) => {
     listedItems.getItems()
-        .then(items => res.render('market', { user : req.user, items : items, maps : item_maps}))
+        .then(items => { console.log(items); res.render('market', { user : req.user, items : items, maps : item_maps})})
         .catch(err => { logs.warnLog(err); res.redirect('/') });
 }
 

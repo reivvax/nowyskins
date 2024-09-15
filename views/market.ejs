@@ -9,12 +9,12 @@
     <link rel="stylesheet" href="/marketcards.css">
 </head>
 <body>
-    <%-include('./components/navbar.ejs')%>
+    <%-include('./components/navbar.ejs', { user : user })%>
     
     <div class="container">
         <div class="cards-container">
             <% items.forEach((item) => { %>
-                <%- include('./components/buycard.ejs'); %>
+                <%- include('./components/buycard.ejs', { item: item, maps: maps }); %>
             <% }); %>
         </div>
     </div>

@@ -20,7 +20,7 @@ const startPricesUpdate = async () => {
     const updateNextItem = async () => {
         if (index >= items.length) {
             logs.verboseLog("Completed one full cycle of price updates.");
-            return; // End the cycle once all items are updated
+            return;
         }
 
         const item = items[index];

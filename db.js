@@ -24,6 +24,7 @@ CREATE TABLE IF NOT EXISTS users (
   display_name VARCHAR(255),
   balance DECIMAL(12, 2) DEFAULT 0,
   email VARCHAR(255) UNIQUE,
+  phone VARCHAR(20),
   registered_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
   avatar VARCHAR(255),
   tradelink VARCHAR(255)
@@ -52,16 +53,16 @@ CREATE TABLE IF NOT EXISTS prices (
   market_hash_name VARCHAR(100) PRIMARY KEY,
   price DECIMAL(12, 2) NOT NULL
 );
-`;
 
-// CREATE TABLE IF NOT EXISTS prices (
-//   type VARCHAR(20) NOT NULL,  
-//   weapon_name VARCHAR(30),
-//   skin_name VARCHAR(30) NOT NULL,
-//   exterior INT,
-//   quality INT,
-//   price DECIMAL(12, 2) NOT NULL
-// );
+CREATE TABLE IF NOT EXISTS trades (
+  seller_id VARCHAR(20),
+  buyer_id VARCHAR(20),
+  asset_id VARCHAR(20),
+  traded_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (seller_id) REFERENCES users(steam_id),
+  FOREIGN KEY (buyer_id) REFERENCES users(steam_id)
+)
+`;
 
 //Database setup
 pool.query(

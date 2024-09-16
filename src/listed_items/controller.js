@@ -12,7 +12,7 @@ const ensurePrivilegedToDelete = (req, res, next) => {
     listedItems.getItem(asset_id)
         .then(item => {
             if (item.steam_id != req.user.steam_id) {
-                logs.verboseLog("Unauthorized to delete item");
+                logs.verboseLog(`User ${req.user.steam_id} unauthorized to delete item ${asset_id}`);
                 res.status(401).redirect('/');
             } else
                 return next();

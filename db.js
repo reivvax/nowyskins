@@ -18,11 +18,12 @@ pool.connect((err) => {
 
 //item exterior: 0 = BS, ..., 4 = FN
 //item types: 'weapon', 'knife', 'case', 'gloves', 'sticker', 'agent'
+//TODO change tradelink to trade token
 const setup = `
 CREATE TABLE IF NOT EXISTS users (
   steam_id VARCHAR(20) PRIMARY KEY,
   display_name VARCHAR(255),
-  balance DECIMAL(12, 2) DEFAULT 0,
+  balance DECIMAL(15, 2) DEFAULT 0,
   email VARCHAR(255) UNIQUE,
   phone VARCHAR(20),
   registered_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
@@ -55,13 +56,16 @@ CREATE TABLE IF NOT EXISTS prices (
 );
 
 CREATE TABLE IF NOT EXISTS trades (
+  trade_id SERIAL PRIMARY KEY, 
   seller_id VARCHAR(20),
   buyer_id VARCHAR(20),
   asset_id VARCHAR(20),
-  traded_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+  state VARCHAR(20) DEFAULT 'unaccepted',
+  created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (seller_id) REFERENCES users(steam_id),
-  FOREIGN KEY (buyer_id) REFERENCES users(steam_id)
-)
+  FOREIGN KEY (buyer_id) REFERENCES users(steam_id),
+  FOREIGN KEY (asset_id) REFERENCES listed_items(asset_id)
+);
 `;
 
 //Database setup

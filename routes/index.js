@@ -18,10 +18,11 @@ router.get('/stall/me', ensureAuthenticated, pagesController.renderMyStall);
 
 router.get('/stall/:id', pagesController.renderStall);
 
+router.get('/trades', ensureAuthenticated, pagesController.renderTrades);
+
 // TODO 
 // router.get('/deposit', ensureAuthenticated, controller.renderDeposit);
 // router.get('/withdraw', ensureAuthenticated, controller.renderWithdraw);
-// router.get('/trades', ensureAuthenticated, controller.renderTrades);
 // router.get('/offers', ensureAuthenticated, controller.renderOffers);
 // router.get('/watchlist', ensureAuthenticated, controller.renderWatchlist)
 

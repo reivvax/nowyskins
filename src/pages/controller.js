@@ -4,6 +4,7 @@ const userUtils = require('../users/userUtils');
 const item_maps = require('../utils/item_attributes_maps');
 const steamItems = require('../steam_items/itemUtils');
 const listedItems = require('../listed_items/itemUtils');
+const tradesUtils = require('../trades/tradingUtils');
 const logs = require('../utils/logging');
 
 const renderIndex = (req, res) => {
@@ -44,7 +45,13 @@ const renderStall = (req, res) => {
             userUtils.getUserById(id)
                 .then(seller => res.render('stall', { user : req.user, seller : seller, items : items, maps : item_maps }))
         })
-        .catch((err) => { logs.debugLog(err); res.redirect('/') });
+        .catch((err) => { logs.warnLog(err); res.redirect('/') });
+}
+
+const renderTrades = (req, res) => {
+    tradesUtils.getTradesFromUserWithUserAndItem(req.user.steam_id)
+        .then(trades => res.render('trades', { user : user, trades : trades, maps : item_maps }))
+        .catch(err => { logs.warnLog(err); res.redirect('/'); })
 }
 
 module.exports = {
@@ -53,5 +60,6 @@ module.exports = {
     renderProfile,
     renderSell,
     renderMyStall,
-    renderStall
+    renderStall,
+    renderTrades
 }

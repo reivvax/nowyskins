@@ -1,12 +1,11 @@
 //Utils to perform operations on listed items
 const pool = require('../../db');
 const queries = require('./itemQueries');
-const logs = require('../utils/logging');
 
 const getItems = () => {
     return new Promise((resolve, reject) => { pool.query(queries.getItems, (err, results) => {
             if (err)
-                reject(err);
+                return reject(err);
             resolve(results.rows);
         });
     })
@@ -15,9 +14,9 @@ const getItems = () => {
 const getItem = (asset_id) => {
     return new Promise((resolve, reject) => {pool.query(queries.getItem, [asset_id], (err, results) => {
             if (err)
-                reject(err);
+                return reject(err);
             if (results.rows.length)
-                resolve(results.rows[0]);
+                return resolve(results.rows[0]);
             reject(new Error("Item not found"));
         });
     });
@@ -26,7 +25,7 @@ const getItem = (asset_id) => {
 const getItemsFromUser = (steam_id) => {
     return new Promise((resolve, reject) => {pool.query(queries.getItemsFromUser, [steam_id], (err, results) => {
             if (err)
-                reject(err);
+                return reject(err);
             resolve(results.rows);
         });
     });
@@ -40,20 +39,20 @@ const addItemToDatabase = (item) => {
             [asset_id, name, quality, exterior, undefined, paint_wear, paint_seed, market_hash_name, icon_url, inspect_url, steam_id, price], 
             (err, result) => {
                 if (err)
-                    reject(err);
+                    return reject(err);
                 resolve(result.rows[0]);
             }
         );
     });
 }
 
-const addItemWithCheck = (item) => {
+const addItemWithCheck = (item, client) => {
     return new Promise((resolve, reject) => {
         if (!item) {
-            reject(new Error("Item is null"));
+            return reject(new Error("Item is null"));
         }
 
-        pool.query(queries.getItem, [item.asset_id], (error, results) => {
+        (client ? client : pool).query(queries.getItem, [item.asset_id], (error, results) => {
             if (error) 
                 reject(error);
             if (!results.rows.length) { // no item with such id found
@@ -69,8 +68,12 @@ const addItemWithCheck = (item) => {
 const removeItem = (asset_id) => {
     return new Promise((resolve, reject) => {
         pool.query(queries.removeItem, [asset_id], (error, result) => {
-            if (error) reject(error);
-            resolve(result);
+            if (error) 
+                return reject(error);
+            if (result.rowCount > 0)
+                resolve(result.rows[0]);
+            else
+                reject(new Error("Item not found"));
         });
     });
 };

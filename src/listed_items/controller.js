@@ -7,27 +7,46 @@ const addItem = (req, res) => {
         .catch(err => { logs.warn(err); res.status(500).send("Failed to add item to the database"); })
 }
 
+const checkIfListingExists = (req, res, next) => {
+    return listedItems.getItem(req.body.asset_id)
+        .then(item => {
+            if (item) {
+                return next();
+            } else {
+                return res.status(404).send("Item not found.");
+            }
+        })
+        .catch(err => { 
+                logs.verboseLog(err);
+            if (err.message == "Item not found")
+                return res.status(404).send(err.message);
+            else
+                return res.status(500).send(err.message);
+        });
+}
+
 const ensurePrivilegedToDelete = (req, res, next) => {
     const asset_id = req.params.id;
     listedItems.getItem(asset_id)
         .then(item => {
             if (item.steam_id != req.user.steam_id) {
                 logs.verboseLog(`User ${req.user.steam_id} unauthorized to delete item ${asset_id}`);
-                res.status(401).redirect('/');
+                return res.status(401).redirect('/');
             } else
                 return next();
         })
-        .catch((err) => { logs.debugLog(err); res.status(500).send("Failed to fetch item from database") });
+        .catch((err) => { logs.debugLog(err); return res.status(500).send("Failed to fetch item from database") });
 }
 
 const deleteItem = (req, res) => {
     listedItems.removeItem(req.params.id)
-        .then(() => { res.status(200).send("Item removed successfully"); })
-        .catch(err => { log.debugLog(ere); res.status(500).send("Failed to remove item from database"); });
+        .then(() => { return res.status(200).send("Item removed successfully"); })
+        .catch(err => { log.debugLog(ere); return res.status(500).send("Failed to remove item from database"); });
 }
 
 module.exports = {
     addItem,
+    checkIfListingExists,
     ensurePrivilegedToDelete,
     deleteItem,
 }

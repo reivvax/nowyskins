@@ -10,8 +10,19 @@ const newTrade = (req, res) => {
         .catch(err => { logs.warnLog(err); res.status(500).send("Failed to create a new trade.") });
 }
 
+ /* Removes the listing of the item and creates a new trade */
+const removeListingAndCreateTrade = (req, res) => {
+    const { seller_id, asset_id } = req.body;
+    const success = tradesUtils.removeListingAndCreateTrade(seller_id, req.user.steam_id, asset_id);
+    
+    if (success)
+        res.status(201).send("Trade created successfully.");
+    else
+        res.status(500).send("Failed to create a new trade.");
+}   
+
 const ensurePrivilegedToCreateTrade = (req, res, next) => {
-    const { seller_id, asset_id } = req.body.asset_id;
+    const { seller_id, asset_id } = req.body;
     listedItems.getItem(asset_id)
         .then(item => {
             if (item.steam_id != seller_id) {
@@ -25,5 +36,6 @@ const ensurePrivilegedToCreateTrade = (req, res, next) => {
 
 module.exports = {
     newTrade,
+    removeListingAndCreateTrade,
     ensurePrivilegedToCreateTrade,
 }

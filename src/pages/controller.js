@@ -4,7 +4,7 @@ const userUtils = require('../users/userUtils');
 const item_maps = require('../utils/item_attributes_maps');
 const steamItems = require('../steam_items/itemUtils');
 const listedItems = require('../listed_items/itemUtils');
-const tradesUtils = require('../trades/tradingUtils');
+const tradesUtils = require('../trades/tradesUtils');
 const logs = require('../utils/logging');
 
 const renderIndex = (req, res) => {
@@ -50,7 +50,7 @@ const renderStall = (req, res) => {
 
 const renderTrades = (req, res) => {
     tradesUtils.getTradesFromUserWithUserAndItem(req.user.steam_id)
-        .then(trades => res.render('trades', { user : user, trades : trades, maps : item_maps }))
+        .then(trades => res.render('temptrades', { user : user, trades : trades, maps : item_maps }))
         .catch(err => { logs.warnLog(err); res.redirect('/'); })
 }
 

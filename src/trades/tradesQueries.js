@@ -36,25 +36,25 @@ const getTradesFromUserWithUserAndItem = `
         t.trade_id,
         t.seller_id,
         CASE 
-            WHEN t.seller_id = $1 THEN $3 -- display_name
+            WHEN t.seller_id = $1 THEN $2 -- display_name
             ELSE s.display_name
         END AS seller_display_name,
         
         CASE 
-            WHEN t.seller_id = $1 THEN $4  -- avatar
+            WHEN t.seller_id = $1 THEN $3  -- avatar
             ELSE s.avatar
         END AS seller_avatar,
 
         t.buyer_id,
         
         CASE 
-            WHEN t.buyer_id = $1 THEN $3  -- display_name
-            ELSE s.display_name
+            WHEN t.buyer_id = $1 THEN $2  -- display_name
+            ELSE b.display_name
         END AS buyer_display_name,
         
         CASE 
-            WHEN t.buyer_id = $1 THEN $4  -- avatar
-            ELSE s.avatar
+            WHEN t.buyer_id = $1 THEN $3  -- avatar
+            ELSE b.avatar
         END AS buyer_avatar,
         
         t.asset_id,
@@ -64,6 +64,8 @@ const getTradesFromUserWithUserAndItem = `
         li.exterior AS item_exterior,
         li.quality AS item_quality,
         li.rarity AS item_rarity,
+        li.paint_wear AS item_paint_wear,
+        li.paint_seed AS item_paint_seed,
         li.price AS item_price,
         li.icon_url AS item_icon_url,
         li.inspect_url AS item_inspect_url
@@ -72,10 +74,9 @@ const getTradesFromUserWithUserAndItem = `
     JOIN 
         listed_items li ON t.asset_id = li.asset_id
     JOIN 
-        users s ON (CASE 
-                    WHEN t.seller_id = $1 THEN t.buyer_id
-                    WHEN t.buyer_id = $1 THEN t.seller_id
-                END) = s.steam_id
+        users s ON t.seller_id = s.steam_id
+    JOIN 
+        users b ON t.buyer_id = b.steam_id
     WHERE 
         t.seller_id = $1 OR t.buyer_id = $1;
 `;

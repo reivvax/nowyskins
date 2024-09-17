@@ -3,8 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <title>Trades</title>
+    <link rel="stylesheet" href="/basic.css">
 </head>
 <body>
+    <%- include('./components/navbar.ejs', { user : user }) %>
+    <% console.log(user) %>
     <h1>Trades</h1>
     <div>
         <button onclick="showTab('selling')">Selling</button>
@@ -15,14 +18,15 @@
         <% trades.forEach(trade => { %>
             <% if (trade.seller_id === user.steam_id) { %>
                 <div class="trade">
-                    <img src="<%= user.avatar %>" alt="Seller Avatar" class="avatar">
+                    <img src="<%= "https://avatars.steamstatic.com/" + user.avatar %>" alt="Seller Avatar" class="avatar">
                     <p>Seller: <%= user.name %></p>
-                    <img src="<%= trade.buyer_avatar %>" alt="Buyer Avatar" class="avatar">
+                    <img src="<%= "https://avatars.steamstatic.com/" + trade.buyer_avatar %>" alt="Buyer Avatar" class="avatar">
                     <p>Buyer: <%= trade.buyer_name %></p>
                     <img src="<%= trade.item_icon %>" alt="Item Icon" class="item-icon">
-                    <p>Item: <%= item_maps[trade.item_id] %></p>
-                    <p>Wear: <%= trade.wear %></p>
-                    <p>Paint Seed: <%= trade.paint_seed %></p>
+                    <p>Item: <%= trade.item_name %></p>
+                    <p>Wear: <%= item_maps.exteriorMapIntToString[trade.item_exterior] %></p>
+                    <p>Float: <% trade.item_wear_value %></p>
+                    <p>Seed: <%= trade.item_paint_seed %></p>
                     <p>Price: <%= trade.price %></p>
                 </div>
             <% } %>

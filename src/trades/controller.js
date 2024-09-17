@@ -11,16 +11,16 @@ const newTrade = (req, res) => {
 }
 
  /* Removes the listing of the item and creates a new trade */
-const removeListingAndCreateTrade = (req, res) => {
+const removeListingAndCreateTrade = async (req, res) => {
     const { seller_id, asset_id } = req.body;
-    const success = tradesUtils.removeListingAndCreateTrade(seller_id, req.user.steam_id, asset_id);
-    
-    if (success)
+    try {
+        await tradesUtils.removeListingAndCreateTrade(seller_id, req.user.steam_id, asset_id);
         res.status(201).send("Trade created successfully.");
-    else
+    } catch (err) {
+        logs.debugLog(err);
         res.status(500).send("Failed to create a new trade.");
-}   
-
+    }
+}
 const ensurePrivilegedToCreateTrade = (req, res, next) => {
     const { seller_id, asset_id } = req.body;
     listedItems.getItem(asset_id)

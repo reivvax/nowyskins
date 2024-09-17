@@ -57,14 +57,13 @@ CREATE TABLE IF NOT EXISTS prices (
 
 CREATE TABLE IF NOT EXISTS trades (
   trade_id SERIAL PRIMARY KEY, 
-  seller_id VARCHAR(20),
-  buyer_id VARCHAR(20),
-  asset_id VARCHAR(20),
+  seller_id VARCHAR(20) NOT NULL,
+  buyer_id VARCHAR(20) NOT NULL,
+  asset_id VARCHAR(20) NOT NULL,
   state VARCHAR(20) DEFAULT 'unaccepted',
   created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (seller_id) REFERENCES users(steam_id),
-  FOREIGN KEY (buyer_id) REFERENCES users(steam_id),
-  FOREIGN KEY (asset_id) REFERENCES listed_items(asset_id)
+  FOREIGN KEY (buyer_id) REFERENCES users(steam_id)
 );
 `;
 

@@ -1,6 +1,6 @@
 const pool = require('../../db');
 const queries = require('./tradesQueries');
-const listedItemsQueries = require('../listed_items/itemQueries');
+const listedItemsUtils = require('../listed_items/itemUtils');
 
 const getTrade = (trade_id) => {
     return new Promise((resolve, reject) => {
@@ -48,9 +48,9 @@ const getTradeWithUsersAndItem = (trade_id) => {
    });
 }
 
-const getTradesFromUserWithUserAndItem = (user_id) => {
+const getTradesFromUserWithUserAndItem = (user_id, display_name, avatar) => {
     return new Promise((resolve, reject) => {
-        pool.query(queries.getTradesFromUserWithUserAndItem, [user_id], (err, res) => {
+        pool.query(queries.getTradesFromUserWithUserAndItem, [user_id, display_name, avatar], (err, res) => {
            if (err)
                reject(err);
            else
@@ -83,24 +83,19 @@ const updateState = (trade_id, state) => {
 
 /* Removes the listing of the item and creates a new trade using sql transaction */
 const removeListingAndCreateTrade = async (seller_id, buyer_id, asset_id) => {
-    const res = false;
     const client = await pool.connect();
     try {
         await client.query('BEGIN');    
-        const deleteResult = await listedItemsQueries.removeItem(asset_id, client);
 
-        if (deleteResult.rowCount == 0)
-            throw new Error("Listing not found");
+        await listedItemsUtils.removeItem(asset_id, client);
+        await addNewTrade(seller_id, buyer_id, asset_id, client);
 
-        await addNewTrade(seller_id, buyer_id, asset_id, client)
-        await pool.query('COMMIT');
-        res = true;
+        await client.query('COMMIT');
     } catch(err) {
-        await pool.query('ROLLBACK');
-        res = false;
+        await client.query('ROLLBACK');
+        throw err;
     } finally {
         client.release();
-        return res;
     }
 }
 

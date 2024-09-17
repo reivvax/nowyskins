@@ -13,7 +13,7 @@ const renderIndex = (req, res) => {
 
 const renderMarket = (req, res) => {
     listedItems.getItems()
-        .then(items => { console.log(items); res.render('market', { user : req.user, items : items, maps : item_maps})})
+        .then(items => { res.render('market', { user : req.user, items : items, maps : item_maps})})
         .catch(err => { logs.warnLog(err); res.redirect('/') });
 }
 
@@ -49,8 +49,9 @@ const renderStall = (req, res) => {
 }
 
 const renderTrades = (req, res) => {
-    tradesUtils.getTradesFromUserWithUserAndItem(req.user.steam_id)
-        .then(trades => res.render('temptrades', { user : user, trades : trades, maps : item_maps }))
+    const user = req.user;
+    tradesUtils.getTradesFromUserWithUserAndItem(user.steam_id, user.display_name, user.avatar)
+        .then(trades => { console.log(trades); res.render('trades', { user : user, trades : trades, maps : item_maps }) })
         .catch(err => { logs.warnLog(err); res.redirect('/'); })
 }
 

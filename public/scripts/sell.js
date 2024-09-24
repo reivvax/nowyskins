@@ -5,13 +5,13 @@ const decrementItemCount = () => {
     }
 }
 
-const sendData = (asset_id, class_id, instance_id, inspect_url, price) => {
+const sendData = (asset_id, class_id, instance_id, d, price) => {
     return fetch('/listeditems', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ asset_id: asset_id, class_id: class_id, instance_id: instance_id, inspect_url: inspect_url, price: price })
+        body: JSON.stringify({ asset_id: asset_id, class_id: class_id, instance_id: instance_id, d: d, price: price })
     })
     .then(response => {
         if (response.status >= 400)
@@ -54,6 +54,7 @@ document.addEventListener('DOMContentLoaded', function() {
             confirmSellBtn.setAttribute('data-class-id', sellButton.getAttribute('data-class-id'));
             confirmSellBtn.setAttribute('data-instance-id', sellButton.getAttribute('data-instance-id'));
             confirmSellBtn.setAttribute('data-inspect-url', sellButton.getAttribute('data-inspect-url'));
+            confirmSellBtn.setAttribute('data-d-value', sellButton.getAttribute('data-d-value'));
 
             document.body.classList.add('no-scroll');
             modal.style.display = "block";
@@ -87,10 +88,10 @@ document.addEventListener('DOMContentLoaded', function() {
         const asset_id = this.getAttribute('data-asset-id');
         const class_id = this.getAttribute('data-class-id');
         const instance_id = this.getAttribute('data-instance-id');
-        const inspect_url = this.getAttribute('data-inspect-url');
+        const d = this.getAttribute('data-d-value');
         const customPrice = customPriceInput.value;
 
-        let success = await sendData(asset_id, class_id, instance_id, inspect_url, customPrice);
+        let success = await sendData(asset_id, class_id, instance_id, d, customPrice);
         if (success)
             closeModal();
     });

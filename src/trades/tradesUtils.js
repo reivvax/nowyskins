@@ -82,12 +82,12 @@ const updateState = (trade_id, state) => {
 }
 
 /* Removes the listing of the item and creates a new trade using sql transaction */
-const removeListingAndCreateTrade = async (seller_id, buyer_id, asset_id) => {
+const changeListingStatusAndCreateTrade = async (seller_id, buyer_id, asset_id) => {
     const client = await pool.connect();
     try {
         await client.query('BEGIN');    
 
-        await listedItemsUtils.removeItem(asset_id, client);
+        await listedItemsUtils.updateStatus(asset_id, 'false', client);
         await addNewTrade(seller_id, buyer_id, asset_id, client);
 
         await client.query('COMMIT');
@@ -108,5 +108,5 @@ module.exports = {
     getTradesFromUserWithUserAndItem,
     addNewTrade,
     updateState,
-    removeListingAndCreateTrade,
+    changeListingStatusAndCreateTrade,
 }

@@ -22,12 +22,12 @@
                     <p>Seller: <%= user.name %></p>
                     <img src="<%= "https://avatars.steamstatic.com/" + trade.buyer_avatar %>" alt="Buyer Avatar" class="avatar">
                     <p>Buyer: <%= trade.buyer_name %></p>
-                    <img src="<%= trade.item_icon %>" alt="Item Icon" class="item-icon">
+                    <img src="<%=trade.item_icon_url.startsWith("http") ? trade.item_icon_url : "http://cdn.steamcommunity.com/economy/image/" + trade.item_icon_url%>" alt="Item Icon" class="item-icon">
                     <p>Item: <%= trade.item_name %></p>
-                    <p>Wear: <%= item_maps.exteriorMapIntToString[trade.item_exterior] %></p>
+                    <p>Wear: <%= maps.exteriorMapIntToString[trade.item_exterior] %></p>
                     <p>Float: <% trade.item_wear_value %></p>
                     <p>Seed: <%= trade.item_paint_seed %></p>
-                    <p>Price: <%= trade.price %></p>
+                    <p>Price: <%= trade.item_price %></p>
                 </div>
             <% } %>
         <% }) %>
@@ -37,15 +37,16 @@
         <% trades.forEach(trade => { %>
             <% if (trade.buyer_id === user.steam_id) { %>
                 <div class="trade">
-                    <img src="<%= trade.seller_avatar %>" alt="Seller Avatar" class="avatar">
+                    <img src="<%= "https://avatars.steamstatic.com/" + trade.seller_avatar %>" alt="Seller Avatar" class="avatar">
                     <p>Seller: <%= trade.seller_name %></p>
-                    <img src="<%= user.avatar %>" alt="Buyer Avatar" class="avatar">
+                    <img src="<%= "https://avatars.steamstatic.com/" + user.avatar %>" alt="Buyer Avatar" class="avatar">
                     <p>Buyer: <%= user.name %></p>
-                    <img src="<%= trade.item_icon %>" alt="Item Icon" class="item-icon">
-                    <p>Item: <%= item_maps[trade.item_id] %></p>
-                    <p>Wear: <%= trade.wear %></p>
-                    <p>Paint Seed: <%= trade.paint_seed %></p>
-                    <p>Price: <%= trade.price %></p>
+                    <img src="<%=trade.item_icon_url.startsWith("http") ? trade.item_icon_url : "http://cdn.steamcommunity.com/economy/image/" + trade.item_icon_url%>" alt="Item Icon" class="item-icon">
+                    <p>Item: <%= trade.item_name %></p>
+                    <p>Wear: <%= maps.exteriorMapIntToString[trade.item_exterior] %></p>
+                    <p>Float: <% trade.item_wear_value %></p>
+                    <p>Seed: <%= trade.item_paint_seed %></p>
+                    <p>Price: <%= trade.item_price %></p>
                 </div>
             <% } %>
         <% }) %>

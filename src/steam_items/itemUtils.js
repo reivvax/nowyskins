@@ -30,6 +30,10 @@ const fillInspectLink = (steam_id, asset_id, inspect_url) => {
     return inspect_url.replace('%owner_steamid%', steam_id).replace('%assetid%', asset_id);
 }
 
+const constructInspectLink = (steam_id, asset_id, d) => {
+    return `steam://rungame/730/76561202255233023/+csgo_econ_action_preview%20S${steam_id}A${asset_id}D${d}`;
+}
+
 /**
  *   Takes inspect link as an argument, makes a call to external process that passes the request to the Valve server,
  *   returns raw result which is a detailed representation of an item.
@@ -89,8 +93,9 @@ const constructItemsFromInspectLinks = (steam_id, links) => {
             if (!item.error)
                 result.push({
                     asset_id: key,
+                    d: item.d.toString(),
                     steam_id: steam_id,
-                    name: item.weapon_type === "Sticker" ? item.full_item_name : item.weapon_type + ' | ' + item.item_name,
+                    name: item.name,
                     market_hash_name: item.full_item_name,
                     paint_wear: item.floatvalue,
                     paint_seed: item.paintseed,
@@ -98,17 +103,18 @@ const constructItemsFromInspectLinks = (steam_id, links) => {
                     quality: item.quality,
                     rarity: item.rarity,
                     icon_url: item.imageurl,
-                    inspect_url: 'steam://rungame/730/76561202255233023/+csgo_econ_action_preview%20S' + steam_id + 'A' + key + 'D' + item.d
+                    inspect_url: item.inspect_url
                 });
         }
         return result;
-    }).catch(err => { return null; });
+    }).catch(err => { return []; });
 }
 
 /** 
     Uses @function fetchRawItemData and reconstructs one object to desired form:
     @return {
-        asset_id
+        asset_id,
+        d,
         name,
         quality,
         exterior,
@@ -125,8 +131,9 @@ const constructItemFromInspectLink = (steam_id, inspect_url, asset_id) => {
     const filled_url = fillInspectLink(steam_id, asset_id, inspect_url);
     return fetchRawItemData(filled_url).then(item => {
         item.asset_id = asset_id;
+        item.d = item.d.toString(),
         item.steam_id = steam_id;
-        item.name = item.weapon_type + ' | ' + item.item_name;
+        item.name = item.name;
         item.paint_wear = item.floatvalue;
         item.paint_seed = item.paintseed;
         item.exterior = item_maps.exteriorMapStringToInt[item.wear_name];
@@ -134,7 +141,7 @@ const constructItemFromInspectLink = (steam_id, inspect_url, asset_id) => {
         item.icon_url = item.imageurl;
         item.inspect_url = filled_url;
         return item;
-    }).catch((err) => { return null; });
+    }).catch((err) => { return []; });
 }
 
 /* Performs simple query about asset info to Steam server */
@@ -151,7 +158,8 @@ const querySteamAssetClassInfo = (uri) => {
         });
     });
 }
-
+ 
+//todo change name
 /**
     Gets all the attributes of items and performs single query to Steam server to get details of items,
     using @function querySteamAssetClassInfo()
@@ -170,9 +178,10 @@ const constructItemsWithNoInspectLink = (steam_id, items) => {
                 var quality = item_maps.qualityMapStringToInt[getTagValue(data.tags, "Quality")];
                 var exterior = item_maps.exteriorMapStringToInt[getTagValue(data.tags, "Exterior")];
                 // var rarity = item_maps.rarityMapStringToInt[getTagValue(item.tags, "Rarity")];
-                
+
                 result.push({
                     asset_id: item.asset_id,
+                    d: data.actions ? data.actions[0].link.match(/D(\d+)/) : undefined,
                     class_id: item.class_id,
                     instance_id: item.instance_id,
                     name: data.name,
@@ -181,6 +190,7 @@ const constructItemsWithNoInspectLink = (steam_id, items) => {
                     rarity: undefined, 
                     market_hash_name: data.market_hash_name,
                     icon_url: data.icon_url,
+                    inspect_url: data.actions ? data.actions[0].link : undefined,
                     steam_id: steam_id
                 });
             }
@@ -208,12 +218,14 @@ const constructItemWithNoInspectLink = (steam_id, asset_id, class_id, instance_i
                 asset_id: asset_id,
                 class_id: class_id,
                 instance_id: instance_id,
+                d: body.actions ? body.actions[0].link.match(/D(\d+)/) : undefined,
                 name: body.name,
                 quality: quality,
                 exterior: exterior,
                 rarity: undefined, 
                 market_hash_name: body.market_hash_name,
                 icon_url: body.icon_url,
+                inspect_url: body.actions ? body.actions[0].link : undefined,
                 steam_id: steam_id
             };
             resolve(item);
@@ -222,10 +234,10 @@ const constructItemWithNoInspectLink = (steam_id, asset_id, class_id, instance_i
 }
 
 /* Constructs an item object. */
-const constructItem = (steam_id, asset_id, class_id, instance_id, inspect_url) => {
-    if (!inspect_url || inspect_url === '')
+const constructItem = (steam_id, asset_id, class_id, instance_id, d) => {
+    if (!d || d === '')
         return constructItemWithNoInspectLink(steam_id, asset_id, class_id, instance_id);
-    return constructItemFromInspectLink(steam_id, inspect_url, asset_id);
+    return constructItemFromInspectLink(steam_id, constructInspectLink(steam_id, asset_id, d), asset_id);
 }
 
 /* Returns raw Steam inventory JSON from Steam api */
@@ -298,6 +310,7 @@ const filterFunction = (tags) => {
 the result is an array of objects:
 @returns {
  asset_id,
+ d,
  name,
  quality,
  exterior,
@@ -322,28 +335,26 @@ const getFilteredSteamInventory = (steam_id, tradeable) => {
                 return map;
             }, {});
 
-            let inspectableItems = [];
-            let names = [];
-            let notInspectableItems = [];
+            let weapons = [];
+            let others = [];
 
             assets.forEach(a => {
                 let description = classidToDescription[a.classid];
                 if ((!tradeable || description.tradable) && filterFunction(description.tags)) {
                     if (description.actions && description.tags[0].internal_name !== "CSGO_Tool_Sticker") { // has inspect link and is not a sticker
-                        inspectableItems.push(fillInspectLink(steam_id, a.assetid, description.actions[0].link));
-                        names.push(description.name);
+                        weapons.push(fillInspectLink(steam_id, a.assetid, description.actions[0].link));
                     } else // no inspect link
-                        notInspectableItems.push({ asset_id: a.assetid, class_id: description.classid, instance_id: description.instanceid });
+                        others.push({ asset_id: a.assetid, class_id: description.classid, instance_id: description.instanceid });
                 }
             });
 
             let data = [];
 
             // Merge inspectable and not inspectable items to one array
-            constructItemsFromInspectLinks(steam_id, inspectableItems).then(inspectItems => {
-                data = inspectItems;
-                constructItemsWithNoInspectLink(steam_id, notInspectableItems).then(noInspectItems => {
-                    data = data.concat(noInspectItems);
+            constructItemsFromInspectLinks(steam_id, weapons).then(weaponsResults => {
+                data = weaponsResults;
+                constructItemsWithNoInspectLink(steam_id, others).then(othersResults => {
+                    data = data.concat(othersResults);
                     completeItemsWithPrices(data).then(pricedItems => { // Add prices
                         Promise.all(pricedItems.map(item => Promise.resolve(item))).then(resolvedData => 
                             resolve(resolvedData.filter(item => item !== null))
@@ -360,6 +371,7 @@ also items that are alreay marked as listed in the system are omitted
 the result is an array of objects:
 @returns {
  asset_id,
+ d,
  name,
  quality,
  exterior,

@@ -11,10 +11,10 @@ const newTrade = (req, res) => {
 }
 
  /* Removes the listing of the item and creates a new trade */
-const removeListingAndCreateTrade = async (req, res) => {
+const changeListingStatusAndCreateTrade = async (req, res) => {
     const { seller_id, asset_id } = req.body;
     try {
-        await tradesUtils.removeListingAndCreateTrade(seller_id, req.user.steam_id, asset_id);
+        await tradesUtils.changeListingStatusAndCreateTrade(seller_id, req.user.steam_id, asset_id);
         res.status(201).send("Trade created successfully.");
     } catch (err) {
         logs.debugLog(err);
@@ -28,6 +28,9 @@ const ensurePrivilegedToCreateTrade = (req, res, next) => {
             if (item.steam_id != seller_id) {
                 logs.verboseLog(`Unable to create offer because item ${asset_id} is not listed by user ${seller_id}`);
                 res.status(401).redirect('/');
+            } else if (!item.active) {
+                logs.verboseLog(`Unable to create offer because item ${asset_id} is not active`);
+                res.status(401).redirect('/');
             } else
                 return next();
         })
@@ -36,6 +39,6 @@ const ensurePrivilegedToCreateTrade = (req, res, next) => {
 
 module.exports = {
     newTrade,
-    removeListingAndCreateTrade,
+    changeListingStatusAndCreateTrade,
     ensurePrivilegedToCreateTrade,
 }

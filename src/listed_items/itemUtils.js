@@ -8,7 +8,16 @@ const getItems = () => {
                 return reject(err);
             resolve(results.rows);
         });
-    })
+    });
+}
+
+const getActiveItems = () => {
+    return new Promise((resolve, reject) => { pool.query(queries.getActiveItems, (err, results) => {
+            if (err)
+                return reject(err);
+            resolve(results.rows);
+        });
+    });
 }
 
 const getItem = (asset_id) => {
@@ -22,6 +31,12 @@ const getItem = (asset_id) => {
     });
 }
 
+const isActive = (asset_id) => {
+    return getItem(asset_id)
+        .then(item => { return item.active; })
+        .catch(err => { return false; } );
+}    
+
 const getItemsFromUser = (steam_id) => {
     return new Promise((resolve, reject) => {pool.query(queries.getItemsFromUser, [steam_id], (err, results) => {
             if (err)
@@ -31,12 +46,21 @@ const getItemsFromUser = (steam_id) => {
     });
 }
 
+const getActiveItemsFromUser = (steam_id) => {
+    return new Promise((resolve, reject) => {pool.query(queries.getActiveItemsFromUser, [steam_id], (err, results) => {
+            if (err)
+                return reject(err);
+            resolve(results.rows);
+        });
+    });
+}
+
 const addItemToDatabase = (item) => {
-    const { asset_id, name, quality, exterior, rarity, paint_wear, paint_seed, market_hash_name, icon_url, inspect_url, steam_id, price } = item;
+    const { asset_id, d, name, quality, exterior, rarity, paint_wear, paint_seed, market_hash_name, icon_url, inspect_url, steam_id, price } = item;
     return new Promise((resolve, reject) => {
         pool.query(
             queries.addItem, 
-            [asset_id, name, quality, exterior, undefined, paint_wear, paint_seed, market_hash_name, icon_url, inspect_url, steam_id, price], 
+            [asset_id, d, name, quality, exterior, undefined, paint_wear, paint_seed, market_hash_name, icon_url, inspect_url, steam_id, price], 
             (err, result) => {
                 if (err)
                     return reject(err);
@@ -78,12 +102,28 @@ const removeItem = (asset_id) => {
     });
 };
 
+const updateStatus = (asset_id, status, client) => {
+    return new Promise((resolve, reject) => {
+        (client ? client : pool).query(queries.updateStatus, [asset_id, status], (error, result) => {
+            if (error) 
+                return reject(error);
+            if (result.rowCount > 0)
+                resolve(result.rows[0]);
+            else
+                reject(new Error("Item not found"));
+        });
+    });
+}
 
 module.exports = {
     getItems,
+    getActiveItems,
     getItem,
+    isActive,
     getItemsFromUser,
+    getActiveItemsFromUser,
     addItemToDatabase,
     addItemWithCheck,
     removeItem,
+    updateStatus,
 }

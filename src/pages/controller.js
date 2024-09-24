@@ -12,7 +12,7 @@ const renderIndex = (req, res) => {
 }
 
 const renderMarket = (req, res) => {
-    listedItems.getItems()
+    listedItems.getActiveItems()
         .then(items => { res.render('market', { user : req.user, items : items, maps : item_maps})})
         .catch(err => { logs.warnLog(err); res.redirect('/') });
 }
@@ -28,7 +28,7 @@ const renderSell = (req, res) => {
 }
 
 const renderMyStall = (req, res) => {
-    listedItems.getItemsFromUser(req.user.steam_id)
+    listedItems.getActiveItemsFromUser(req.user.steam_id)
         .then(items => res.render('mystall', { user : req.user, items : items, maps : item_maps }))
         .catch(err => { logs.warnLog(err); res.redirect('/') });
 }
@@ -40,7 +40,7 @@ const renderStall = (req, res) => {
         return;
     }
 
-    listedItems.getItemsFromUser(id)
+    listedItems.getActiveItemsFromUser(id)
         .then(items => {
             userUtils.getUserById(id)
                 .then(seller => res.render('stall', { user : req.user, seller : seller, items : items, maps : item_maps }))

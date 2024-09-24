@@ -17,53 +17,56 @@ pool.connect((err) => {
 });
 
 //item exterior: 0 = BS, ..., 4 = FN
-//item types: 'weapon', 'knife', 'case', 'gloves', 'sticker', 'agent'
-//TODO change tradelink to trade token
+//trades states: 0: 'to_be_accepted_by_seller', 'trade_offer_to_be_sent', 'to_be_accepted_by_buyer', 'completed'
+//TODO change user tradelink to trade token
 const setup = `
+DROP TABLE listed_items;
+drop table trades;
 CREATE TABLE IF NOT EXISTS users (
-  steam_id VARCHAR(20) PRIMARY KEY,
-  display_name VARCHAR(255),
-  balance DECIMAL(15, 2) DEFAULT 0,
-  email VARCHAR(255) UNIQUE,
-  phone VARCHAR(20),
-  registered_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
-  avatar VARCHAR(255),
-  tradelink VARCHAR(255)
+  steam_id          VARCHAR(20)     PRIMARY KEY,
+  display_name      VARCHAR(255),
+  balance           DECIMAL(15, 2)  DEFAULT 0,
+  email             VARCHAR(255)    UNIQUE,
+  phone             VARCHAR(20),
+  registered_at     TIMESTAMPTZ     DEFAULT CURRENT_TIMESTAMP,
+  avatar            VARCHAR(255),
+  tradelink         VARCHAR(255)
 );
 
 CREATE TABLE IF NOT EXISTS listed_items (
-  asset_id VARCHAR(20) PRIMARY KEY,
-  name VARCHAR(100) NOT NULL,
-  paint_wear VARCHAR(20),
-  paint_seed VARCHAR(20),
-  quality INT,
-  exterior INT,
-  rarity INT DEFAULT 0,
-  market_hash_name VARCHAR(100),
-  price DECIMAL(12, 2) DEFAULT 0,
-  icon_url VARCHAR(255) NOT NULL,
-  inspect_url VARCHAR(255),
-  trade_lock INT,
-  time_added TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
-  type VARCHAR(20),
-  steam_id VARCHAR(20),
-  FOREIGN KEY (steam_id) REFERENCES users(steam_id)
+  asset_id          VARCHAR(20)     PRIMARY KEY,
+  d                 VARCHAR(30),
+  name              VARCHAR(100)    NOT NULL,
+  paint_wear        VARCHAR(20),
+  paint_seed        VARCHAR(20),
+  quality           smallint,
+  exterior          smallint,
+  rarity            smallint        DEFAULT 0,
+  market_hash_name  VARCHAR(100),
+  price             DECIMAL(12, 2)  DEFAULT 0,
+  icon_url          VARCHAR(255)    NOT NULL,
+  inspect_url       VARCHAR(255),
+  trade_lock        boolean         DEFAULT false,
+  time_added        TIMESTAMPTZ     DEFAULT CURRENT_TIMESTAMP,
+  active            boolean         DEFAULT true,
+  steam_id          VARCHAR(20),
+  FOREIGN KEY       (steam_id)      REFERENCES users(steam_id)
 ); 
 
 CREATE TABLE IF NOT EXISTS prices (
-  market_hash_name VARCHAR(100) PRIMARY KEY,
-  price DECIMAL(12, 2) NOT NULL
+  market_hash_name  VARCHAR(100)    PRIMARY KEY,
+  price             DECIMAL(12, 2)  NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS trades (
-  trade_id SERIAL PRIMARY KEY, 
-  seller_id VARCHAR(20) NOT NULL,
-  buyer_id VARCHAR(20) NOT NULL,
-  asset_id VARCHAR(20) NOT NULL,
-  state VARCHAR(20) DEFAULT 'unaccepted',
-  created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (seller_id) REFERENCES users(steam_id),
-  FOREIGN KEY (buyer_id) REFERENCES users(steam_id)
+  trade_id          SERIAL PRIMARY KEY, 
+  seller_id         VARCHAR(20)     NOT NULL,
+  buyer_id          VARCHAR(20)     NOT NULL,
+  asset_id          VARCHAR(20)     NOT NULL,
+  state             VARCHAR(30)     DEFAULT 'to_be_accepted_by_seller',
+  created_at        TIMESTAMPTZ     DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY       (seller_id)     REFERENCES users(steam_id),
+  FOREIGN KEY       (buyer_id)      REFERENCES users(steam_id)
 );
 `;
 

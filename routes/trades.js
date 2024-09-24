@@ -8,8 +8,8 @@ const router = Router();
 router.post('/new', 
     ensureAuthenticated, 
     tradesController.ensurePrivilegedToCreateTrade, 
-    listedItemsController.checkIfListingExists, 
-    tradesController.removeListingAndCreateTrade
+    listedItemsController.checkIfListingActive, 
+    tradesController.changeListingStatusAndCreateTrade
 );
 
 // router.put('/update/:trade_id', ensureAuthenticated, tradesController.updateState);

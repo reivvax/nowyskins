@@ -2,8 +2,8 @@ const steamItems = require('./itemUtils');
 const logs = require('../utils/logging');
 
 const fetchItemData = (req, res, next) => {
-    const { asset_id, class_id, instance_id, inspect_url, price } = req.body;
-    steamItems.constructItem(req.user.steam_id, asset_id, class_id, instance_id, inspect_url).then(item => {
+    const { asset_id, class_id, instance_id, d, price } = req.body;
+    steamItems.constructItem(req.user.steam_id, asset_id, class_id, instance_id, d).then(item => {
         req.body = item;
         req.body.price = price;
         return next();

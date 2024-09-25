@@ -79,6 +79,7 @@ const getTradesFromUserWithUserAndItem = `
         users b ON t.buyer_id = b.steam_id
     WHERE 
         t.seller_id = $1 OR t.buyer_id = $1;
+    ORDER BY t.created_at DESC;
 `;
 
 const addNewTrade = "INSERT INTO trades (seller_id, buyer_id, asset_id) VALUES ($1, $2, $3) RETURNING *;";

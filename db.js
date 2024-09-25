@@ -20,8 +20,7 @@ pool.connect((err) => {
 //trades states: 0: 'to_be_accepted_by_seller', 'trade_offer_to_be_sent', 'to_be_accepted_by_buyer', 'completed'
 //TODO change user tradelink to trade token
 const setup = `
-DROP TABLE listed_items;
-drop table trades;
+DROP TABLE trades
 CREATE TABLE IF NOT EXISTS users (
   steam_id          VARCHAR(20)     PRIMARY KEY,
   display_name      VARCHAR(255),
@@ -63,7 +62,7 @@ CREATE TABLE IF NOT EXISTS trades (
   seller_id         VARCHAR(20)     NOT NULL,
   buyer_id          VARCHAR(20)     NOT NULL,
   asset_id          VARCHAR(20)     NOT NULL,
-  state             VARCHAR(30)     DEFAULT 'to_be_accepted_by_seller',
+  state             smallint        DEFAULT 0,
   created_at        TIMESTAMPTZ     DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY       (seller_id)     REFERENCES users(steam_id),
   FOREIGN KEY       (buyer_id)      REFERENCES users(steam_id)

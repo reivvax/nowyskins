@@ -4,59 +4,84 @@
     <meta charset="UTF-8">
     <title>Trades</title>
     <link rel="stylesheet" href="/basic.css">
+    <link rel="stylesheet" href="/trades.css">
 </head>
 <body>
     <%- include('./components/navbar.ejs', { user : user }) %>
-    <% console.log(user) %>
     <h1>Trades</h1>
     <div>
-        <button onclick="showTab('selling')">Selling</button>
-        <button onclick="showTab('buying')">Buying</button>
+        <button class="category" onclick="showTab('selling')">Selling</button>
+        <button class="category" onclick="showTab('buying')">Buying</button>
     </div>
+
+    <%
+        selling = trades.filter(trade => trade.seller_id === user.steam_id);
+        buying = trades.filter(trade => trade.buyer_id === user.steam_id);
+    %>
+
     <div id="selling" class="tab-content">
-        <h2>Selling</h2>
-        <% trades.forEach(trade => { %>
-            <% if (trade.seller_id === user.steam_id) { %>
-                <div class="trade">
-                    <img src="<%= "https://avatars.steamstatic.com/" + user.avatar %>" alt="Seller Avatar" class="avatar">
-                    <p>Seller: <%= user.name %></p>
-                    <img src="<%= "https://avatars.steamstatic.com/" + trade.buyer_avatar %>" alt="Buyer Avatar" class="avatar">
-                    <p>Buyer: <%= trade.buyer_name %></p>
-                    <img src="<%=trade.item_icon_url.startsWith("http") ? trade.item_icon_url : "http://cdn.steamcommunity.com/economy/image/" + trade.item_icon_url%>" alt="Item Icon" class="item-icon">
-                    <p>Item: <%= trade.item_name %></p>
-                    <p>Wear: <%= maps.exteriorMapIntToString[trade.item_exterior] %></p>
-                    <p>Float: <% trade.item_wear_value %></p>
-                    <p>Seed: <%= trade.item_paint_seed %></p>
-                    <p>Price: <%= trade.item_price %></p>
+        <h2>Selling</h2> 
+        <% if (selling.length != 0) { %>
+            <% selling.forEach(trade => { %>
+                <div class="trade-container">
+                    <div class="trade-info seller">
+                        <img src="<%= "https://avatars.steamstatic.com/" + user.avatar %>" alt="Seller Avatar" class="avatar">
+                        <p>Seller: <%= user.display_name %></p>
+                    </div>
+                    <div class="trade-item">
+                        <img src="<%= trade.item_icon_url.startsWith("http") ? trade.item_icon_url : "http://cdn.steamcommunity.com/economy/image/" + trade.item_icon_url %>" alt="Item Icon" class="item-icon">
+                        <p>Item: <%= trade.item_name %></p>
+                        <p>Wear: <%= maps.exteriorMapIntToString[trade.item_exterior] %></p>
+                        <p>Float: <%= trade.item_paint_wear %></p>
+                        <p>Seed: <%= trade.item_paint_seed %></p>
+                        <p>Price: <%= trade.item_price %>$</p>
+                    </div>
+                    <div class="trade-info buyer">
+                        <img src="<%= "https://avatars.steamstatic.com/" + trade.buyer_avatar %>" alt="Buyer Avatar" class="avatar">
+                        <p>Buyer: <%= trade.buyer_display_name %></p>
+                    </div>
                 </div>
-            <% } %>
-        <% }) %>
+            <% }) %>
+        <% } else { %>
+            <p>You are not selling any items.</p>
+        <% } %>
     </div>
+
     <div id="buying" class="tab-content" style="display:none;">
         <h2>Buying</h2>
-        <% trades.forEach(trade => { %>
-            <% if (trade.buyer_id === user.steam_id) { %>
-                <div class="trade">
-                    <img src="<%= "https://avatars.steamstatic.com/" + trade.seller_avatar %>" alt="Seller Avatar" class="avatar">
-                    <p>Seller: <%= trade.seller_name %></p>
-                    <img src="<%= "https://avatars.steamstatic.com/" + user.avatar %>" alt="Buyer Avatar" class="avatar">
-                    <p>Buyer: <%= user.name %></p>
-                    <img src="<%=trade.item_icon_url.startsWith("http") ? trade.item_icon_url : "http://cdn.steamcommunity.com/economy/image/" + trade.item_icon_url%>" alt="Item Icon" class="item-icon">
-                    <p>Item: <%= trade.item_name %></p>
-                    <p>Wear: <%= maps.exteriorMapIntToString[trade.item_exterior] %></p>
-                    <p>Float: <% trade.item_wear_value %></p>
-                    <p>Seed: <%= trade.item_paint_seed %></p>
-                    <p>Price: <%= trade.item_price %></p>
+        <% if (buying.length != 0) { %>
+            <% buying.forEach(trade => { %>
+                <div class="trade-container">
+                    <div class="trade-info seller">
+                        <img src="<%= "https://avatars.steamstatic.com/" + trade.seller_avatar %>" alt="Seller Avatar" class="avatar">
+                        <p>Seller: <%= trade.seller_display_name %></p>
+                    </div>
+                    <div class="trade-item">
+                        <img src="<%= trade.item_icon_url.startsWith("http") ? trade.item_icon_url : "http://cdn.steamcommunity.com/economy/image/" + trade.item_icon_url %>" alt="Item Icon" class="item-icon">
+                        <p>Item: <%= trade.item_name %></p>
+                        <p>Wear: <%= maps.exteriorMapIntToString[trade.item_exterior] %></p>
+                        <p>Float: <%= trade.item_paint_wear %></p>
+                        <p>Seed: <%= trade.item_paint_seed %></p>
+                        <p>Price: <%= trade.item_price %>$</p>
+                    </div>
+                    <div class="trade-info buyer">
+                        <img src="<%= "https://avatars.steamstatic.com/" + user.avatar %>" alt="Buyer Avatar" class="avatar">
+                        <p>Buyer: <%= user.display_name %></p>
+                    </div>
                 </div>
-            <% } %>
-        <% }) %>
+            <% }) %>
+        <% } else { %>
+            <p>You are not selling any items.</p>
+        <% } %>
     </div>
+
     <script>
         function showTab(tabName) {
             document.getElementById('selling').style.display = 'none';
             document.getElementById('buying').style.display = 'none';
             document.getElementById(tabName).style.display = 'block';
         }
+        showTab('selling');
     </script>
 </body>
 </html>

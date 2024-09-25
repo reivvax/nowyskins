@@ -1,6 +1,12 @@
 const pool = require('../../db');
 const queries = require('./tradesQueries');
 const listedItemsUtils = require('../listed_items/itemUtils');
+const trade_maps = require('../utils/trade_maps')
+
+const mapState = (trade) => {
+    trade.state_name = trade_maps.stateMapIntToString[trade.state];
+    return trade;
+}
 
 const getTrade = (trade_id) => {
     return new Promise((resolve, reject) => {
@@ -8,7 +14,7 @@ const getTrade = (trade_id) => {
             if (err)
                 reject(err);
             else
-                resolve(res.rows[0]);
+                resolve(mapState(res.rows[0]));
         });
     });
 }
@@ -20,7 +26,7 @@ const getTrades = (steam_id, query) => {
             if (err)
                 reject(err);
             else
-                resolve(res.rows);
+                resolve(res.rows.map(mapState));
         });
     });
 }
@@ -43,7 +49,7 @@ const getTradeWithUsersAndItem = (trade_id) => {
            if (err)
                reject(err);
            else
-               resolve(res.rows[0]);
+               resolve(mapState(res.rows[0]));
        });
    });
 }
@@ -54,7 +60,7 @@ const getTradesFromUserWithUserAndItem = (user_id, display_name, avatar) => {
            if (err)
                reject(err);
            else
-               resolve(res.rows);
+               resolve(res.rows.map(mapState));
        });
    });
 }
@@ -65,7 +71,7 @@ const addNewTrade = (seller_id, buyer_id, asset_id, client) => {
             if (err)
                 reject(err);
             else
-                resolve(res.rows[0]);
+                resolve(mapState(res.rows[0]));
         });
     });
 }
@@ -76,7 +82,7 @@ const updateState = (trade_id, state) => {
            if (err)
                reject(err);
            else
-               resolve(res.rows[0]);
+               resolve(mapState(res.rows[0]));
        });
    });
 }

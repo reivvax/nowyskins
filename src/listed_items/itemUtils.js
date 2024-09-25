@@ -1,12 +1,19 @@
 //Utils to perform operations on listed items
 const pool = require('../../db');
 const queries = require('./itemQueries');
+const maps = require('../utils/item_attributes_maps');
+
+const mapValues = (item) => {
+    item.exterior_name = maps.exteriorMapIntToString[item.exterior];
+    item.quality_name = maps.qualityMapIntToString[item.quality];
+    return item;
+}
 
 const getItems = () => {
     return new Promise((resolve, reject) => { pool.query(queries.getItems, (err, results) => {
             if (err)
                 return reject(err);
-            resolve(results.rows);
+            resolve(results.rows.map(mapValues));
         });
     });
 }
@@ -15,7 +22,7 @@ const getActiveItems = () => {
     return new Promise((resolve, reject) => { pool.query(queries.getActiveItems, (err, results) => {
             if (err)
                 return reject(err);
-            resolve(results.rows);
+            resolve(results.rows.map(mapValues));
         });
     });
 }
@@ -25,7 +32,7 @@ const getItem = (asset_id) => {
             if (err)
                 return reject(err);
             if (results.rows.length)
-                return resolve(results.rows[0]);
+                return resolve(mapValues(results.rows[0]));
             reject(new Error("Item not found"));
         });
     });
@@ -41,7 +48,7 @@ const getItemsFromUser = (steam_id) => {
     return new Promise((resolve, reject) => {pool.query(queries.getItemsFromUser, [steam_id], (err, results) => {
             if (err)
                 return reject(err);
-            resolve(results.rows);
+            resolve(results.rows.map(mapValues));
         });
     });
 }
@@ -50,7 +57,7 @@ const getActiveItemsFromUser = (steam_id) => {
     return new Promise((resolve, reject) => {pool.query(queries.getActiveItemsFromUser, [steam_id], (err, results) => {
             if (err)
                 return reject(err);
-            resolve(results.rows);
+            resolve(results.rows.map(mapValues));
         });
     });
 }
@@ -64,7 +71,7 @@ const addItemToDatabase = (item) => {
             (err, result) => {
                 if (err)
                     return reject(err);
-                resolve(result.rows[0]);
+                resolve(mapValues(result.rows[0]));
             }
         );
     });
@@ -72,16 +79,15 @@ const addItemToDatabase = (item) => {
 
 const addItemWithCheck = (item, client) => {
     return new Promise((resolve, reject) => {
-        if (!item) {
+        if (!item)
             return reject(new Error("Item is null"));
-        }
 
         (client ? client : pool).query(queries.getItem, [item.asset_id], (error, results) => {
             if (error) 
                 reject(error);
             if (!results.rows.length) { // no item with such id found
                 addItemToDatabase(item)
-                    .then(item => resolve(item))
+                    .then(item => resolve(mapValues(item)))
                     .catch(err => { reject(err); });
             } else
                 reject(new Error("Item is already listed"));
@@ -95,7 +101,7 @@ const removeItem = (asset_id) => {
             if (error) 
                 return reject(error);
             if (result.rowCount > 0)
-                resolve(result.rows[0]);
+                resolve(mapValues(result.rows[0]));
             else
                 reject(new Error("Item not found"));
         });
@@ -108,7 +114,7 @@ const updateStatus = (asset_id, status, client) => {
             if (error) 
                 return reject(error);
             if (result.rowCount > 0)
-                resolve(result.rows[0]);
+                resolve(mapValues(result.rows[0]));
             else
                 reject(new Error("Item not found"));
         });

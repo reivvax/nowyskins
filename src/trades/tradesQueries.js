@@ -78,7 +78,7 @@ const getTradesFromUserWithUserAndItem = `
     JOIN 
         users b ON t.buyer_id = b.steam_id
     WHERE 
-        t.seller_id = $1 OR t.buyer_id = $1;
+        t.seller_id = $1 OR t.buyer_id = $1
     ORDER BY t.created_at DESC;
 `;
 

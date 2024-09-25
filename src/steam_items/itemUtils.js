@@ -9,6 +9,14 @@ const logs = require('../utils/logging');
 var appid = '730'; // CS:GO 2
 var contextid = '2'; // default CS:GO 2 context
 
+const maps = require('../utils/item_attributes_maps');
+
+const mapValues = (item) => {
+    item.exterior_string = maps.exteriorMapIntToString[item.exterior];
+    item.quality_string = maps.qualityMapIntToString[item.quality];
+    return item;
+}
+
 /* Helper function to extract values of tags from raw JSON from Steam. */
 const getTagValue = (tags, search) => {
     for (let tagId in tags) {
@@ -85,7 +93,7 @@ const fetchRawItemsData = (urls) => {
  * @param links array of already filled inspect links
  */
    
-const constructItemsFromInspectLinks = (steam_id, links) => {
+const constructWeapons = (steam_id, links) => {
     return fetchRawItemsData(links).then(body => {
         let result = [];
         for (key of Object.keys(body)) {
@@ -100,8 +108,11 @@ const constructItemsFromInspectLinks = (steam_id, links) => {
                     paint_wear: item.floatvalue,
                     paint_seed: item.paintseed,
                     exterior: item.wear_name ? item_maps.exteriorMapStringToInt[item.wear_name] : undefined,
+                    exterior_name: item.wear_name,
                     quality: item.quality,
+                    quality_name: item_maps.qualityMapStringToInt[item.quality],
                     rarity: item.rarity,
+                    // rarity_name: item_maps.rarityMapStringToInt[item.rarity],
                     icon_url: item.imageurl,
                     inspect_url: item.inspect_url
                 });
@@ -127,7 +138,7 @@ const constructItemsFromInspectLinks = (steam_id, links) => {
         steam_id
     }
 */
-const constructItemFromInspectLink = (steam_id, inspect_url, asset_id) => {
+const constructWeapon = (steam_id, inspect_url, asset_id) => {
     const filled_url = fillInspectLink(steam_id, asset_id, inspect_url);
     return fetchRawItemData(filled_url).then(item => {
         item.asset_id = asset_id;
@@ -136,7 +147,12 @@ const constructItemFromInspectLink = (steam_id, inspect_url, asset_id) => {
         item.name = item.name;
         item.paint_wear = item.floatvalue;
         item.paint_seed = item.paintseed;
-        item.exterior = item_maps.exteriorMapStringToInt[item.wear_name];
+        item.exterior = item.wear_name ? item_maps.exteriorMapStringToInt[item.wear_name] : undefined,
+        item.exterior_name = item.wear_name,
+        item.quality = item.quality,
+        item.quality_name = item_maps.qualityMapStringToInt[item.quality],
+        item.rarity = item.rarity,
+        // item.rarity_name = item_maps.rarityMapStringToInt[item.rarity],
         item.market_hash_name = item.full_item_name
         item.icon_url = item.imageurl;
         item.inspect_url = filled_url;
@@ -159,12 +175,11 @@ const querySteamAssetClassInfo = (uri) => {
     });
 }
  
-//todo change name
 /**
     Gets all the attributes of items and performs single query to Steam server to get details of items,
     using @function querySteamAssetClassInfo()
 */
-const constructItemsWithNoInspectLink = (steam_id, items) => {
+const constructOtherItems = (steam_id, items) => {
     var uri = `/?key=${process.env['STEAM_API_KEY']}&appid=${appid}&language=en&class_count=` + items.length;
     for (const [i, item] of items.entries())
         uri += '&classid' + i + '=' + item.class_id + '&instanceid' + i + '=' + item.instance_id;
@@ -203,7 +218,7 @@ const constructItemsWithNoInspectLink = (steam_id, items) => {
     Gets all the attributes of an item and performs single query to Steam server to get details of an item,
     using @function querySteamAssetClassInfo()
 */
-const constructItemWithNoInspectLink = (steam_id, asset_id, class_id, instance_id) => {
+const constructOtherItem = (steam_id, asset_id, class_id, instance_id) => {
     var uri = `/?key=${process.env['STEAM_API_KEY']}&appid=${appid}&language=en&class_count=1&classid0=${class_id}&instanceid0=${instance_id}`;
     return new Promise((resolve, reject) => {
          querySteamAssetClassInfo(uri).then(body => {
@@ -236,8 +251,8 @@ const constructItemWithNoInspectLink = (steam_id, asset_id, class_id, instance_i
 /* Constructs an item object. */
 const constructItem = (steam_id, asset_id, class_id, instance_id, d) => {
     if (!d || d === '')
-        return constructItemWithNoInspectLink(steam_id, asset_id, class_id, instance_id);
-    return constructItemFromInspectLink(steam_id, constructInspectLink(steam_id, asset_id, d), asset_id);
+        return constructOtherItem(steam_id, asset_id, class_id, instance_id);
+    return constructWeapon(steam_id, constructInspectLink(steam_id, asset_id, d), asset_id);
 }
 
 /* Returns raw Steam inventory JSON from Steam api */
@@ -351,9 +366,9 @@ const getFilteredSteamInventory = (steam_id, tradeable) => {
             let data = [];
 
             // Merge inspectable and not inspectable items to one array
-            constructItemsFromInspectLinks(steam_id, weapons).then(weaponsResults => {
+            constructWeapons(steam_id, weapons).then(weaponsResults => {
                 data = weaponsResults;
-                constructItemsWithNoInspectLink(steam_id, others).then(othersResults => {
+                constructOtherItems(steam_id, others).then(othersResults => {
                     data = data.concat(othersResults);
                     completeItemsWithPrices(data).then(pricedItems => { // Add prices
                         Promise.all(pricedItems.map(item => Promise.resolve(item))).then(resolvedData => 
@@ -428,7 +443,7 @@ const loadUsersInspectableItems = (steam_id) => {
 
 module.exports = {
     constructItem,
-    constructItemFromInspectLink,
+    constructWeapon,
     getRawSteamInventory,
     getFilteredSteamInventory,
     getFilteredSteamInventoryWithoutListedItems,

@@ -40,6 +40,22 @@
                         <img src="<%= "https://avatars.steamstatic.com/" + trade.buyer_avatar %>" alt="Buyer Avatar" class="avatar">
                         <p>Buyer: <%= trade.buyer_display_name %></p>
                     </div>
+
+                    <% if (trade.state === 0) { %>
+                        <div class="trade-actions">
+                            <button class="circle-button accept" title="Accept">
+                                ✓
+                            </button>
+                            <button class="circle-button cancel" title="Cancel">
+                                ✕
+                            </button>
+                        </div>
+                    <% } else if (trade.state === 1) { %>
+                        <a href="<%= trade.buyer_tradelink %>" class="trade-link">Trade with buyer</a>
+                    <% } else if (trade.state === 3) { %>
+                        <p class="trade-status">Completed</p>
+                    <% } %>
+
                 </div>
             <% }) %>
         <% } else { %>
@@ -68,6 +84,12 @@
                         <img src="<%= "https://avatars.steamstatic.com/" + user.avatar %>" alt="Buyer Avatar" class="avatar">
                         <p>Buyer: <%= user.display_name %></p>
                     </div>
+
+                    <% if (trade.state === 2) { %>
+                        <a href="<%= trade.seller_tradelink %>" class="trade-link">Trade with seller</a>
+                    <% } else if (trade.state === 3) { %>
+                        <p class="trade-status">Completed</p>
+                    <% } %>
                 </div>
             <% }) %>
         <% } else { %>

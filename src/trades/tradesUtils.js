@@ -54,9 +54,9 @@ const getTradeWithUsersAndItem = (trade_id) => {
    });
 }
 
-const getTradesFromUserWithUserAndItem = (user_id, display_name, avatar) => {
+const getTradesFromUserWithUserAndItem = (user_id, display_name, avatar, tradelink) => {
     return new Promise((resolve, reject) => {
-        pool.query(queries.getTradesFromUserWithUserAndItem, [user_id, display_name, avatar], (err, res) => {
+        pool.query(queries.getTradesFromUserWithUserAndItem, [user_id, display_name, avatar, tradelink], (err, res) => {
            if (err)
                reject(err);
            else

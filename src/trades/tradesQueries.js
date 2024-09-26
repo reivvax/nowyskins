@@ -45,6 +45,11 @@ const getTradesFromUserWithUserAndItem = `
             ELSE s.avatar
         END AS seller_avatar,
 
+        CASE 
+            WHEN t.seller_id = $1 THEN $4  -- tradelink
+            ELSE s.tradelink
+        END AS seller_tradelink,
+
         t.buyer_id,
         
         CASE 
@@ -56,6 +61,11 @@ const getTradesFromUserWithUserAndItem = `
             WHEN t.buyer_id = $1 THEN $3  -- avatar
             ELSE b.avatar
         END AS buyer_avatar,
+        
+        CASE 
+            WHEN t.buyer_id = $1 THEN $4  -- tradelink
+            ELSE b.tradelink
+        END AS buyer_tradelink,
         
         t.asset_id,
         t.state,

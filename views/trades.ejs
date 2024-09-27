@@ -31,7 +31,7 @@
                     <div class="trade-item">
                         <img src="<%= trade.item_icon_url.startsWith("http") ? trade.item_icon_url : "http://cdn.steamcommunity.com/economy/image/" + trade.item_icon_url %>" alt="Item Icon" class="item-icon">
                         <p>Item: <%= trade.item_name %></p>
-                        <p>Wear: <%= maps.exteriorMapIntToString[trade.item_exterior] %></p>
+                        <p>Wear: <%= maps.exteriorMap[trade.item_exterior] %></p>
                         <p>Float: <%= trade.item_paint_wear %></p>
                         <p>Seed: <%= trade.item_paint_seed %></p>
                         <p>Price: <%= trade.item_price %>$</p>
@@ -75,7 +75,7 @@
                     <div class="trade-item">
                         <img src="<%= trade.item_icon_url.startsWith("http") ? trade.item_icon_url : "http://cdn.steamcommunity.com/economy/image/" + trade.item_icon_url %>" alt="Item Icon" class="item-icon">
                         <p>Item: <%= trade.item_name %></p>
-                        <p>Wear: <%= maps.exteriorMapIntToString[trade.item_exterior] %></p>
+                        <p>Wear: <%= maps.exteriorMap[trade.item_exterior] %></p>
                         <p>Float: <%= trade.item_paint_wear %></p>
                         <p>Seed: <%= trade.item_paint_seed %></p>
                         <p>Price: <%= trade.item_price %>$</p>

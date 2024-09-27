@@ -4,8 +4,8 @@ const queries = require('./itemQueries');
 const maps = require('../utils/item_attributes_maps');
 
 const mapValues = (item) => {
-    item.exterior_name = maps.exteriorMapIntToString[item.exterior];
-    item.quality_name = maps.qualityMapIntToString[item.quality];
+    item.exterior_name = maps.exteriorMap[item.exterior];
+    item.quality_name = maps.qualityMap[item.quality];
     return item;
 }
 

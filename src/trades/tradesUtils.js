@@ -4,7 +4,7 @@ const listedItemsUtils = require('../listed_items/itemUtils');
 const trade_maps = require('../utils/trade_maps')
 
 const mapState = (trade) => {
-    trade.state_name = trade_maps.stateMapIntToString[trade.state];
+    trade.state_name = trade_maps.stateMap[trade.state];
     return trade;
 }
 

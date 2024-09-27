@@ -12,8 +12,8 @@ var contextid = '2'; // default CS:GO 2 context
 const maps = require('../utils/item_attributes_maps');
 
 const mapValues = (item) => {
-    item.exterior_string = maps.exteriorMapIntToString[item.exterior];
-    item.quality_string = maps.qualityMapIntToString[item.quality];
+    item.exterior_string = maps.exteriorMap[item.exterior];
+    item.quality_string = maps.qualityMap[item.quality];
     return item;
 }
 
@@ -107,10 +107,10 @@ const constructWeapons = (steam_id, links) => {
                     market_hash_name: item.full_item_name,
                     paint_wear: item.floatvalue,
                     paint_seed: item.paintseed,
-                    exterior: item.wear_name ? item_maps.exteriorMapStringToInt[item.wear_name] : undefined,
+                    exterior: item.wear_name ? item_maps.exteriorMap[item.wear_name] : undefined,
                     exterior_name: item.wear_name,
                     quality: item.quality,
-                    quality_name: item_maps.qualityMapStringToInt[item.quality],
+                    quality_name: item_maps.qualityMap[item.quality],
                     rarity: item.rarity,
                     // rarity_name: item_maps.rarityMapStringToInt[item.rarity],
                     icon_url: item.imageurl,
@@ -147,10 +147,10 @@ const constructWeapon = (steam_id, inspect_url, asset_id) => {
         item.name = item.name;
         item.paint_wear = item.floatvalue;
         item.paint_seed = item.paintseed;
-        item.exterior = item.wear_name ? item_maps.exteriorMapStringToInt[item.wear_name] : undefined,
+        item.exterior = item.wear_name ? item_maps.exteriorMap[item.wear_name] : undefined,
         item.exterior_name = item.wear_name,
         item.quality = item.quality,
-        item.quality_name = item_maps.qualityMapStringToInt[item.quality],
+        item.quality_name = item_maps.qualityMap[item.quality],
         item.rarity = item.rarity,
         // item.rarity_name = item_maps.rarityMapStringToInt[item.rarity],
         item.market_hash_name = item.full_item_name
@@ -190,8 +190,8 @@ const constructOtherItems = (steam_id, items) => {
 
             for (item of items) {
                 var data = body.result[item.instance_id == '0' ? item.class_id : item.class_id + '_' + item.instance_id];
-                var quality = item_maps.qualityMapStringToInt[getTagValue(data.tags, "Quality")];
-                var exterior = item_maps.exteriorMapStringToInt[getTagValue(data.tags, "Exterior")];
+                var quality = item_maps.qualityMap[getTagValue(data.tags, "Quality")];
+                var exterior = item_maps.exteriorMap[getTagValue(data.tags, "Exterior")];
                 // var rarity = item_maps.rarityMapStringToInt[getTagValue(item.tags, "Rarity")];
 
                 result.push({
@@ -225,9 +225,9 @@ const constructOtherItem = (steam_id, asset_id, class_id, instance_id) => {
             const key = Object.keys(body.result)[0];
             body = body.result[key];
 
-            var quality = item_maps.qualityMapStringToInt[getTagValue(body.tags, "Quality")];
-            var exterior = item_maps.exteriorMapStringToInt[getTagValue(body.tags, "Exterior")];
-            // var rarity = item_maps.rarityMapStringToInt[getTagValue(description.tags, "Rarity")];
+            var quality = item_maps.qualityMap[getTagValue(body.tags, "Quality")];
+            var exterior = item_maps.exteriorMap[getTagValue(body.tags, "Exterior")];
+            // var rarity = item_maps.rarityMap[getTagValue(description.tags, "Rarity")];
             
             const item = {
                 asset_id: asset_id,

@@ -51,7 +51,7 @@ const renderStall = (req, res) => {
 const renderTrades = (req, res) => {
     const user = req.user;
     tradesUtils.getTradesFromUserWithUserAndItem(user.steam_id, user.display_name, user.avatar, user.tradelink)
-        .then(trades => { console.log(trades); res.render('trades', { user : user, trades : trades, maps : item_maps }) })
+        .then(trades => { res.render('trades', { user : user, trades : trades, maps : item_maps }) })
         .catch(err => { logs.warnLog(err); res.redirect('/'); })
 }
 

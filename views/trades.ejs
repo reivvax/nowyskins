@@ -17,6 +17,7 @@
     <%
         selling = trades.filter(trade => trade.seller_id === user.steam_id);
         buying = trades.filter(trade => trade.buyer_id === user.steam_id);
+        console.log(selling);
     %>
 
     <div id="selling" class="tab-content">
@@ -43,17 +44,19 @@
 
                     <% if (trade.state === 0) { %>
                         <div class="trade-actions">
-                            <button class="circle-button accept" title="Accept">
+                            <button class="circle-button accept" data-trade-id="<%= trade.trade_id %>" title="Accept">
                                 ✓
                             </button>
-                            <button class="circle-button cancel" title="Cancel">
+                            <button class="circle-button cancel" data-trade-id="<%= trade.trade_id %>" title="Cancel">
                                 ✕
                             </button>
                         </div>
                     <% } else if (trade.state === 1) { %>
                         <a href="<%= trade.buyer_tradelink %>" class="trade-link">Trade with buyer</a>
                     <% } else if (trade.state === 3) { %>
-                        <p class="trade-status">Completed</p>
+                        <p class="trade-status-accepted">Completed</p>
+                    <% } else if (trade.state === 4) { %>
+                        <p class="trade-status-cancelled">Cancelled</p>
                     <% } %>
 
                 </div>
@@ -88,7 +91,9 @@
                     <% if (trade.state === 2) { %>
                         <a href="<%= trade.seller_tradelink %>" class="trade-link">Trade with seller</a>
                     <% } else if (trade.state === 3) { %>
-                        <p class="trade-status">Completed</p>
+                        <p class="trade-status-accepted">Completed</p>
+                    <% } else if (trade.state === 4) { %>
+                        <p class="trade-status-cancelled">Cancelled</p>
                     <% } %>
                 </div>
             <% }) %>
@@ -105,5 +110,6 @@
         }
         showTab('selling');
     </script>
+    <script src="/trades.js"></script>
 </body>
 </html>

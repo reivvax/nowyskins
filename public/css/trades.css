@@ -153,8 +153,14 @@ button:focus {
     background-color: #0056b3;
 }
 
-.trade-status {
+.trade-status-accepted {
     color: #28a745;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+.trade-status-cancelled {
+    color: #dc3545;
     font-weight: bold;
     margin-top: 10px;
 }

@@ -17,7 +17,7 @@ pool.connect((err) => {
 });
 
 //item exterior: 0 = BS, ..., 4 = FN
-//trades states: 0: 'to_be_accepted_by_seller', 'trade_offer_to_be_sent', 'to_be_accepted_by_buyer', 'completed'
+//trades states: 0: 'To be accepted by seller', 'Trade offer to be sent', 'To be accepted by buyer', 'Completed', 'Cancelled'
 //TODO change user tradelink to trade token
 const setup = `
 CREATE TABLE IF NOT EXISTS users (

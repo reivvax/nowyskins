@@ -12,6 +12,16 @@ router.post('/new',
     tradesController.changeListingStatusAndCreateTrade
 );
 
-// router.put('/update/:trade_id', ensureAuthenticated, tradesController.updateState);
+router.put('/accept/:trade_id', 
+    ensureAuthenticated, 
+    tradesController.ensureSellerPrivilegedToUpdateTrade, 
+    tradesController.acceptTrade
+);
+
+router.put('/cancel/:trade_id', 
+    ensureAuthenticated, 
+    tradesController.ensureSellerPrivilegedToUpdateTrade, 
+    tradesController.cancelTrade
+);
 
 module.exports = router;

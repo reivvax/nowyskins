@@ -21,6 +21,7 @@ const changeListingStatusAndCreateTrade = async (req, res) => {
         res.status(500).send("Failed to create a new trade.");
     }
 }
+
 const ensurePrivilegedToCreateTrade = (req, res, next) => {
     const { seller_id, asset_id } = req.body;
     listedItems.getItem(asset_id)
@@ -37,8 +38,52 @@ const ensurePrivilegedToCreateTrade = (req, res, next) => {
         .catch(err => { logs.debugLog(err); res.status(500).send("Failed to fetch item from database"); })
 }
 
+const ensureSellerPrivilegedToUpdateTrade = (req, res, next) => {
+    const { trade_id } = req.params;
+    tradesUtils.getTrade(trade_id)
+        .then(trade => {
+            if (trade.seller_id != req.user.steam_id || trade.state != 0) {
+                logs.verboseLog(`Unable to update trade because user ${req.user.steam_id} is not the seller of trade ${trade_id}`);
+                res.status(401).send('Unauthorized');
+            } else
+                return next();
+        })
+        .catch(err => { logs.debugLog(err); res.status(500).send("Failed to fetch trade from database"); })
+}
+
+const ensureBuyerPrivilegedToUpdateTrade = (req, res, next) => {
+    const { trade_id } = req.params;
+    tradesUtils.getTrade(trade_id)
+        .then(trade => {
+            if (trade.buyer_id != req.user.steam_id || trade.state != 2) { //TODO check if this check is valid
+                logs.verboseLog(`Unable to update trade because user ${req.user.steam_id} is not the buyer of trade ${trade_id}`);
+                res.status(401).send('Unauthorized');
+            } else
+                return next();
+        })
+        .catch(err => { logs.debugLog(err); res.status(500).send("Failed to fetch trade from database"); })
+}
+
+const acceptTrade = (req, res) => {
+    const { trade_id } = req.params;
+    tradesUtils.updateState(trade_id, 1)
+        .then(() => { res.status(200).send("Trade accepted successfully.") })
+        .catch(err => { logs.debugLog(err); res.status(500).send("Failed to accept trade.") });
+}
+
+const cancelTrade = (req, res) => {
+    const { trade_id } = req.params;
+    tradesUtils.cancelTrade(trade_id)
+        .then(() => { res.status(200).send("Trade cancelled successfully.") })
+        .catch(err => { logs.debugLog(err); res.status(500).send("Failed to cancel trade.") });
+}
+
 module.exports = {
     newTrade,
     changeListingStatusAndCreateTrade,
     ensurePrivilegedToCreateTrade,
+    ensureSellerPrivilegedToUpdateTrade,
+    ensureBuyerPrivilegedToUpdateTrade,
+    acceptTrade,
+    cancelTrade,
 }

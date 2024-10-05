@@ -84,7 +84,12 @@ const updateState = (trade_id, state) => {
            else
                resolve(mapState(res.rows[0]));
        });
-   });
+   })
+}
+
+const cancelTrade = async (trade_id) => {
+    let trade = await updateState(trade_id, trade_maps.stateMap['Cancelled']);
+    await listedItemsUtils.updateStatus(trade.asset_id, 'true');
 }
 
 /* Removes the listing of the item and creates a new trade using sql transaction */
@@ -114,5 +119,6 @@ module.exports = {
     getTradesFromUserWithUserAndItem,
     addNewTrade,
     updateState,
+    cancelTrade,
     changeListingStatusAndCreateTrade,
 }

@@ -32,7 +32,8 @@ CREATE TABLE IF NOT EXISTS users (
 );
 
 CREATE TABLE IF NOT EXISTS listed_items (
-  asset_id          VARCHAR(20)     PRIMARY KEY,
+  id                SERIAL PRIMARY KEY,
+  asset_id          VARCHAR(20) NOT NULL,
   d                 VARCHAR(30),
   name              VARCHAR(100)    NOT NULL,
   paint_wear        VARCHAR(20),
@@ -50,6 +51,12 @@ CREATE TABLE IF NOT EXISTS listed_items (
   steam_id          VARCHAR(20),
   FOREIGN KEY       (steam_id)      REFERENCES users(steam_id)
 ); 
+
+CREATE TABLE watchlist (
+    steam_id INT REFERENCES users(steam_id) ON DELETE CASCADE,
+    listing_id INT REFERENCES listings(id) ON DELETE CASCADE,
+    PRIMARY KEY (steam_id, listing_id)
+);
 
 CREATE TABLE IF NOT EXISTS prices (
   market_hash_name  VARCHAR(100)    PRIMARY KEY,

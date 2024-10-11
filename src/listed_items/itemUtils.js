@@ -27,15 +27,36 @@ const getActiveItems = () => {
     });
 }
 
-const getItem = (asset_id) => {
-    return new Promise((resolve, reject) => {pool.query(queries.getItem, [asset_id], (err, results) => {
+const get = (query, params) => {
+    return new Promise((resolve, reject) => {pool.query(query, params, (err, results) => {
             if (err)
                 return reject(err);
             if (results.rows.length)
-                return resolve(mapValues(results.rows[0]));
+                return resolve(results.rows.map(mapValues));
             reject(new Error("Item not found"));
         });
     });
+}
+
+const getItem = (id) => {
+    return get(queries.getItem, [id])
+        .then(item => { return item[0]; });
+}
+
+const getItemByAsset = (asset_id) => {
+    return get(queries.getItemByAsset, [asset_id])
+        .then(item => {
+            if (item instanceof Array) {
+                item.sort((a, b) => new Date(b.time_added) - new Date(a.time_added));
+                for (let i = 1; i < item.length; i++)
+                    removeItem(item[i].asset_id);
+                
+                return item[0];
+            } else {
+                return item;
+            }
+        });
+    
 }
 
 const isActive = (asset_id) => {
@@ -77,12 +98,12 @@ const addItemToDatabase = (item) => {
     });
 }
 
-const addItemWithCheck = (item, client) => {
+const addItemWithCheck = (item) => {
     return new Promise((resolve, reject) => {
         if (!item)
             return reject(new Error("Item is null"));
 
-        (client ? client : pool).query(queries.getItem, [item.asset_id], (error, results) => {
+        pool.query(queries.getItemByAsset, [item.asset_id], (error, results) => {
             if (error) 
                 reject(error);
             if (!results.rows.length) { // no item with such id found
@@ -125,6 +146,7 @@ module.exports = {
     getItems,
     getActiveItems,
     getItem,
+    getItemByAsset,
     isActive,
     getItemsFromUser,
     getActiveItemsFromUser,

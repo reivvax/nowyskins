@@ -8,25 +8,28 @@
     <link rel="stylesheet" href="profile.css">
 </head>
 <body>
-    <%- include('./components/navbar.ejs', { user : user }) %>
-    <div class="container">
-        <div class="profile-content">
-            <a href="<%="https://steamcommunity.com/profiles/" + user.steam_id%>"><img src="<%="https://avatars.steamstatic.com/" + user.avatar.substring(0, user.avatar.length - 4) + "_full.jpg"%>" alt="Avatar" class="profile-img"></a>
-            <h2><%= user.display_name %>'s Profile</h2>
-            <div class="profile-info">
-                <strong>Username:</strong> <%= user.display_name%>
-            </div>
-            <div class="profile-info">
-                <strong>Email:</strong> <%=user.email%>
-            </div>
-            <div class="profile-info">
-                <label for="tradelink-input">Trade Link:</label>
-                <input type="text" id="tradelink-input" class="tradelink-input" value="<%= user.tradelink %>">
-            </div>
-            <div class="profile-info">
-                <strong>Balance:</strong> <%=user.balance%>
+    <div class="main-content">
+        <%- include('./components/navbar.ejs', { user : user }) %>
+        <div class="container">
+            <div class="profile-content">
+                <a href="<%="https://steamcommunity.com/profiles/" + user.steam_id%>"><img src="<%="https://avatars.steamstatic.com/" + user.avatar.substring(0, user.avatar.length - 4) + "_full.jpg"%>" alt="Avatar" class="profile-img"></a>
+                <h2><%= user.display_name %>'s Profile</h2>
+                <div class="profile-info">
+                    <strong>Username:</strong> <%= user.display_name%>
+                </div>
+                <div class="profile-info">
+                    <strong>Email:</strong> <%=user.email%>
+                </div>
+                <div class="profile-info">
+                    <label for="tradelink-input">Trade Link:</label>
+                    <input type="text" id="tradelink-input" class="tradelink-input" value="<%= user.tradelink %>">
+                </div>
+                <div class="profile-info">
+                    <strong>Balance:</strong> <%=user.balance%>
+                </div>
             </div>
         </div>
     </div>
+    <%- include('./components/footer.ejs') %>
 </body>
 </html>

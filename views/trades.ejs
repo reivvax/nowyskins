@@ -7,100 +7,104 @@
     <link rel="stylesheet" href="/trades.css">
 </head>
 <body>
-    <%- include('./components/navbar.ejs', { user : user }) %>
-    <h1>Trades</h1>
-    <div>
-        <button class="category" onclick="showTab('selling')">Selling</button>
-        <button class="category" onclick="showTab('buying')">Buying</button>
-    </div>
+    <div class="main-content">
+        <%- include('./components/navbar.ejs', { user : user }) %>
+        <h1>Trades</h1>
+        <div>
+            <button class="category" onclick="showTab('selling')">Selling</button>
+            <button class="category" onclick="showTab('buying')">Buying</button>
+        </div>
 
-    <%
-        selling = trades.filter(trade => trade.seller_id === user.steam_id);
-        buying = trades.filter(trade => trade.buyer_id === user.steam_id);
-        console.log(selling);
-    %>
+        <%
+            selling = trades.filter(trade => trade.seller_id === user.steam_id);
+            buying = trades.filter(trade => trade.buyer_id === user.steam_id);
+            console.log(selling);
+        %>
 
-    <div id="selling" class="tab-content">
-        <h2>Selling</h2> 
-        <% if (selling.length != 0) { %>
-            <% selling.forEach(trade => { %>
-                <div class="trade-container">
-                    <div class="trade-info seller">
-                        <img src="<%= "https://avatars.steamstatic.com/" + user.avatar %>" alt="Seller Avatar" class="avatar">
-                        <p>Seller: <%= user.display_name %></p>
-                    </div>
-                    <div class="trade-item">
-                        <img src="<%= trade.item_icon_url.startsWith("http") ? trade.item_icon_url : "http://cdn.steamcommunity.com/economy/image/" + trade.item_icon_url %>" alt="Item Icon" class="item-icon">
-                        <p>Item: <%= trade.item_name %></p>
-                        <p>Wear: <%= maps.exteriorMap[trade.item_exterior] %></p>
-                        <p>Float: <%= trade.item_paint_wear %></p>
-                        <p>Seed: <%= trade.item_paint_seed %></p>
-                        <p>Price: <%= trade.item_price %>$</p>
-                    </div>
-                    <div class="trade-info buyer">
-                        <img src="<%= "https://avatars.steamstatic.com/" + trade.buyer_avatar %>" alt="Buyer Avatar" class="avatar">
-                        <p>Buyer: <%= trade.buyer_display_name %></p>
-                    </div>
-
-                    <% if (trade.state === 0) { %>
-                        <div class="trade-actions">
-                            <button class="circle-button accept" data-trade-id="<%= trade.trade_id %>" title="Accept">
-                                ✓
-                            </button>
-                            <button class="circle-button cancel" data-trade-id="<%= trade.trade_id %>" title="Cancel">
-                                ✕
-                            </button>
+        <div id="selling" class="tab-content">
+            <h2>Selling</h2> 
+            <% if (selling.length != 0) { %>
+                <% selling.forEach(trade => { %>
+                    <div class="trade-container">
+                        <div class="trade-info seller">
+                            <img src="<%= "https://avatars.steamstatic.com/" + user.avatar %>" alt="Seller Avatar" class="avatar">
+                            <p>Seller: <%= user.display_name %></p>
                         </div>
-                    <% } else if (trade.state === 1) { %>
-                        <a href="<%= trade.buyer_tradelink %>" class="trade-link">Trade with buyer</a>
-                    <% } else if (trade.state === 3) { %>
-                        <p class="trade-status-accepted">Completed</p>
-                    <% } else if (trade.state === 4) { %>
-                        <p class="trade-status-cancelled">Cancelled</p>
-                    <% } %>
+                        <div class="trade-item">
+                            <img src="<%= trade.item_icon_url.startsWith("http") ? trade.item_icon_url : "http://cdn.steamcommunity.com/economy/image/" + trade.item_icon_url %>" alt="Item Icon" class="item-icon">
+                            <p>Item: <%= trade.item_name %></p>
+                            <p>Wear: <%= maps.exteriorMap[trade.item_exterior] %></p>
+                            <p>Float: <%= trade.item_paint_wear %></p>
+                            <p>Seed: <%= trade.item_paint_seed %></p>
+                            <p>Price: <%= trade.item_price %>$</p>
+                        </div>
+                        <div class="trade-info buyer">
+                            <img src="<%= "https://avatars.steamstatic.com/" + trade.buyer_avatar %>" alt="Buyer Avatar" class="avatar">
+                            <p>Buyer: <%= trade.buyer_display_name %></p>
+                        </div>
 
-                </div>
-            <% }) %>
-        <% } else { %>
-            <p>You are not selling any items.</p>
-        <% } %>
+                        <% if (trade.state === 0) { %>
+                            <div class="trade-actions">
+                                <button class="circle-button accept" data-trade-id="<%= trade.trade_id %>" title="Accept">
+                                    ✓
+                                </button>
+                                <button class="circle-button cancel" data-trade-id="<%= trade.trade_id %>" title="Cancel">
+                                    ✕
+                                </button>
+                            </div>
+                        <% } else if (trade.state === 1) { %>
+                            <a href="<%= trade.buyer_tradelink %>" class="trade-link">Trade with buyer</a>
+                        <% } else if (trade.state === 3) { %>
+                            <p class="trade-status-accepted">Completed</p>
+                        <% } else if (trade.state === 4) { %>
+                            <p class="trade-status-cancelled">Cancelled</p>
+                        <% } %>
+
+                    </div>
+                <% }) %>
+            <% } else { %>
+                <p>You are not selling any items.</p>
+            <% } %>
+        </div>
+
+        <div id="buying" class="tab-content" style="display:none;">
+            <h2>Buying</h2>
+            <% if (buying.length != 0) { %>
+                <% buying.forEach(trade => { %>
+                    <div class="trade-container">
+                        <div class="trade-info seller">
+                            <img src="<%= "https://avatars.steamstatic.com/" + trade.seller_avatar %>" alt="Seller Avatar" class="avatar">
+                            <p>Seller: <%= trade.seller_display_name %></p>
+                        </div>
+                        <div class="trade-item">
+                            <img src="<%= trade.item_icon_url.startsWith("http") ? trade.item_icon_url : "http://cdn.steamcommunity.com/economy/image/" + trade.item_icon_url %>" alt="Item Icon" class="item-icon">
+                            <p>Item: <%= trade.item_name %></p>
+                            <p>Wear: <%= maps.exteriorMap[trade.item_exterior] %></p>
+                            <p>Float: <%= trade.item_paint_wear %></p>
+                            <p>Seed: <%= trade.item_paint_seed %></p>
+                            <p>Price: <%= trade.item_price %>$</p>
+                        </div>
+                        <div class="trade-info buyer">
+                            <img src="<%= "https://avatars.steamstatic.com/" + user.avatar %>" alt="Buyer Avatar" class="avatar">
+                            <p>Buyer: <%= user.display_name %></p>
+                        </div>
+
+                        <% if (trade.state === 2) { %>
+                            <a href="<%= trade.seller_tradelink %>" class="trade-link">Trade with seller</a>
+                        <% } else if (trade.state === 3) { %>
+                            <p class="trade-status-accepted">Completed</p>
+                        <% } else if (trade.state === 4) { %>
+                            <p class="trade-status-cancelled">Cancelled</p>
+                        <% } %>
+                    </div>
+                <% }) %>
+            <% } else { %>
+                <p>You are not selling any items.</p>
+            <% } %>
+        </div>
     </div>
 
-    <div id="buying" class="tab-content" style="display:none;">
-        <h2>Buying</h2>
-        <% if (buying.length != 0) { %>
-            <% buying.forEach(trade => { %>
-                <div class="trade-container">
-                    <div class="trade-info seller">
-                        <img src="<%= "https://avatars.steamstatic.com/" + trade.seller_avatar %>" alt="Seller Avatar" class="avatar">
-                        <p>Seller: <%= trade.seller_display_name %></p>
-                    </div>
-                    <div class="trade-item">
-                        <img src="<%= trade.item_icon_url.startsWith("http") ? trade.item_icon_url : "http://cdn.steamcommunity.com/economy/image/" + trade.item_icon_url %>" alt="Item Icon" class="item-icon">
-                        <p>Item: <%= trade.item_name %></p>
-                        <p>Wear: <%= maps.exteriorMap[trade.item_exterior] %></p>
-                        <p>Float: <%= trade.item_paint_wear %></p>
-                        <p>Seed: <%= trade.item_paint_seed %></p>
-                        <p>Price: <%= trade.item_price %>$</p>
-                    </div>
-                    <div class="trade-info buyer">
-                        <img src="<%= "https://avatars.steamstatic.com/" + user.avatar %>" alt="Buyer Avatar" class="avatar">
-                        <p>Buyer: <%= user.display_name %></p>
-                    </div>
-
-                    <% if (trade.state === 2) { %>
-                        <a href="<%= trade.seller_tradelink %>" class="trade-link">Trade with seller</a>
-                    <% } else if (trade.state === 3) { %>
-                        <p class="trade-status-accepted">Completed</p>
-                    <% } else if (trade.state === 4) { %>
-                        <p class="trade-status-cancelled">Cancelled</p>
-                    <% } %>
-                </div>
-            <% }) %>
-        <% } else { %>
-            <p>You are not selling any items.</p>
-        <% } %>
-    </div>
+    <%- include('./components/footer.ejs') %>
 
     <script>
         function showTab(tabName) {

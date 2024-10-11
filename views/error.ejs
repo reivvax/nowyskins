@@ -32,13 +32,16 @@
     </style>
 </head>
 <body>
-    <%- include('./components/navbar.ejs', { user : user }) %>
-    <div class="container">
-        <div class="error-content">
-            <h1><%= message %></h1>
-            <h2>Status: <%= error.status %></h2>
-            <pre><%= error.stack %></pre>
+    <div class="main-content">
+        <%- include('./components/navbar.ejs', { user : user }) %>
+        <div class="container">
+            <div class="error-content">
+                <h1><%= message %></h1>
+                <h2>Status: <%= error.status %></h2>
+                <pre><%= error.stack %></pre>
+            </div>
         </div>
     </div>
+    <%- include('./components/footer.ejs') %>
 </body>
 </html>

@@ -9,15 +9,18 @@
     <link rel="stylesheet" href="/marketcards.css">
 </head>
 <body>
-    <%-include('./components/navbar.ejs', { user : user })%>
+    <div class="main-content">
+        <%-include('./components/navbar.ejs', { user : user })%>
     
-    <div class="container">
-        <div class="cards-container">
-            <% items.forEach((item) => { %>
-                <%- include('./components/buycard.ejs', { item: item, maps: maps }); %>
-            <% }); %>
+        <div class="container">
+            <div class="cards-container">
+                <% items.forEach((item) => { %>
+                    <%- include('./components/buycard.ejs', { item: item, maps: maps }); %>
+                <% }); %>
+            </div>
         </div>
     </div>
+    <%- include('./components/footer.ejs') %>
 
     <script src="/buying.js"></script>
 </body>

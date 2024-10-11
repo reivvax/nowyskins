@@ -9,38 +9,41 @@
     <link rel="stylesheet" href="popup.css">
 </head>
 <body>
-    <%- include('./components/navbar.ejs', { user : user }) %>
-    <div class="container">
-        <div class="main-content">
-            <h1>Welcome to the Transaction Service</h1>
-            <p>Here you can manage your transactions quickly and securely. <% if(!user) { %> Log in to get started. <% } %> </p>
+    <div class="main-content">
+        <%- include('./components/navbar.ejs', { user : user }) %>
+        <div class="container">
+            <div class="welcome">
+                <h1>Welcome to the Transaction Service</h1>
+                <p>Here you can manage your transactions quickly and securely. <% if(!user) { %> Log in to get started. <% } %> </p>
+            </div>
         </div>
+
+        <!-- Popup window -->
+        <% if (user && !user.email) { %>
+            <div class="popup-overlay" id="overlay"></div>
+
+            <div id="popup" class="popup">
+                <div class="popup-header">
+                    Please provide email and tradelink to continue.
+                </div>
+                <div class="popup-content">
+                    <div>
+                        <label for="email">Email:</label>
+                        <input type="email" id="email" class="email-input" placeholder="Enter your email">
+                    </div>
+                    <div>
+                        <label for="tradelink">Trade Link:</label>
+                        <input type="text" id="tradelink" class="tradelink-input" placeholder="Enter your trade link">
+                        <a class="find-link" href="https://steamcommunity.com/id/me/tradeoffers/privacy#trade_offer_access_url" target="_blank">Find it here</a>
+                    </div>
+                    <p id="error-message"></p>
+                    <button id="submit-btn" class="submit-btn">Submit</button>
+                </div>
+            </div>
+        <% } %>
     </div>
 
-    <!-- Popup window -->
-    <% if (user && !user.email) { %>
-        <div class="popup-overlay" id="overlay"></div>
-
-        <div id="popup" class="popup">
-            <div class="popup-header">
-                Please provide email and tradelink to continue.
-            </div>
-            <div class="popup-content">
-                <div>
-                    <label for="email">Email:</label>
-                    <input type="email" id="email" class="email-input" placeholder="Enter your email">
-                </div>
-                <div>
-                    <label for="tradelink">Trade Link:</label>
-                    <input type="text" id="tradelink" class="tradelink-input" placeholder="Enter your trade link">
-                    <a class="find-link" href="https://steamcommunity.com/id/me/tradeoffers/privacy#trade_offer_access_url" target="_blank">Find it here</a>
-                </div>
-                <p id="error-message"></p>
-                <button id="submit-btn" class="submit-btn">Submit</button>
-            </div>
-        </div>
-    <% } %>
-
+    <%- include('./components/footer.ejs') %>
 
     <script>
         var steam_id = <%-JSON.stringify(user ? user.steam_id : undefined)%>;

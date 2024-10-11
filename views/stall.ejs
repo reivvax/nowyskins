@@ -10,24 +10,27 @@
     <link rel="stylesheet" href="/marketcards.css">
 </head>
 <body>
-    <%- include('./components/navbar.ejs', { user : user }) %>
-    
-    <div class="user-section">
-        <img src="<%="https://avatars.steamstatic.com/" + seller.avatar.substring(0, seller.avatar.length - 4) + "_full.jpg"%>" alt="avatar" class="user-photo">
-        <h2><%= seller.display_name %></h2>
-    </div>
-    
-    <div class="container">
-        <div class="cards-container">
-            <% if (items.length)
-                items.forEach((item) => { %>
-                <%- include('./components/buycard.ejs', { item: item, maps: maps }) %>
-            <% });
-            else { %>
-                <h2>No items in the stall</h2>
-            <% } %>
+    <div class="main-content">
+        <%- include('./components/navbar.ejs', { user : user }) %>
+        
+        <div class="user-section">
+            <img src="<%="https://avatars.steamstatic.com/" + seller.avatar.substring(0, seller.avatar.length - 4) + "_full.jpg"%>" alt="avatar" class="user-photo">
+            <h2><%= seller.display_name %></h2>
+        </div>
+        
+        <div class="container">
+            <div class="cards-container">
+                <% if (items.length)
+                    items.forEach((item) => { %>
+                    <%- include('./components/buycard.ejs', { item: item, maps: maps }) %>
+                <% });
+                else { %>
+                    <h2>No items in the stall</h2>
+                <% } %>
+            </div>
         </div>
     </div>
+    <%- include('./components/footer.ejs') %>
 
     <script src="/mystall.js"></script>
 </body>

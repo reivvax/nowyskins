@@ -1,6 +1,6 @@
-.item-card button {
+.remove-button {
     background-color: #c92121;
 }
-.item-card button:hover {
+.remove-button:hover {
     background-color: #721414;
 }

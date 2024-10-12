@@ -56,14 +56,13 @@ const getItemByAsset = (asset_id) => {
                 return item;
             }
         });
-    
 }
 
 const isActive = (asset_id) => {
-    return getItem(asset_id)
+    return getItemByAsset(asset_id)
         .then(item => { return item.active; })
         .catch(err => { return false; } );
-}    
+}
 
 const getItemsFromUser = (steam_id) => {
     return new Promise((resolve, reject) => {pool.query(queries.getItemsFromUser, [steam_id], (err, results) => {

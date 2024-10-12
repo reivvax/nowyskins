@@ -1,6 +1,6 @@
-.item-card button {
+.buy-button {
     background-color: #199223;
 }
-.item-card button:hover {
+.buy-button:hover {
     background-color: #126130;
 }

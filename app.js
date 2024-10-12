@@ -13,6 +13,7 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var listedItemsRouter = require('./routes/listedItems');
 var tradesRouter = require('./routes/trades');
+var watchlistsRouter = require('./routes/watchlists');
 
 const app = express();
 
@@ -25,6 +26,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public/css')));
 app.use(express.static(path.join(__dirname, 'public/scripts')));
+app.use(express.static(path.join(__dirname, 'public/resources')));
 
 app.use(session({
     secret: process.env['SESSION_SECRET'],
@@ -40,6 +42,7 @@ app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/listeditems', listedItemsRouter);
 app.use('/trades', tradesRouter);
+app.use('/watchlists', watchlistsRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

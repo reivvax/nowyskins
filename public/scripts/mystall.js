@@ -22,4 +22,9 @@ document.addEventListener("DOMContentLoaded", function() {
             });
         });
     });
+
+    document.querySelector('.inspect-button').addEventListener('click', function() {
+        const inspectUrl = this.getAttribute('data-inspect-url');
+        window.location.href = inspectUrl;
+    });
 });

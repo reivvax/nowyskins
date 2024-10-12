@@ -8,6 +8,11 @@ document.addEventListener("DOMContentLoaded", function() {
             buyItem(asset_id, seller_id);
         });
     });
+
+    document.querySelector('.inspect-button').addEventListener('click', function() {
+        const inspectUrl = this.getAttribute('data-inspect-url');
+        window.location.href = inspectUrl;
+      });
 });
 
 function buyItem(asset_id, seller_id) {
@@ -22,10 +27,15 @@ function buyItem(asset_id, seller_id) {
         })
     })
     .then(response => {
+        if (response.redirected) {
+            window.location.href = response.url;
+            return;
+        }
+
         if (!response.ok) {
             throw new Error('Network response was not ok');
         }
-        console.log(response.json())
+
         return response.json();
     })
     .catch(error => {

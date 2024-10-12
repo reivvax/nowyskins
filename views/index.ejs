@@ -46,7 +46,7 @@
     <%- include('./components/footer.ejs') %>
 
     <script>
-        var steam_id = <%-JSON.stringify(user ? user.steam_id : undefined)%>;
+        var steam_id = <%-JSON.stringify(user ? user.steam_id : null)%>;
     </script>
     <script src="userUpdate.js"></script>
     <script src="popup.js"></script>

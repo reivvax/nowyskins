@@ -8,7 +8,7 @@ const addItem = (req, res) => {
 }
 
 const checkIfListingExists = (req, res, next) => {
-    return listedItems.getItem(req.body.asset_id)
+    return listedItems.getItemByAsset(req.body.asset_id)
         .then(item => { return next(); })
         .catch(err => { 
                 logs.verboseLog(err);
@@ -37,7 +37,7 @@ const checkIfListingActive = async (req, res, next) => {
 
 const ensurePrivilegedToDelete = (req, res, next) => {
     const asset_id = req.params.id;
-    listedItems.getItem(asset_id)
+    listedItems.getItemByAsset(asset_id)
         .then(item => {
             if (item.steam_id != req.user.steam_id) {
                 logs.verboseLog(`User ${req.user.steam_id} unauthorized to delete item ${asset_id}`);

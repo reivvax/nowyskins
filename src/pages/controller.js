@@ -8,7 +8,8 @@ const tradesUtils = require('../trades/tradesUtils');
 const logs = require('../utils/logging');
 
 const renderIndex = (req, res) => {
-    res.render('index', { user: req.user });
+    let message = req.query.message || null;
+    res.render('index', { user: req.user, message: message });
 }
 
 const renderMarket = (req, res) => {

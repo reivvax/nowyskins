@@ -52,9 +52,9 @@ CREATE TABLE IF NOT EXISTS listed_items (
   FOREIGN KEY       (steam_id)      REFERENCES users(steam_id)
 ); 
 
-CREATE TABLE watchlist (
-    steam_id INT REFERENCES users(steam_id) ON DELETE CASCADE,
-    listing_id INT REFERENCES listings(id) ON DELETE CASCADE,
+CREATE TABLE IF NOT EXISTS watchlists (
+    steam_id VARCHAR(20) REFERENCES users(steam_id) ON DELETE CASCADE,
+    listing_id INT REFERENCES listed_items(id) ON DELETE CASCADE,
     PRIMARY KEY (steam_id, listing_id)
 );
 

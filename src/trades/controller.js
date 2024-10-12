@@ -24,7 +24,7 @@ const changeListingStatusAndCreateTrade = async (req, res) => {
 
 const ensurePrivilegedToCreateTrade = (req, res, next) => {
     const { seller_id, asset_id } = req.body;
-    listedItems.getItem(asset_id)
+    listedItems.getItemByAsset(asset_id)
         .then(item => {
             if (item.steam_id != seller_id) {
                 logs.verboseLog(`Unable to create offer because item ${asset_id} is not listed by user ${seller_id}`);

@@ -16,27 +16,7 @@
             <h2 id="itemCount"><%=items.length%> items</h2>
             <div class="cards-container">
                 <% items.forEach((item) => { if (item) { %>
-                    <div id="<%=item.asset_id%>" class="item-card">
-                        <h3 class="item-name"><%=item.name%></h3>
-                        <h4 class="item-exterior"><%=item.exterior ? maps.exteriorMap[item.exterior] : ""%></h4>
-
-                        <img class="item-icon" src="<%=item.icon_url.startsWith("http") ? item.icon_url : "http://cdn.steamcommunity.com/economy/image/" + item.icon_url%>" alt="<%=item.name%>">
-
-                        <div class="paint-info">
-                            <h3 class="paint-wear"><%=item.paint_wear%></h3>
-                            <h3 class="paint-seed"><%=item.paint_seed%></h3>
-                        </div>
-
-                        <p class="item-price"><%= item.price ? "$" + item.price : "Reference price not available"%></p>
-                        <button class="sell-button"
-                            data-asset-id="<%=item.asset_id%>"
-                            data-class-id="<%=item.class_id%>"
-                            data-instance-id="<%=item.instance_id%>"
-                            data-d-value="<%=item.d%>"
-                            data-icon-url="<%=item.icon_url.startsWith("http") ? item.icon_url : "http://cdn.steamcommunity.com/economy/image/" + item.icon_url%>">
-                            Sell
-                        </button>
-                    </div>
+                    <%- include('./components/sellcard', {item : item, maps : maps}) %>
                 <% }}); %>
             </div>
         </div>

@@ -57,7 +57,7 @@
     text-align: right;
 }
 
-.item-card button {
+.sell-button, .buy-button, .remove-button {
     background-color: #0059ff;
     color: #e0e0e0;
     border: none;
@@ -66,6 +66,42 @@
     border-radius: 5px;
     font-size: 16px;
 }
-.item-card button:hover {
+.sell-button:hover, .buy-button:hover, .remove-button:hover {
     background-color: #1b4164;
+}
+
+.image-container {
+    position: relative;
+    display: inline-block;
+}
+
+
+.item-buttons {
+    position: absolute;
+    top: -30px;
+    right: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.icon-link {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background-color: rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.icon-svg {
+    width: 20px;
+    height: 20px;
+}
+
+.icon-link:hover {
+    background-color: rgba(0, 0, 0, 0.4);
 }

@@ -141,6 +141,19 @@ const updateStatus = (asset_id, status, client) => {
     });
 }
 
+const incrementWatchCount = (id, count) => {
+    return new Promise((resolve, reject) => {
+        pool.query(queries.incrementWatchCount, [count, id], (error, result) => {
+            if (error) 
+                return reject(error);
+            if (result.rowCount > 0)
+                resolve(mapValues(result.rows[0]));
+            else
+                reject(new Error("Item not found"));
+        });
+    });
+}
+
 module.exports = {
     getItems,
     getActiveItems,
@@ -153,4 +166,5 @@ module.exports = {
     addItemWithCheck,
     removeItem,
     updateStatus,
+    incrementWatchCount 
 }

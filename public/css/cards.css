@@ -66,6 +66,7 @@
     border-radius: 5px;
     font-size: 16px;
 }
+
 .sell-button:hover, .buy-button:hover, .remove-button:hover {
     background-color: #1b4164;
 }
@@ -75,7 +76,6 @@
     display: inline-block;
 }
 
-
 .item-buttons {
     position: absolute;
     top: -30px;
@@ -83,18 +83,23 @@
     display: flex;
     flex-direction: column;
     gap: 10px;
+    align-items: end;
 }
 
 .icon-link {
-    width: 32px;
-    height: 32px;
-    display: flex;
+    display: inline-flex;
     align-items: center;
-    justify-content: center;
-    border-radius: 50%;
+    padding: 5px;
+    border-radius: 20%;
     background-color: rgba(0, 0, 0, 0.2);
-    cursor: pointer;
     text-decoration: none;
+    transition: background-color 0.3s;
+    cursor: pointer;
+}
+
+
+.icon-link:hover {
+    background-color: rgba(0, 0, 0, 0.4);
 }
 
 .icon-svg {
@@ -102,6 +107,8 @@
     height: 20px;
 }
 
-.icon-link:hover {
-    background-color: rgba(0, 0, 0, 0.4);
+.watch-count {
+    margin-left: 5px;
+    font-size: 14px;
+    color: white;
 }

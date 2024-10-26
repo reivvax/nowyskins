@@ -48,6 +48,7 @@ CREATE TABLE IF NOT EXISTS listed_items (
   trade_lock        boolean         DEFAULT false,
   time_added        TIMESTAMPTZ     DEFAULT CURRENT_TIMESTAMP,
   active            boolean         DEFAULT true,
+  watch_count       INT             DEFAULT 0,
   steam_id          VARCHAR(20),
   FOREIGN KEY       (steam_id)      REFERENCES users(steam_id)
 ); 

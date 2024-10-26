@@ -51,11 +51,22 @@ const removeAllWatchesForListing = (listing_id) => {
     });
 }
 
+const getWatchesCountForListing = (listing_id) => {
+    return new Promise((resolve, reject) => { pool.query(queries.getWatchesCountForListing, [listing_id], (err, res) => {
+            if (err) {
+                return reject(err);
+            }
+            resolve(res.rows[0]);
+        });
+    });
+}
+
 module.exports = {
     addToWatchlist,
     getListingIdsByUser,
     joinListings,
     removeFromWatchlist,
     removeAllWatchesForListing,
+    getWatchesCountForListing,
 }
 

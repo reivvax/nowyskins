@@ -14,10 +14,13 @@ WHERE
 const removeFromWatchlist = "DELETE FROM watchlists WHERE steam_id = $1 AND listing_id = $2 RETURNING *";
 const removeAllWatchesForListing = "DELETE FROM watchlists WHERE listing_id = $1 RETURNING *";
 
+const getWatchesCountForListing = "SELECT COUNT(*) FROM watchlists WHERE listing_id = $1";
+
 module.exports = {
     addToWatchlist,
     getListingIdsByUser,
     joinListings,
     removeFromWatchlist,
     removeAllWatchesForListing,
+    getWatchesCountForListing,
 }

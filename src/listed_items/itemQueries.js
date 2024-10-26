@@ -7,6 +7,7 @@ const removeItem = "DELETE FROM listed_items WHERE asset_id = $1 RETURNING *";
 const getItemsFromUser = "SELECT * FROM listed_items WHERE steam_id = $1";
 const getActiveItemsFromUser = "SELECT * FROM listed_items WHERE steam_id = $1 AND active = true";
 const updateStatus = "UPDATE listed_items SET active = $2 WHERE asset_id = $1 RETURNING *";
+const incrementWatchCount = "UPDATE listed_items SET watched_by = watched_by + 1 WHERE id = $1 RETURNING *";
 
 module.exports = {
     getItems,
@@ -18,4 +19,5 @@ module.exports = {
     getItemsFromUser,
     getActiveItemsFromUser,
     updateStatus,
+    incrementWatchCount
 }
